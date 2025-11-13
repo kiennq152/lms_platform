@@ -10,11 +10,14 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5173;
 
-const CLIENT_BUILD_PATH = path.join(__dirname, '..', 'client');
+const ROOT_PATH = path.join(__dirname, '..');
+const CLIENT_BUILD_PATH = path.join(ROOT_PATH, 'client');
+const DOCS_PATH = path.join(ROOT_PATH, 'docs');
 
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.static(CLIENT_BUILD_PATH));
+app.use('/docs', express.static(DOCS_PATH));
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: Date.now() });

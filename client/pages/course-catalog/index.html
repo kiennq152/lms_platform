@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>VIAN Academy - Danh Mục Khóa Học</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1E3A8A",
+                        "accent": "#DC2626",
+                        "background-light": "#F8F9FA",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+        .animate-fade-out {
+            animation: fadeOut 0.2s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(10px); }
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
+<div class="relative flex min-h-screen w-full flex-col">
+    <header class="sticky top-0 z-20 flex items-center justify-between px-6 lg:px-10 py-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-4xl">school</span>
+            <div>
+                <h1 class="text-2xl lg:text-3xl font-bold">VIAN Academy</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Khám phá hơn 10.000+ khóa học chất lượng</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button id="darkToggle" class="flex items-center justify-center size-10 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+            </button>
+            <button id="cartButton" class="relative flex items-center justify-center size-12 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors">
+                <span class="material-symbols-outlined text-2xl">shopping_cart</span>
+                <span id="cartCountBadge" class="absolute -top-2 -right-1 min-w-[1.5rem] h-6 px-1 rounded-full bg-accent text-xs font-bold flex items-center justify-center shadow-lg">0</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 px-6 lg:px-10 py-10">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-10">
+            <!-- Filters -->
+            <aside class="space-y-6">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 p-6 sticky top-28">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-lg font-bold">Bộ lọc thông minh</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Tinh chỉnh danh sách khóa học theo mục tiêu của bạn.</p>
+                        </div>
+                        <button id="resetFiltersBtn" class="text-sm font-semibold text-primary hover:text-accent transition-colors">Đặt lại</button>
+                    </div>
+
+                    <div class="space-y-5">
+                        <section>
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">Danh mục</h3>
+                            <div class="space-y-2" id="categoryFilter"></div>
+                        </section>
+
+                        <section>
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">Mức độ</h3>
+                            <div class="space-y-2" id="levelFilter"></div>
+                        </section>
+
+                        <section>
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3 flex items-center justify-between">
+                                Giá học phí
+                                <span id="priceValue" class="text-sm text-primary font-bold">$500</span>
+                            </h3>
+                            <input id="priceRange" type="range" min="0" max="500" value="500" class="w-full accent-primary"/>
+                            <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                                <span>0$</span>
+                                <span>500$</span>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">Thống kê nhanh</h3>
+                            <ul class="space-y-2 text-xs text-gray-600 dark:text-gray-400" id="catalogSummary">
+                                <li>Tổng số khóa học: <strong id="totalCourses">0</strong></li>
+                                <li>Đang hiển thị: <strong id="visibleCourses">0</strong></li>
+                                <li>Đã thêm vào giỏ: <strong id="cartCount">0</strong></li>
+                            </ul>
+                        </section>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Catalog -->
+            <section class="space-y-8">
+                <header class="flex flex-col gap-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 p-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div>
+                            <p class="text-sm text-primary font-semibold mb-1">Danh mục học tập</p>
+                            <h1 class="text-3xl font-bold">Khám Phá Khóa Học Phù Hợp</h1>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-2xl">
+                                Lọc theo lĩnh vực, mức độ, giá, hoặc tự thêm các khóa học mới để mở rộng thư viện đào tạo của bạn.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button id="seedCoursesBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                <span class="material-symbols-outlined text-base">stadia_controller</span>
+                                Khôi phục mẫu
+                            </button>
+                            <button id="addCourseBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold shadow hover:bg-primary/90 transition-colors">
+                                <span class="material-symbols-outlined text-base">add</span>
+                                Thêm khóa học
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr,200px] gap-3">
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                            <input id="searchInput" type="text" placeholder="Tìm kiếm khóa học theo tên, giảng viên hoặc từ khóa..."
+                                   class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:outline-none"/>
+                        </div>
+                        <select id="sortSelect" class="px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:outline-none text-sm font-semibold">
+                            <option value="newest">Mới nhất</option>
+                            <option value="popular">Phổ biến</option>
+                            <option value="price-asc">Giá tăng dần</option>
+                            <option value="price-desc">Giá giảm dần</option>
+                            <option value="rating">Đánh giá cao</option>
+                        </select>
+                    </div>
+                </header>
+
+                <div id="emptyState" class="hidden bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-12 text-center space-y-3">
+                    <span class="material-symbols-outlined text-5xl text-primary">auto_awesome</span>
+                    <h3 class="text-xl font-semibold">Không tìm thấy khóa học phù hợp.</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Hãy thử điều chỉnh bộ lọc hoặc thêm khóa học mới bằng nút <strong>Thêm khóa học</strong> ở phía trên.</p>
+                </div>
+
+                <div id="courseGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+
+                <footer class="flex flex-wrap items-center justify-between gap-4">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Các khóa học được lưu trong Local Storage. Bạn có thể reload trang mà không mất dữ liệu tùy chỉnh.
+                    </p>
+                    <button id="exportCoursesBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <span class="material-symbols-outlined text-base">download</span>
+                        Xuất danh sách (JSON)
+                    </button>
+                </footer>
+            </section>
+        </div>
+    </main>
+</div>
+
+<!-- Course Form Modal -->
+<div id="courseFormModal" class="hidden fixed inset-0 z-40 items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    <div class="w-full max-w-3xl rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <div>
+                <h3 id="courseFormTitle" class="text-xl font-bold text-primary">Thêm khóa học mới</h3>
+                <p id="courseFormSubtitle" class="text-xs text-gray-500 dark:text-gray-400">Điền thông tin chi tiết để hiển thị khóa học trong danh mục.</p>
+            </div>
+            <button id="closeFormBtn" class="flex items-center justify-center size-9 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="courseForm" class="px-6 py-6 space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label class="text-sm font-semibold flex flex-col gap-1">
+                    Tên khóa học *
+                    <input name="title" required class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none"/>
+                </label>
+                <label class="text-sm font-semibold flex flex-col gap-1">
+                    Giảng viên *
+                    <input name="instructor" required class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none"/>
+                </label>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label class="text-sm font-semibold flex flex-col gap-1">
+                    Giá (USD) *
+                    <input name="price" type="number" min="0" step="0.01" required class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none"/>
+                </label>
+                <label class="text-sm font-semibold flex flex-col gap-1">
+                    Học viên đã đăng ký
+                    <input name="students" type="number" min="0" value="0" class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none"/>
+                </label>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label class="text-sm font-semibold flex flex-col gap-1">
+                    Mức độ
+                    <select name="level" class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="Cơ Bản">Cơ Bản</option>
+                        <option value="Trung Cấp">Trung Cấp</option>
+                        <option value="Nâng Cao">Nâng Cao</option>
+                    </select>
+                </label>
+                <label class="text-sm font-semibold flex flex-col gap-1">
+                    Danh mục
+                    <select name="category" class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none">
+                        <option value="Lập Trình">Lập Trình</option>
+                        <option value="Thiết Kế">Thiết Kế</option>
+                        <option value="Kinh Doanh">Kinh Doanh</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Dữ Liệu">Dữ Liệu</option>
+                    </select>
+                </label>
+            </div>
+            <label class="text-sm font-semibold flex flex-col gap-1">
+                Đường dẫn ảnh (tuỳ chọn)
+                <input name="image" type="url" placeholder="https://..." class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none"/>
+            </label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label class="text-sm font-semibold flex flex-col gap-1">
+                    Đánh giá (0 - 5)
+                    <input name="rating" type="number" min="0" max="5" step="0.1" value="4.7" class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none"/>
+                </label>
+                <label class="text-sm font-semibold flex flex-col gap-1">
+                    Video preview (YouTube ID hoặc URL)
+                    <input name="preview" type="text" placeholder="mã video" class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 focus:ring-2 focus:ring-primary focus:outline-none"/>
+                </label>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" id="cancelFormBtn" class="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    Hủy
+                </button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors">
+                    Lưu khóa học
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1522199997018-9c69aa1f7ca7?auto=format&fit=crop&w=900&q=80';
+const DEFAULT_COURSES = [
+    {
+        id: 1,
+        title: 'Advanced Python for Data Science',
+        instructor: 'Dr. Angela Yu',
+        image: 'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?auto=format&fit=crop&w=900&q=80',
+        price: 129.99,
+        rating: 4.8,
+        students: 12450,
+        category: 'Lập Trình',
+        level: 'Nâng Cao',
+        preview: 'r1wDaTiK8bQ'
+    },
+    {
+        id: 2,
+        title: 'The Complete 2024 Web Development Bootcamp',
+        instructor: 'Colt Steele',
+        image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=900&q=80',
+        price: 99.99,
+        rating: 4.9,
+        students: 9820,
+        category: 'Lập Trình',
+        level: 'Cơ Bản',
+        preview: 'Q33KBiDriJY'
+    },
+    {
+        id: 3,
+        title: 'UI/UX Design Masterclass 2024',
+        instructor: 'Sarah Johnson',
+        image: 'https://images.unsplash.com/photo-1587614382346-4ec892f9aca3?auto=format&fit=crop&w=900&q=80',
+        price: 79.99,
+        rating: 4.6,
+        students: 6430,
+        category: 'Thiết Kế',
+        level: 'Trung Cấp',
+        preview: '3Yv1mJ7v7v4'
+    },
+    {
+        id: 4,
+        title: 'Growth Marketing 360°',
+        instructor: 'Neil Patel',
+        image: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=900&q=80',
+        price: 69.99,
+        rating: 4.5,
+        students: 8450,
+        category: 'Marketing',
+        level: 'Cơ Bản',
+        preview: 'q0zVZjAX9yM'
+    },
+    {
+        id: 5,
+        title: 'Business Strategy & Management',
+        instructor: 'Michael Porter',
+        image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=80',
+        price: 89.99,
+        rating: 4.7,
+        students: 4980,
+        category: 'Kinh Doanh',
+        level: 'Trung Cấp',
+        preview: 'KjXfM4_5a-Y'
+    },
+    {
+        id: 6,
+        title: 'Data Analytics with SQL & Tableau',
+        instructor: 'Emily Chen',
+        image: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=900&q=80',
+        price: 119.00,
+        rating: 4.8,
+        students: 7850,
+        category: 'Dữ Liệu',
+        level: 'Nâng Cao',
+        preview: 'U8LJ0H1Q0Zc'
+    }
+];
+
+class Toast {
+    static show(message, type = 'success', timeout = 2200) {
+        const colors = {
+            success: 'bg-emerald-500',
+            info: 'bg-primary',
+            warning: 'bg-amber-500',
+            error: 'bg-red-500'
+        };
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.className = `${colors[type] ?? colors.success} animate-fade-in text-white px-4 py-2 rounded-full shadow-lg fixed top-6 right-6 z-50 text-sm font-semibold`;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.remove('animate-fade-in');
+            toast.classList.add('animate-fade-out');
+            toast.addEventListener('animationend', () => toast.remove());
+        }, timeout);
+    }
+}
+
+class CartService {
+    constructor(storageKey = 'cart') {
+        this.storageKey = storageKey;
+        this.cart = this.load();
+        this.updateBadge();
+    }
+
+    load() {
+        try {
+            const raw = localStorage.getItem(this.storageKey);
+            return raw ? JSON.parse(raw) : [];
+        } catch (error) {
+            console.warn('Không thể đọc giỏ hàng:', error);
+            return [];
+        }
+    }
+
+    save() {
+        localStorage.setItem(this.storageKey, JSON.stringify(this.cart));
+        this.updateBadge();
+    }
+
+    updateBadge() {
+        const badge = document.getElementById('cartCountBadge');
+        if (badge) {
+            badge.textContent = this.cart.length;
+            badge.classList.toggle('hidden', this.cart.length === 0);
+        }
+        const catalogBadge = document.getElementById('cartCount');
+        if (catalogBadge) {
+            catalogBadge.textContent = this.cart.length;
+        }
+    }
+
+    add(course) {
+        if (!this.cart.some(item => item.id === course.id)) {
+            this.cart.push({
+                id: course.id,
+                name: course.title,
+                instructor: course.instructor,
+                price: course.price,
+                image: course.image || PLACEHOLDER_IMAGE
+            });
+            this.save();
+            Toast.show('Đã thêm khóa học vào giỏ hàng.', 'success');
+        } else {
+            Toast.show('Khóa học đã có trong giỏ hàng.', 'info');
+        }
+    }
+}
+
+class CourseCatalog {
+    constructor() {
+        this.storageKey = 'courseCatalog';
+        this.courses = this.loadCourses();
+        this.filteredCourses = [...this.courses];
+
+        this.selectedCategories = new Set();
+        this.selectedLevels = new Set();
+        this.searchQuery = '';
+        this.sortOption = 'newest';
+        this.maxPrice = 500;
+
+        this.isEditMode = false;
+        this.editingCourseId = null;
+
+        this.cartService = new CartService();
+        this.init();
+    }
+
+    loadCourses() {
+        try {
+            const raw = localStorage.getItem(this.storageKey);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length) {
+                    return parsed;
+                }
+            }
+        } catch (error) {
+            console.warn('Không thể đọc courseCatalog:', error);
+        }
+        return [...DEFAULT_COURSES];
+    }
+
+    saveCourses() {
+        localStorage.setItem(this.storageKey, JSON.stringify(this.courses));
+    }
+
+    init() {
+        this.cacheDom();
+        this.renderFilterOptions();
+        this.applyFilters();
+        this.bindEvents();
+    }
+
+    cacheDom() {
+        this.categoryFilterEl = document.getElementById('categoryFilter');
+        this.levelFilterEl = document.getElementById('levelFilter');
+        this.priceRangeEl = document.getElementById('priceRange');
+        this.priceValueEl = document.getElementById('priceValue');
+        this.catalogSummaryEl = document.getElementById('catalogSummary');
+        this.totalCoursesEl = document.getElementById('totalCourses');
+        this.visibleCoursesEl = document.getElementById('visibleCourses');
+        this.searchInputEl = document.getElementById('searchInput');
+        this.sortSelectEl = document.getElementById('sortSelect');
+        this.courseGridEl = document.getElementById('courseGrid');
+        this.emptyStateEl = document.getElementById('emptyState');
+        this.addCourseBtn = document.getElementById('addCourseBtn');
+        this.seedCoursesBtn = document.getElementById('seedCoursesBtn');
+        this.exportCoursesBtn = document.getElementById('exportCoursesBtn');
+        this.resetFiltersBtn = document.getElementById('resetFiltersBtn');
+        this.cartButton = document.getElementById('cartButton');
+
+        this.modalEl = document.getElementById('courseFormModal');
+        this.formEl = document.getElementById('courseForm');
+        this.formTitleEl = document.getElementById('courseFormTitle');
+        this.formSubtitleEl = document.getElementById('courseFormSubtitle');
+        this.closeFormBtn = document.getElementById('closeFormBtn');
+        this.cancelFormBtn = document.getElementById('cancelFormBtn');
+    }
+
+    bindEvents() {
+        this.priceRangeEl.addEventListener('input', ({ target }) => {
+            this.maxPrice = Number(target.value);
+            this.priceValueEl.textContent = `$${this.maxPrice}`;
+            this.applyFilters();
+        });
+
+        this.searchInputEl.addEventListener('input', ({ target }) => {
+            this.searchQuery = target.value.trim().toLowerCase();
+            this.applyFilters();
+        });
+
+        this.sortSelectEl.addEventListener('change', ({ target }) => {
+            this.sortOption = target.value;
+            this.applyFilters();
+        });
+
+        this.addCourseBtn.addEventListener('click', () => this.openForm());
+        this.seedCoursesBtn.addEventListener('click', () => this.resetCatalog());
+        this.exportCoursesBtn.addEventListener('click', () => this.exportCatalog());
+        this.resetFiltersBtn.addEventListener('click', () => this.resetFilters());
+        this.cartButton.addEventListener('click', () => {
+            window.location.href = '../cart-checkout/code.html';
+        });
+
+        this.closeFormBtn.addEventListener('click', () => this.closeForm());
+        this.cancelFormBtn.addEventListener('click', () => this.closeForm());
+        this.modalEl.addEventListener('click', (event) => {
+            if (event.target === this.modalEl) {
+                this.closeForm();
+            }
+        });
+        this.formEl.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(this.formEl);
+            this.handleSubmit(formData);
+        });
+
+        document.getElementById('darkToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('themeIcon').textContent = isDark ? 'light_mode' : 'dark_mode';
+        });
+
+        const storedTheme = localStorage.getItem('theme');
+        if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('themeIcon').textContent = 'light_mode';
+        }
+    }
+
+    renderFilterOptions() {
+        const categories = Array.from(new Set(this.courses.map(course => course.category))).sort();
+        const levels = Array.from(new Set(this.courses.map(course => course.level))).sort();
+
+        this.categoryFilterEl.innerHTML = categories.map(category => `
+            <label class="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" value="${category}" class="category-filter accent-primary rounded"/>
+                <span>${category}</span>
+            </label>
+        `).join('');
+
+        this.levelFilterEl.innerHTML = levels.map(level => `
+            <label class="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" value="${level}" class="level-filter accent-primary rounded"/>
+                <span>${level}</span>
+            </label>
+        `).join('');
+
+        this.categoryFilterEl.querySelectorAll('.category-filter').forEach(input => {
+            input.checked = this.selectedCategories.size === 0 || this.selectedCategories.has(input.value);
+            input.addEventListener('change', () => {
+                if (input.checked) {
+                    this.selectedCategories.add(input.value);
+                } else {
+                    this.selectedCategories.delete(input.value);
+                }
+                this.applyFilters();
+            });
+        });
+
+        this.levelFilterEl.querySelectorAll('.level-filter').forEach(input => {
+            input.checked = this.selectedLevels.size === 0 || this.selectedLevels.has(input.value);
+            input.addEventListener('change', () => {
+                if (input.checked) {
+                    this.selectedLevels.add(input.value);
+                } else {
+                    this.selectedLevels.delete(input.value);
+                }
+                this.applyFilters();
+            });
+        });
+    }
+
+    applyFilters() {
+        const priceLimit = this.maxPrice;
+        const categories = this.selectedCategories.size ? this.selectedCategories : null;
+        const levels = this.selectedLevels.size ? this.selectedLevels : null;
+        const query = this.searchQuery;
+
+        let result = this.courses.filter(course => {
+            const matchesCategory = !categories || categories.has(course.category);
+            const matchesLevel = !levels || levels.has(course.level);
+            const matchesPrice = course.price <= priceLimit;
+            const matchesSearch = !query ||
+                course.title.toLowerCase().includes(query) ||
+                course.instructor.toLowerCase().includes(query) ||
+                course.category.toLowerCase().includes(query);
+            return matchesCategory && matchesLevel && matchesPrice && matchesSearch;
+        });
+
+        switch (this.sortOption) {
+            case 'popular':
+                result = result.sort((a, b) => b.students - a.students);
+                break;
+            case 'price-asc':
+                result = result.sort((a, b) => a.price - b.price);
+                break;
+            case 'price-desc':
+                result = result.sort((a, b) => b.price - a.price);
+                break;
+            case 'rating':
+                result = result.sort((a, b) => b.rating - a.rating);
+                break;
+            default:
+                result = result.sort((a, b) => b.id - a.id);
+        }
+
+        this.filteredCourses = result;
+        this.renderCourses();
+        this.updateSummary();
+    }
+
+    renderCourses() {
+        if (!this.filteredCourses.length) {
+            this.courseGridEl.innerHTML = '';
+            this.emptyStateEl.classList.remove('hidden');
+            return;
+        }
+
+        this.emptyStateEl.classList.add('hidden');
+        this.courseGridEl.innerHTML = this.filteredCourses.map(course => `
+            <article class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-shadow overflow-hidden">
+                <div class="relative h-44 overflow-hidden">
+                    <img src="${course.image || PLACEHOLDER_IMAGE}" alt="${course.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                    <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold bg-primary text-white">${course.category}</span>
+                    <button data-action="preview" data-id="${course.id}" class="absolute bottom-3 right-3 flex items-center gap-1 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="material-symbols-outlined text-sm">play_circle</span> Preview
+                    </button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <header class="space-y-1">
+                        <h3 class="text-lg font-bold leading-snug">${course.title}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">${course.instructor}</p>
+                    </header>
+                    <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                        <div class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-amber-400 text-sm">grade</span>
+                            <span class="font-semibold">${course.rating.toFixed(1)}</span>
+                        </div>
+                        <span>•</span>
+                        <div class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">group</span>
+                            <span>${course.students.toLocaleString()} học viên</span>
+                        </div>
+                        <span>•</span>
+                        <span class="text-xs font-semibold">${course.level}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xl font-bold text-primary">$${course.price.toFixed(2)}</span>
+                        <div class="flex items-center gap-2">
+                            <button data-action="edit" data-id="${course.id}" class="flex items-center justify-center size-9 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                <span class="material-symbols-outlined text-base">edit</span>
+                            </button>
+                            <button data-action="delete" data-id="${course.id}" class="flex items-center justify-center size-9 rounded-full border border-red-200 text-red-500 hover:bg-red-500/10 transition-colors">
+                                <span class="material-symbols-outlined text-base">delete</span>
+                            </button>
+                            <button data-action="add-cart" data-id="${course.id}" class="flex items-center justify-center size-9 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors">
+                                <span class="material-symbols-outlined text-base">add_shopping_cart</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+
+        this.courseGridEl.querySelectorAll('button[data-action]').forEach(button => {
+            const action = button.dataset.action;
+            const courseId = Number(button.dataset.id);
+            if (action === 'add-cart') {
+                button.addEventListener('click', () => this.addToCart(courseId));
+            } else if (action === 'edit') {
+                button.addEventListener('click', () => this.openForm(courseId));
+            } else if (action === 'delete') {
+                button.addEventListener('click', () => this.deleteCourse(courseId));
+            } else if (action === 'preview') {
+                button.addEventListener('click', () => this.openPreview(courseId));
+            }
+        });
+    }
+
+    updateSummary() {
+        this.totalCoursesEl.textContent = this.courses.length;
+        this.visibleCoursesEl.textContent = this.filteredCourses.length;
+        this.cartService.updateBadge();
+    }
+
+    resetFilters() {
+        this.selectedCategories.clear();
+        this.selectedLevels.clear();
+        this.searchQuery = '';
+        this.sortOption = 'newest';
+        this.maxPrice = 500;
+
+        this.searchInputEl.value = '';
+        this.sortSelectEl.value = 'newest';
+        this.priceRangeEl.value = 500;
+        this.priceValueEl.textContent = '$500';
+
+        this.renderFilterOptions();
+        this.applyFilters();
+        Toast.show('Đã đặt lại toàn bộ bộ lọc.', 'info');
+    }
+
+    openForm(courseId = null) {
+        this.formEl.reset();
+        if (courseId) {
+            const course = this.courses.find(item => item.id === courseId);
+            if (!course) return;
+            this.isEditMode = true;
+            this.editingCourseId = courseId;
+            this.formTitleEl.textContent = 'Chỉnh sửa khóa học';
+            this.formSubtitleEl.textContent = 'Cập nhật thông tin khóa học và lưu để áp dụng thay đổi.';
+            this.formEl.title.value = course.title;
+            this.formEl.instructor.value = course.instructor;
+            this.formEl.price.value = course.price;
+            this.formEl.students.value = course.students;
+            this.formEl.level.value = course.level;
+            this.formEl.category.value = course.category;
+            this.formEl.image.value = course.image || '';
+            this.formEl.rating.value = course.rating;
+            this.formEl.preview.value = course.preview || '';
+        } else {
+            this.isEditMode = false;
+            this.editingCourseId = null;
+            this.formTitleEl.textContent = 'Thêm khóa học mới';
+            this.formSubtitleEl.textContent = 'Điền thông tin chi tiết để hiển thị khóa học trong danh mục.';
+        }
+        this.modalEl.classList.remove('hidden');
+        this.modalEl.classList.add('flex');
+    }
+
+    closeForm() {
+        this.modalEl.classList.add('hidden');
+        this.modalEl.classList.remove('flex');
+        this.isEditMode = false;
+        this.editingCourseId = null;
+    }
+
+    handleSubmit(formData) {
+        const payload = {
+            title: formData.get('title').trim(),
+            instructor: formData.get('instructor').trim(),
+            price: Number(formData.get('price')),
+            students: Number(formData.get('students') || 0),
+            level: formData.get('level') || 'Cơ Bản',
+            category: formData.get('category') || 'Lập Trình',
+            image: formData.get('image')?.trim(),
+            rating: Number(formData.get('rating') || 4.5),
+            preview: formData.get('preview')?.trim()
+        };
+
+        if (!payload.title || !payload.instructor || Number.isNaN(payload.price)) {
+            Toast.show('Vui lòng điền đầy đủ thông tin bắt buộc.', 'error');
+            return;
+        }
+
+        payload.price = Math.max(0, payload.price);
+        payload.students = Math.max(0, Math.floor(payload.students));
+        payload.rating = Math.min(Math.max(payload.rating, 0), 5);
+
+        if (this.isEditMode && this.editingCourseId !== null) {
+            this.courses = this.courses.map(course => course.id === this.editingCourseId ? { ...course, ...payload } : course);
+            Toast.show('Đã cập nhật khóa học.', 'success');
+        } else {
+            const newId = this.courses.length ? Math.max(...this.courses.map(course => course.id)) + 1 : 1;
+            this.courses.push({ id: newId, ...payload });
+            Toast.show('Đã thêm khóa học mới.', 'success');
+        }
+
+        this.saveCourses();
+        this.closeForm();
+        this.applyFilters();
+    }
+
+    deleteCourse(courseId) {
+        const course = this.courses.find(item => item.id === courseId);
+        if (!course) return;
+        if (!confirm(`Bạn muốn xóa khóa học "${course.title}"?`)) {
+            return;
+        }
+        this.courses = this.courses.filter(item => item.id !== courseId);
+        this.saveCourses();
+        this.applyFilters();
+        Toast.show('Khóa học đã được xóa.', 'warning');
+    }
+
+    addToCart(courseId) {
+        const course = this.courses.find(item => item.id === courseId);
+        if (!course) return;
+        this.cartService.add(course);
+        this.cartService.updateBadge();
+    }
+
+    openPreview(courseId) {
+        const course = this.courses.find(item => item.id === courseId);
+        if (!course || !course.preview) {
+            Toast.show('Khóa học chưa có video preview.', 'info');
+            return;
+        }
+        const url = course.preview.startsWith('http') ? course.preview : `https://www.youtube.com/watch?v=${course.preview}`;
+        window.open(url, '_blank');
+    }
+
+    resetCatalog() {
+        if (!confirm('Khôi phục về danh sách khóa học mặc định? Thay đổi hiện tại sẽ bị ghi đè.')) {
+            return;
+        }
+        this.courses = [...DEFAULT_COURSES];
+        this.saveCourses();
+        this.renderFilterOptions();
+        this.applyFilters();
+        Toast.show('Đã khôi phục danh mục mẫu.', 'success');
+    }
+
+    exportCatalog() {
+        const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.courses, null, 2))}`;
+        const link = document.createElement('a');
+        link.href = dataStr;
+        link.download = `course-catalog-${Date.now()}.json`;
+        link.click();
+        Toast.show('Đã xuất danh sách khóa học.', 'success');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new CourseCatalog();
+});
+</script>
+</body>
+</html>
+
