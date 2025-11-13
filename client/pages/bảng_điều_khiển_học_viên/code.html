@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Guruclass - VIAN Academy - Đào tạo IT Hàn Quốc</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1E3A8A", // Dark blue from reference
+              "accent": "#DC2626", // Red from reference
+              "background-light": "#F8F9FA",
+              "background-dark": "#101922",
+              "text-primary-light": "#1F2937",
+              "text-primary-dark": "#F8F9FA",
+              "text-secondary-light": "#6B7280",
+              "text-secondary-dark": "#A9B1B9",
+              "card-light": "#FFFFFF",
+              "card-dark": "#182431",
+              "border-light": "#E9ECEF",
+              "border-dark": "#2A3B4D",
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "0.75rem",
+              "xl": "1rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .material-symbols-outlined.fill {
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-primary-light dark:text-text-primary-dark">
+<div class="relative flex min-h-screen w-full">
+<aside class="sticky top-0 flex h-screen flex-col border-r border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark w-64 p-4">
+<div class="flex items-center gap-2 px-2 pb-6">
+<span class="material-symbols-outlined text-primary text-3xl">school</span>
+<h1 class="text-xl font-bold text-text-primary-light dark:text-text-primary-dark">VIAN Academy</h1>
+</div>
+<div class="flex flex-col justify-between h-full">
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary" href="#">
+<span class="material-symbols-outlined fill">dashboard</span>
+<p class="text-sm font-medium">Bảng điều khiển</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">import_contacts</span>
+<p class="text-sm font-medium">Khóa học của tôi</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">workspace_premium</span>
+<p class="text-sm font-medium">Chứng chỉ</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">forum</span>
+<p class="text-sm font-medium">Diễn đàn</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">credit_card</span>
+<p class="text-sm font-medium">Thanh toán</p>
+</a>
+</div>
+<div class="flex flex-col gap-1 border-t border-border-light dark:border-border-dark pt-4">
+<div class="flex items-center gap-3 px-3 py-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="Avatar of Minh Anh" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB1WTFm-xwtHq8b_43zDypyfN44CDtCGEbAv7jRuQnZIwVzh9VRSnWv6egbKHiD4tYDBuIK9_JxWL8ewjv_SQapBdS5N71SXE08LJZS3yOO18yKrAtTXIpRJS2rl2psdqR3gE-69tgN9BuZOHbBpT4SpiGFffT6XDvtuLxcQdMZ81P0XaFm4HtYJyhwu_jhj6oH47Xldf3Ub4HrPgvEVs9NGuujv7GmKZKjf9oq1a5b84LqbtyD8agVHNZikOFReWjSxfWoMy3ntXI");'></div>
+<div class="flex flex-col">
+<h1 class="text-sm font-medium leading-normal text-text-primary-light dark:text-text-primary-dark">Minh Anh</h1>
+<p class="text-xs font-normal leading-normal text-text-secondary-light dark:text-text-secondary-dark">minhanh@email.com</p>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium leading-normal">Cài đặt</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
+<span class="material-symbols-outlined">help</span>
+<p class="text-sm font-medium leading-normal">Hỗ trợ</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-500/10" href="#">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-medium leading-normal">Đăng xuất</p>
+</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 p-6 lg:p-8">
+<div class="max-w-7xl mx-auto">
+<header class="flex flex-wrap justify-between items-center gap-4 mb-8">
+<div class="flex flex-col gap-1">
+<h1 class="text-3xl font-bold tracking-tight text-text-primary-light dark:text-text-primary-dark">Chào mừng đến với VIAN Academy, Minh Anh!</h1>
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Bảng điều khiển học tập của bạn - Đào tạo IT Hàn Quốc.</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="relative p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-background-light dark:ring-background-dark"></span>
+</button>
+<button class="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-base">add</span>
+                             Khám phá khóa học
+                        </button>
+</div>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 flex flex-col gap-8">
+<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark">
+<div class="p-5">
+<h2 class="text-xl font-extrabold text-text-primary-light dark:text-text-primary-dark bg-primary text-white inline-block px-4 py-2 -ml-1 mb-4" style="clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%);">KHÓA HỌC CỦA TÔI</h2>
+</div>
+<div class="flex px-5 pb-4">
+<div class="flex h-11 w-full max-w-md items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 p-1.5 gap-1.5">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded px-2 has-[:checked]:bg-accent has-[:checked]:text-white text-text-secondary-light dark:text-text-secondary-dark has-[:checked]:font-bold text-sm transition-all duration-300">
+<span class="truncate">Đang tiến hành</span>
+<input checked="" class="invisible w-0" name="course-status" type="radio" value="In Progress"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded px-2 has-[:checked]:bg-accent has-[:checked]:text-white text-text-secondary-light dark:text-text-secondary-dark has-[:checked]:font-bold text-sm transition-all duration-300">
+<span class="truncate">Đã hoàn thành</span>
+<input class="invisible w-0" name="course-status" type="radio" value="Completed"/>
+</label>
+</div>
+</div>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5 pt-0">
+<div class="flex flex-col gap-3">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg" data-alt="Course thumbnail for Advanced UX Design" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDowZiNNA73OtOmWq59kzIo6zk7oDhVJSljswxPSCjKme3oOtwBGIVJFtSEPUOdaKXjKcQTXRDntRetoqMYBT_mgs34Qm1DaZPRGShjZ_EqpxPj77t7oT31LCLdZscO6NpyZTsSmnIWx4-DNynvGP2bmB1z0dp4WyCzQdJCWCZZXv4nyQvK1oRQCPgEMdRGWWcj8XsM0GMdrvJc983aWoMneGlnzDdEyqItgAycZKKKepa0Lblp6kuZOZ-f0nhNUothtDAQVBKSBRg");'></div>
+<div class="flex flex-col gap-1.5">
+<p class="font-bold leading-tight">Thiết kế UX Nâng cao</p>
+<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 65%"></div>
+</div>
+<p class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">Đã hoàn thành 65%</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg" data-alt="Course thumbnail for Data Science with Python" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAz5T72BTcqNvO2Kc9a5N-nZBmyOWIyYfLXggf_FOQbVG0MD9smEMRhI82J4vF4nn26Vnym053bPLfQ5lMGzXetmcJfHr-JFhASxjYqfTowBIDxvAJWkHZozfQxi9VXg8abfoOE6UP_u_JjAMQJPLzawtcDCBh1PStI3680Kocy8OwMphKalN1ivFpLL6O0Peb0RvlHLNkOunhuspDNuNzX4HB2rOHfkt0Ep9cxjjvxmovtKTE5NDIYV06Cv1y9BxzLXRTzBUeQKeo");'></div>
+<div class="flex flex-col gap-1.5">
+<p class="font-bold leading-tight">Khoa học Dữ liệu với Python</p>
+<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 30%"></div>
+</div>
+<p class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">Đã hoàn thành 30%</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg" data-alt="Course thumbnail for Digital Marketing Fundamentals" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC8pywUwU_TnI1FnhVhLvoz9_wB4uNp6bYNa5Qmoeawbq2MFDID5BcwERdXR_ILZOhMf1mQFHyAMQID06KeS-U1eWMbP3YhbEIvK9BDCTgIOwFukGsj-1N3xHi4l-4fx5aM2WDCmWeMTN62OSHp5nRPSc05YojouWIVyCRF4oIu-7qZFdxEOVaQd7Fs6Es0sA4BkiXZ2YvBl9wM4wzPxKSeYDyzFaCZrcbjy8eG2BligieU5A6lhhwlXppqQNXE8WltV6wpbnUQ-uo");'></div>
+<div class="flex flex-col gap-1.5">
+<p class="font-bold leading-tight">Marketing Kỹ thuật số Cơ bản</p>
+<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 80%"></div>
+</div>
+<p class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">Đã hoàn thành 80%</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark p-5">
+<h2 class="text-xl font-extrabold mb-4 text-text-primary-light dark:text-text-primary-dark">KHÓA HỌC ĐỀ XUẤT</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="flex flex-col gap-2 p-2 rounded-lg border border-border-light dark:border-border-dark">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-md" data-alt="Abstract gradient image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAZp67uNX-dfQY8Gddi8Tt5E6V3DEfa4QyrkfX6-OlVdCGHtIjL1SIhM_3FJXX9n_snUOFGJ0I1RGwmBLdVmMtMXy3LNzM0E4zwjNKgsmKEhAp8ufrvr5i48RdPFZBtyoB1sdR1jOlupIy80pLy4s2Xwoox4GCNFqM7hq0kTp68gYcLXIf5og8o_QV-JWJ7LA5UYkIhwl2J6rarzhBvXXdj1XR1J2v3g4JbWNFj-GnPkoxYXplVMsrzJh_FVigtXtriXiny2_GP7sY");'></div>
+<p class="font-bold text-sm">Lập trình ReactJS từ A-Z</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Bởi John Doe</p>
+</div>
+<div class="flex flex-col gap-2 p-2 rounded-lg border border-border-light dark:border-border-dark">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-md" data-alt="Abstract gradient image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAcKNdn2RNaAivAvQX7Q4Wh0IIDIfNbsTRW3LioACPYV2jL-qpaDobgbZCU9da9S-ahXl35lkK_KNHJGvtrFGxhlxmdPAtWv3nDaB7DdF9-QeGnaY7H_tq6oZt2rQQ-aYsbzJXvTid8dv7M2nhGFH64KOgxB8G21RTH32fzPWqerRDNVsSCJKC4PlFZH9zjFMbWjlN83VTQwQ6ajB0iXEafDxq4mHOzF-74t2vmViIP3aetKh-niUT6QQAFwKjBPyDBcYYg3VQ60C8");'></div>
+<p class="font-bold text-sm">Quản lý dự án Agile</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Bởi Jane Smith</p>
+</div>
+<div class="flex flex-col gap-2 p-2 rounded-lg border border-border-light dark:border-border-dark">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-md" data-alt="Abstract gradient image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAzPVKchDZeL_0Xmkhfi1KYmVR4Iw19FvoEAxuAiDFQXz_XsRNVMQtCa5hBbHkSqRn7FWy-X3ofTz7sxaDGo9UWKxEnd00ULeqbA8sWPKRinWnQAEGsS8RcWpHQ4qsUu_GIZpdNDA68UAfdLcH2KwQ-dC6K_G3SGiKxjcKRKNsXp0itmsF80hmhro-mnLLFLMxLAqMPjZSQKcwREHfEO9-vKDUi5QuyVovDSY6cDnC7Gn8Izowef5gI-1r9PJCnlhOtE-hzTcG9Spo");'></div>
+<p class="font-bold text-sm">Machine Learning cho người mới</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Bởi Sam Wilson</p>
+</div>
+</div>
+</div>
+<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark p-5">
+<h2 class="text-xl font-extrabold mb-4 text-text-primary-light dark:text-text-primary-dark">LỊCH SỬ THANH TOÁN</h2>
+<div class="overflow-x-auto">
+<table class="w-full text-sm text-left">
+<thead class="text-xs text-text-secondary-light dark:text-text-secondary-dark uppercase bg-background-light dark:bg-background-dark">
+<tr>
+<th class="px-4 py-3 font-bold" scope="col">Khóa học</th>
+<th class="px-4 py-3 font-bold" scope="col">Ngày</th>
+<th class="px-4 py-3 font-bold" scope="col">Số tiền</th>
+<th class="px-4 py-3 font-bold" scope="col">Trạng thái</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-border-light dark:border-border-dark">
+<td class="px-4 py-3 font-semibold">Thiết kế UX Nâng cao</td>
+<td class="px-4 py-3">15/05/2024</td>
+<td class="px-4 py-3">1.200.000đ</td>
+<td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs font-bold me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Thành công</span></td>
+</tr>
+<tr class="border-b border-border-light dark:border-border-dark">
+<td class="px-4 py-3 font-semibold">Khoa học Dữ liệu với Python</td>
+<td class="px-4 py-3">10/04/2024</td>
+<td class="px-4 py-3">1.500.000đ</td>
+<td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs font-bold me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Thành công</span></td>
+</tr>
+<tr>
+<td class="px-4 py-3 font-semibold">Marketing Kỹ thuật số Cơ bản</td>
+<td class="px-4 py-3">01/03/2024</td>
+<td class="px-4 py-3">900.000đ</td>
+<td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs font-bold me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Thành công</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="lg:col-span-1 flex flex-col gap-8">
+<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark p-5">
+<h2 class="text-xl font-extrabold mb-4 text-text-primary-light dark:text-text-primary-dark">BUỔI HỌC SẮP TỚI</h2>
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-center justify-center bg-primary text-white p-3 rounded-lg w-16">
+<span class="text-xs font-bold uppercase">T07</span>
+<span class="text-2xl font-extrabold">25</span>
+</div>
+<div class="flex-1">
+<p class="font-bold">Hỏi đáp trực tiếp: UX Design</p>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">19:00 - 20:00</p>
+</div>
+<button class="bg-accent text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-accent/90 transition-colors">Tham gia</button>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 p-3 rounded-lg w-16">
+<span class="text-xs font-bold uppercase text-text-secondary-light dark:text-text-secondary-dark">T07</span>
+<span class="text-2xl font-extrabold">28</span>
+</div>
+<div class="flex-1">
+<p class="font-bold">Workshop: Python Data Cleaning</p>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">14:00 - 16:00</p>
+</div>
+<button class="bg-gray-200 dark:bg-gray-700 text-text-primary-light dark:text-text-primary-dark px-4 py-2 rounded-lg text-sm font-bold cursor-not-allowed">Sắp diễn ra</button>
+</div>
+</div>
+</div>
+<div class="bg-accent text-white rounded-xl shadow-sm p-5">
+<h2 class="text-xl font-extrabold mb-4 text-white">THÔNG BÁO &amp; LIÊN KẾT NHANH</h2>
+<div class="flex flex-col gap-4">
+<div class="flex gap-3 items-start">
+<div class="flex-shrink-0 bg-white/20 p-2 rounded-full mt-0.5">
+<span class="material-symbols-outlined text-base">campaign</span>
+</div>
+<div>
+<p class="text-sm font-semibold">Giảng viên khóa <span class="font-extrabold">Thiết kế UX Nâng cao</span> vừa đăng một tài liệu mới.</p>
+<p class="text-xs opacity-80">5 phút trước</p>
+</div>
+</div>
+<div class="flex gap-3 items-start">
+<div class="flex-shrink-0 bg-white/20 p-2 rounded-full mt-0.5">
+<span class="material-symbols-outlined text-base">chat</span>
+</div>
+<div>
+<p class="text-sm font-semibold">Bạn có tin nhắn mới từ giảng viên <span class="font-extrabold">Jane Smith</span>.</p>
+<p class="text-xs opacity-80">1 giờ trước</p>
+</div>
+</div>
+<div class="border-t border-white/30 my-2"></div>
+<div class="grid grid-cols-2 gap-3">
+<a class="flex items-center gap-2 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">account_circle</span>
+<span class="text-sm font-bold">Tài khoản</span>
+</a>
+<a class="flex items-center gap-2 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">school</span>
+<span class="text-sm font-bold">Điểm số</span>
+</a>
+<a class="flex items-center gap-2 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">calendar_month</span>
+<span class="text-sm font-bold">Lịch học</span>
+</a>
+<a class="flex items-center gap-2 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span class="text-sm font-bold">Cài đặt</span>
+</a>
+</div>
+</div>
+</div>
+<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark p-5">
+<h2 class="text-xl font-extrabold mb-4 text-text-primary-light dark:text-text-primary-dark">CHỨNG CHỈ</h2>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 p-3 border border-border-light dark:border-border-dark rounded-lg">
+<div class="flex-shrink-0 bg-primary/10 text-primary p-2.5 rounded-md">
+<span class="material-symbols-outlined fill">workspace_premium</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-sm">Lập trình Web cơ bản</p>
+<a class="text-xs text-primary font-semibold hover:underline" href="#">Xem chứng chỉ</a>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 border border-border-light dark:border-border-dark rounded-lg">
+<div class="flex-shrink-0 bg-primary/10 text-primary p-2.5 rounded-md">
+<span class="material-symbols-outlined fill">workspace_premium</span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-sm">Giới thiệu về SQL</p>
+<a class="text-xs text-primary font-semibold hover:underline" href="#">Xem chứng chỉ</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

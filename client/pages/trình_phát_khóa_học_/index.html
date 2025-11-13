@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>VIAN Academy - Trình Phát Khóa Học</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1E3A8A",
+                        "accent": "#DC2626",
+                        "background-light": "#F8F9FA",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-dark text-gray-100">
+<div class="flex h-screen">
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <!-- Header -->
+        <header class="bg-gray-900 border-b border-gray-700 px-6 py-3">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl font-bold">Advanced Python for Data Science</h1>
+                <div class="flex items-center gap-4">
+                    <button class="p-2 hover:bg-gray-800 rounded-lg" title="Settings">
+                        <span class="material-symbols-outlined">settings</span>
+                    </button>
+                    <button class="p-2 hover:bg-gray-800 rounded-lg" title="Fullscreen">
+                        <span class="material-symbols-outlined">fullscreen</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Video Player -->
+        <div class="flex-1 bg-black relative flex items-center justify-center" id="videoPlayer">
+            <div class="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                <button class="w-24 h-24 rounded-full bg-accent/80 hover:bg-accent text-white flex items-center justify-center shadow-lg transition-all">
+                    <span class="material-symbols-outlined text-5xl">play_arrow</span>
+                </button>
+            </div>
+            
+            <!-- Video Controls -->
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                <div class="w-full bg-gray-700 rounded-full h-1 mb-4">
+                    <div class="bg-accent h-1 rounded-full" style="width: 35%"></div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <button class="text-white hover:text-accent" id="playBtn">
+                            <span class="material-symbols-outlined">play_arrow</span>
+                        </button>
+                        <button class="text-white hover:text-accent">
+                            <span class="material-symbols-outlined">volume_up</span>
+                        </button>
+                        <span class="text-white text-sm">24:30 / 45:00</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <select class="bg-gray-800 text-white text-sm px-2 py-1 rounded">
+                            <option>1x</option>
+                            <option>1.5x</option>
+                            <option>2x</option>
+                        </select>
+                        <button class="text-white hover:text-accent">
+                            <span class="material-symbols-outlined">closed_caption</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Info Tabs -->
+        <div class="bg-gray-900 border-t border-gray-700">
+            <div class="flex gap-6 px-6 border-b border-gray-700 overflow-x-auto">
+                <button class="py-4 border-b-2 border-accent text-white font-semibold">Tổng Quan</button>
+                <button class="py-4 border-b-2 border-transparent text-gray-400 hover:text-white font-semibold">Ghi Chú</button>
+                <button class="py-4 border-b-2 border-transparent text-gray-400 hover:text-white font-semibold">Bình Luận</button>
+            </div>
+
+            <div class="p-6 max-h-64 overflow-y-auto">
+                <h3 class="text-lg font-bold mb-3">Bài Học: Giới Thiệu Pandas</h3>
+                <p class="text-gray-300 mb-4">
+                    Trong bài học này, chúng tôi sẽ khám phá những kiến thức cơ bản về thư viện Pandas. 
+                    Bạn sẽ học cách:
+                </p>
+                <ul class="list-disc list-inside space-y-2 text-gray-300">
+                    <li>Tạo và xử lý DataFrame</li>
+                    <li>Đọc và ghi file CSV</li>
+                    <li>Lọc và sắp xếp dữ liệu</li>
+                    <li>Thực hiện các phép toán nhóm</li>
+                </ul>
+                
+                <div class="mt-6 pt-6 border-t border-gray-700">
+                    <h4 class="font-semibold mb-3">Tài Nguyên</h4>
+                    <div class="space-y-2">
+                        <a href="#" class="flex items-center gap-3 text-primary hover:text-primary/80">
+                            <span class="material-symbols-outlined">download</span>
+                            <span>Tài liệu bài học.pdf</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-3 text-primary hover:text-primary/80">
+                            <span class="material-symbols-outlined">download</span>
+                            <span>Code mẫu.py</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-3 text-primary hover:text-primary/80">
+                            <span class="material-symbols-outlined">download</span>
+                            <span>Dataset.csv</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="w-96 bg-gray-900 border-l border-gray-700 flex flex-col hidden lg:flex">
+        <!-- Course Progress -->
+        <div class="p-6 border-b border-gray-700">
+            <h3 class="font-bold mb-3">Tiến độ khóa học</h3>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+                <div class="bg-accent h-2 rounded-full" style="width: 35%"></div>
+            </div>
+            <p class="text-sm text-gray-400 mt-2">12/34 bài học hoàn thành</p>
+        </div>
+
+        <!-- Lessons List -->
+        <div class="flex-1 overflow-y-auto p-6">
+            <h3 class="font-bold mb-4">Danh Sách Bài Học</h3>
+            <div class="space-y-2">
+                <div class="group">
+                    <div class="text-sm font-semibold mb-2 text-gray-300">Chương 1: Cơ Bản</div>
+                    <div class="space-y-1 ml-4">
+                        <button class="w-full text-left py-2 px-3 rounded bg-gray-800 border border-accent text-accent flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-base fill">play_circle</span>
+                            <span>Bài 1: Giới Thiệu</span>
+                        </button>
+                        <button class="w-full text-left py-2 px-3 rounded hover:bg-gray-800 text-gray-300 flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-base">play_circle</span>
+                            <span>Bài 2: Cài Đặt</span>
+                        </button>
+                        <button class="w-full text-left py-2 px-3 rounded hover:bg-gray-800 text-gray-400 flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-base">lock</span>
+                            <span>Bài 3: Biến & Kiểu</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="group mt-4">
+                    <div class="text-sm font-semibold mb-2 text-gray-300">Chương 2: Nâng Cao</div>
+                    <div class="space-y-1 ml-4">
+                        <button class="w-full text-left py-2 px-3 rounded hover:bg-gray-800 text-gray-400 flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-base">lock</span>
+                            <span>Bài 1: Hàm</span>
+                        </button>
+                        <button class="w-full text-left py-2 px-3 rounded hover:bg-gray-800 text-gray-400 flex items-center gap-2 text-sm">
+                            <span class="material-symbols-outlined text-base">lock</span>
+                            <span>Bài 2: Lớp & Đối Tượng</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="p-6 border-t border-gray-700 space-y-3">
+            <button class="w-full py-2 bg-accent text-white rounded-lg hover:bg-accent/90 font-semibold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">bookmark</span>
+                Đánh Dấu
+            </button>
+            <button class="w-full py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 font-semibold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">share</span>
+                Chia Sẻ
+            </button>
+            <button class="w-full py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 font-semibold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">help</span>
+                Hỗ Trợ
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+class CoursePlayer {
+    constructor() {
+        this.isPlaying = false;
+        this.init();
+    }
+
+    init() {
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        // Play button
+        document.getElementById('playBtn').addEventListener('click', () => {
+            this.togglePlay();
+        });
+
+        // Lesson clicks
+        document.querySelectorAll('button:not([id])').forEach(btn => {
+            if (btn.textContent.includes('Bài')) {
+                btn.addEventListener('click', () => this.selectLesson(btn));
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('button:has(+ .border-b-2)').forEach(btn => {
+            btn.addEventListener('click', () => console.log('Tab clicked'));
+        });
+
+        // Settings
+        document.querySelector('button[title="Settings"]')?.addEventListener('click', () => {
+            alert('Cài đặt phát lại:\n\n- Chất lượng video\n- Phụ đề\n- Tốc độ phát');
+        });
+
+        // Fullscreen
+        document.querySelector('button[title="Fullscreen"]')?.addEventListener('click', () => {
+            alert('✓ Chuyển sang chế độ toàn màn hình');
+        });
+    }
+
+    togglePlay() {
+        this.isPlaying = !this.isPlaying;
+        console.log('Playing:', this.isPlaying);
+    }
+
+    selectLesson(btn) {
+        // Remove active state from all buttons
+        document.querySelectorAll('button:has(.material-symbols-outlined)').forEach(b => {
+            b.classList.remove('bg-gray-800', 'border', 'border-accent', 'text-accent');
+            b.classList.add('hover:bg-gray-800', 'text-gray-300');
+        });
+        
+        // Add active state to selected button
+        btn.classList.add('bg-gray-800', 'border', 'border-accent', 'text-accent');
+        btn.classList.remove('hover:bg-gray-800', 'text-gray-300');
+        
+        const lessonName = btn.textContent.trim();
+        console.log('Selected lesson:', lessonName);
+        alert('✓ Đang tải: ' + lessonName);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new CoursePlayer();
+});
+</script>
+</body>
+</html>

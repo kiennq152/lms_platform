@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>VIAN Academy - Cộng Đồng</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1E3A8A",
+                        "accent": "#DC2626",
+                        "background-light": "#F8F9FA",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
+<div class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 lg:px-8 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <h1 class="text-2xl font-bold">VIAN Community</h1>
+            <div class="flex items-center gap-4">
+                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">
+                    <span class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">add</span>
+                        Tạo Chủ Đề Mới
+                    </span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 p-6 lg:p-8">
+        <div class="max-w-5xl mx-auto">
+            <!-- Navigation Tabs -->
+            <div class="flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-700">
+                <button class="px-4 py-3 font-semibold border-b-2 border-primary text-primary">Diễn Đàn</button>
+                <button class="px-4 py-3 font-semibold border-b-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">Hỏi Đáp</button>
+                <button class="px-4 py-3 font-semibold border-b-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">Tin Tức</button>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="flex gap-4 mb-8">
+                <div class="flex-1 relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2">search</span>
+                    <input type="text" placeholder="Tìm chủ đề..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"/>
+                </div>
+                <select class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                    <option>Mới Nhất</option>
+                    <option>Phổ Biến Nhất</option>
+                    <option>Được Trả Lời Nhiều Nhất</option>
+                </select>
+            </div>
+
+            <!-- Threads List -->
+            <div class="space-y-4" id="threadsList">
+                <!-- Loaded by JavaScript -->
+            </div>
+
+            <!-- Load More Button -->
+            <div class="flex justify-center mt-8">
+                <button class="px-6 py-2 border border-primary text-primary rounded-lg hover:bg-primary/10">Xem Thêm</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- New Thread Modal -->
+<div id="newThreadModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-2xl w-full">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-bold">Tạo Chủ Đề Mới</h2>
+            <button onclick="document.getElementById('newThreadModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-semibold mb-2">Tiêu Đề</label>
+                <input type="text" placeholder="Nhập tiêu đề chủ đề..." class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary"/>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-2">Nội Dung</label>
+                <textarea placeholder="Viết nội dung chủ đề..." rows="6" class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-2">Danh Mục</label>
+                <select class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary">
+                    <option>Hỗ Trợ Chung</option>
+                    <option>Thảo Luận Khóa Học</option>
+                    <option>Dự Án & Hợp Tác</option>
+                    <option>Giới Thiệu & Truyền Thông</option>
+                </select>
+            </div>
+            <div class="flex gap-4 justify-end">
+                <button type="button" onclick="document.getElementById('newThreadModal').classList.add('hidden')" class="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">Hủy</button>
+                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">Đăng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+class Community {
+    constructor() {
+        this.threads = [
+            {
+                id: 1,
+                title: 'Cách Học Lập Trình Hiệu Quả?',
+                author: 'Nguyễn Văn A',
+                avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAcssMM4wedIRWm_Geo75iYvQAAxOnqCAp5dbvaBzrsrS-Zsv06VTyXnMAH5SEYm5U4CXiOJtxE_E03Xkm-1kDVXBcEXUuu1Ss3cv3IBAIYvJqWg8jaHqhO3Ad3vPFDqIZ2kVMUSgco2xfE5IvpVF74pjZ2P_xV_ZV2L77Ew4ZN9NCyghm0pmstLHi1HqO1dwqNILAssh22ZUhVvyNsQ0caUm5AXTv9-DDAZreTexPRHNrXMHJzAk_4PADHi2kUUEmBgLauqa3EbUA',
+                category: 'Hỗ Trợ Chung',
+                time: '2 giờ trước',
+                replies: 5,
+                views: 128
+            },
+            {
+                id: 2,
+                title: 'Chia Sẻ Kinh Nghiệm: Từ Newbie Đến Senior Developer',
+                author: 'Trần Thị B',
+                avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGrTHmQf9dUMLCAKVlCNR5IwZFKNPlP_I6Pd5o6YETB9VHGsGMv_giowUTs9D--M86FGud2YIOin1Y_hq2s5NjWdQTAqu5IGkCVycXMJD3dL1GUpDc3MumskZ5FC7GiW_FUeEaQvKxiIJh5_9oACcG9Jy7UHpXo-zNCnu2QBznh2GV3X8F2NVenIgBYkUz9oEiWugYEBq88ok7lpq0m2FNWUrOvTgs8atAc_RIOOJp_J7ZwxLjhBvIOlFIVxt-QqSU8LEhCr25GUM',
+                category: 'Giới Thiệu & Truyền Thông',
+                time: '4 giờ trước',
+                replies: 12,
+                views: 342
+            },
+            {
+                id: 3,
+                title: 'Tìm Bạn Hợp Tác Làm Dự Án ReactJS',
+                author: 'Phạm Văn C',
+                avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyhx1NmZaN7wUBZYTWVfrMYkAMvMBsNYJqYtBi_AuNKYfwxT9SD4l_Il8D9v888SB-XD6cDHGQRZ0SaHeByVlKFSOtU5DrthY95e2epJTK02dEAlSmHVFm3JZtctslGf86MM1Qu0SE4QUIz_L7G9kjcn3h-OipY8wbgU4SGnYo7sHEkFSisimH9ZhwCtvL9TLY_7MIB7bmIqQ2AD_9YX4C9v9HBQajQXd-MKnwpaV-rLVZyASKVgHnQUcKrJm1KJZl65Khy6KNPzA',
+                category: 'Dự Án & Hợp Tác',
+                time: '6 giờ trước',
+                replies: 8,
+                views: 215
+            }
+        ];
+        this.init();
+    }
+
+    init() {
+        this.renderThreads();
+        this.setupEventListeners();
+    }
+
+    renderThreads() {
+        const list = document.getElementById('threadsList');
+        list.innerHTML = this.threads.map(thread => `
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow cursor-pointer">
+                <div class="flex gap-4">
+                    <div class="w-12 h-12 rounded-full bg-cover flex-shrink-0" style="background-image: url('${thread.avatar}')"></div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex-1">
+                                <h3 class="font-bold text-lg hover:text-primary transition-colors">${thread.title}</h3>
+                                <div class="flex gap-3 text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                    <span>${thread.author}</span>
+                                    <span>•</span>
+                                    <span>${thread.time}</span>
+                                    <span>•</span>
+                                    <span class="inline-flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-xs">bookmark</span>
+                                        ${thread.category}
+                                    </span>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs font-semibold flex-shrink-0">
+                                <span class="material-symbols-outlined text-xs">chat</span>
+                                ${thread.replies}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-4 text-sm text-gray-600 dark:text-gray-400 ml-16">
+                    <span class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">visibility</span>
+                        ${thread.views} lượt xem
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    setupEventListeners() {
+        // New thread button
+        document.querySelector('button:contains("Tạo Chủ Đề Mới")').addEventListener('click', () => {
+            document.getElementById('newThreadModal').classList.remove('hidden');
+        });
+
+        // Modal form
+        document.querySelector('#newThreadModal form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('✓ Chủ đề mới đã được tạo thành công!');
+            document.getElementById('newThreadModal').classList.add('hidden');
+        });
+
+        // Thread click
+        document.querySelectorAll('[class*="bg-white"][class*="rounded-lg"]').forEach(el => {
+            el.addEventListener('click', () => {
+                alert('✓ Chuyển đến chi tiết chủ đề');
+            });
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new Community();
+});
+</script>
+</body>
+</html>

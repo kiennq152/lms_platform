@@ -1,0 +1,16 @@
+{
+  "name": "stitch-lms-server",
+  "version": "0.1.0",
+  "description": "Lightweight Express server for Stitch LMS dashboard assets.",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "morgan": "^1.10.0"
+  }
+}
+

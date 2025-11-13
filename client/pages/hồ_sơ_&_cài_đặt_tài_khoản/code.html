@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hồ sơ và Cài đặt</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#dc2626", // Red
+              "secondary": "#1e3a8a", // Dark Blue
+              "background-light": "#f8fafc",
+              "background-dark": "#0c1424", // Darker blue background
+              "card-light": "#ffffff",
+              "card-dark": "#16233a",
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-link .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root">
+<div class="layout-container flex h-full grow flex-col">
+<main class="flex-1">
+<div class="container mx-auto p-4 md:p-8">
+<div class="flex flex-col md:flex-row gap-8">
+<aside class="w-full md:w-72 flex-shrink-0">
+<div class="flex flex-col gap-6 p-4 bg-secondary dark:bg-card-dark rounded-xl">
+<div class="flex items-center gap-4 p-2">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-14 ring-4 ring-white/20" data-alt="User avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwQYIjyuUqzYb2DINbsNsCLymY5PTOLPn5me5b-II4TqdWtvyJlP0ENoUXq9J0FW16pZVN5kp-Ho3IbOr43gCUxHewI5ESzZIbNyJvan70Ra7kn9oDU3GVhtLaHoSJAIUq4ppTceVvbXS0AJ1fN2S8g4m7QMsMkEluAQzzKEs0AfQtqAWEbHQ79Ak1b3FkNgFvlNZly90CYAam4wmRo8pxApVp19gLqpvbyb0J395omaN-KqSF5xx9-xGNDMkluyjBbmAGcxmS5OI");'></div>
+<span class="absolute bottom-0 right-0 block h-4 w-4 rounded-full bg-green-500 border-2 border-secondary dark:border-card-dark"></span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-lg font-bold leading-tight">Nguyễn Văn A</h1>
+<p class="text-slate-300 text-sm font-normal leading-normal">Học viên</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-red-600 text-white active-link" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-base font-bold leading-normal">Hồ sơ công khai</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-200 hover:bg-white/10" href="#">
+<span class="material-symbols-outlined">lock</span>
+<p class="text-base font-medium leading-normal">Bảo mật</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-200 hover:bg-white/10" href="#">
+<span class="material-symbols-outlined">credit_card</span>
+<p class="text-base font-medium leading-normal">Phương thức thanh toán</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-200 hover:bg-white/10" href="#">
+<span class="material-symbols-outlined">workspace_premium</span>
+<p class="text-base font-medium leading-normal">Gói đăng ký</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-200 hover:bg-white/10" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<p class="text-base font-medium leading-normal">Lịch sử hóa đơn</p>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-200 hover:bg-white/10" href="#">
+<span class="material-symbols-outlined">school</span>
+<p class="text-base font-medium leading-normal">Thông tin giảng viên</p>
+</a>
+</nav>
+<div class="border-t border-white/20 my-2"></div>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-200 hover:bg-white/10" href="#">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-base font-medium leading-normal">Đăng xuất</p>
+</a>
+</div>
+</div>
+</aside>
+<div class="flex-1 bg-card-light dark:bg-card-dark rounded-xl shadow-lg border border-slate-200 dark:border-slate-700/50">
+<div class="p-6 md:p-8 flex flex-col gap-8">
+<div class="flex flex-wrap justify-between items-center gap-4">
+<div class="flex flex-col gap-1">
+<h2 class="text-slate-900 dark:text-white text-3xl font-black leading-tight">Cài Đặt Tài Khoản</h2>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">Quản lý thông tin cá nhân và cách bạn xuất hiện trên nền tảng.</p>
+</div>
+</div>
+<div class="p-6 bg-slate-50 dark:bg-black/20 rounded-xl flex w-full flex-col gap-6 @container sm:flex-row sm:justify-between sm:items-center">
+<div class="flex items-center gap-6">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full flex-shrink-0 h-28 w-28 ring-4 ring-white dark:ring-slate-600 shadow-md" data-alt="User avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzZfAZgInoHwYg030mjJT-zH_P4nhHXjxrrKOt9gpiMNBqJIEd-wps2xaO50XlTugjFFAsJhM8oLfOn6SOL2F8VvqGco75xsqwkJkXPdterTa9RruHjpP68_W5X68o6lG80arpdWEkt_pMv8i00HVDla8Yczqt6BXp3ZfQ4wRpWu-hD0JY_TtaOafvafYulrlPYUAfyKxRctqZfj-nbSnCBwj0eJZBYF_HPfj5V9tOnpWyuBCX6waBQ9N5Y13ks_PPcR1KJlrgB5U");'></div>
+<div class="flex flex-col justify-center">
+<p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight">Nguyễn Văn A</p>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">nva@email.com</p>
+</div>
+</div>
+<div class="flex flex-col sm:flex-row gap-3">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-5 bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white text-sm font-bold leading-normal tracking-wide hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+<span class="truncate">Đổi ảnh</span>
+</button>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-5 bg-transparent text-slate-600 dark:text-slate-400 text-sm font-bold leading-normal tracking-wide hover:text-red-500 dark:hover:text-red-500 transition-colors">
+<span class="truncate">Xóa ảnh</span>
+</button>
+</div>
+</div>
+<form class="flex flex-col gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col w-full">
+<label class="text-slate-900 dark:text-white text-base font-bold leading-normal pb-2" for="displayName">Tên hiển thị</label>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 placeholder:text-slate-400 px-4 text-base font-medium leading-normal" id="displayName" value="Nguyễn Văn A"/>
+</div>
+<div class="flex flex-col w-full">
+<label class="text-slate-900 dark:text-white text-base font-bold leading-normal pb-2" for="email">Email</label>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-500 dark:text-slate-400 focus:outline-0 border-2 border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/50 h-12 placeholder:text-slate-400 px-4 text-base font-medium leading-normal cursor-not-allowed" id="email" readonly="" value="nva@email.com"/>
+</div>
+</div>
+<div class="flex w-full">
+<div class="flex flex-col flex-1">
+<label class="text-slate-900 dark:text-white text-base font-bold leading-normal pb-2" for="bio">Tiểu sử ngắn</label>
+<textarea class="form-input flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 min-h-36 placeholder:text-slate-400 p-4 text-base font-medium leading-normal" id="bio" placeholder="Viết một chút về bản thân..."></textarea>
+</div>
+</div>
+<div class="flex w-full">
+<div class="flex flex-col flex-1">
+<label class="text-slate-900 dark:text-white text-base font-bold leading-normal pb-2" for="socialLink">Liên kết mạng xã hội (tùy chọn)</label>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 h-12 placeholder:text-slate-400 px-4 text-base font-medium leading-normal" id="socialLink" placeholder="https://linkedin.com/in/yourprofile"/>
+</div>
+</div>
+</form>
+<div class="border-t border-slate-200 dark:border-slate-700"></div>
+<div class="flex flex-col sm:flex-row justify-end gap-4">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white text-base font-bold leading-normal tracking-wide hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+<span class="truncate">Hủy</span>
+</button>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-base font-bold leading-normal tracking-wide shadow-md shadow-primary/30 hover:bg-red-700 transition-colors">
+<span class="truncate">Lưu thay đổi</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+
+<script>
+// Profile & Settings Management
+
+class ProfileSettings {
+  constructor() {
+    this.userProfile = this.loadProfile();
+    this.currentTab = 'public-profile';
+    this.init();
+  }
+
+  init() {
+    this.setupEventListeners();
+    this.loadUserData();
+  }
+
+  setupEventListeners() {
+    // Navigation tabs
+    const navLinks = document.querySelectorAll('aside a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => this.handleTabClick(e, link));
+    });
+
+    // Save button
+    const saveBtn = document.querySelector('button:contains("Lưu thay đổi")');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => this.saveProfile());
+    }
+
+    // Cancel button
+    const cancelBtn = document.querySelector('button:contains("Hủy")');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', () => this.cancelChanges());
+    }
+
+    // Change avatar button
+    const changeAvatarBtn = document.querySelector('button:contains("Đổi ảnh")');
+    if (changeAvatarBtn) {
+      changeAvatarBtn.addEventListener('click', () => this.changeAvatar());
+    }
+
+    // Remove avatar button
+    const removeAvatarBtn = document.querySelector('button:contains("Xóa ảnh")');
+    if (removeAvatarBtn) {
+      removeAvatarBtn.addEventListener('click', () => this.removeAvatar());
+    }
+
+    // Form inputs
+    document.querySelectorAll('input, textarea').forEach(input => {
+      input.addEventListener('change', () => this.markFormDirty());
+    });
+
+    // Logout link
+    const logoutLink = document.querySelector('a:contains("Đăng xuất")');
+    if (logoutLink) {
+      logoutLink.addEventListener('click', (e) => this.logout(e));
+    }
+  }
+
+  handleTabClick(e, link) {
+    e.preventDefault();
+    
+    // Remove active state from all nav items
+    document.querySelectorAll('aside a').forEach(a => {
+      a.classList.remove('bg-red-600', 'text-white');
+      a.classList.add('text-slate-200', 'hover:bg-white/10');
+    });
+    
+    // Add active state to clicked item
+    link.classList.add('bg-red-600', 'text-white');
+    link.classList.remove('text-slate-200', 'hover:bg-white/10');
+    
+    const tabName = link.textContent.trim();
+    this.currentTab = tabName.toLowerCase().replace(/\s+/g, '-');
+    this.loadTabContent(this.currentTab);
+    
+    console.log('Switched to tab:', this.currentTab);
+  }
+
+  loadTabContent(tab) {
+    const mainContent = document.querySelector('main > div > div > div:nth-child(2)');
+    
+    switch(tab) {
+      case 'bảo-mật':
+        this.showSecurityTab();
+        break;
+      case 'phương-thức-thanh-toán':
+        this.showPaymentTab();
+        break;
+      case 'gói-đăng-ký':
+        this.showSubscriptionTab();
+        break;
+      case 'lịch-sử-hóa-đơn':
+        this.showBillingTab();
+        break;
+      case 'thông-tin-giảng-viên':
+        this.showInstructorTab();
+        break;
+      default:
+        // Keep current tab (public profile)
+        break;
+    }
+  }
+
+  showSecurityTab() {
+    alert('Mục "Bảo mật" - Quản lý mật khẩu, xác thực hai yếu tố, và các thiết bị đã đăng nhập');
+  }
+
+  showPaymentTab() {
+    alert('Mục "Phương thức thanh toán" - Thêm thẻ tín dụng, ví điện tử, hoặc tài khoản ngân hàng');
+  }
+
+  showSubscriptionTab() {
+    alert('Mục "Gói đăng ký" - Xem gói hiện tại của bạn và các gói nâng cấp có sẵn');
+  }
+
+  showBillingTab() {
+    const rows = `
+      <tr class="border-b border-slate-200 dark:border-slate-700">
+        <td class="px-6 py-4">Advanced Python Course</td>
+        <td class="px-6 py-4">15/11/2024</td>
+        <td class="px-6 py-4">$99.99</td>
+        <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-1 text-xs font-bold text-green-800 bg-green-200 rounded-full">Đã thanh toán</span></td>
+      </tr>
+      <tr class="border-b border-slate-200 dark:border-slate-700">
+        <td class="px-6 py-4">Web Development Bootcamp</td>
+        <td class="px-6 py-4">10/11/2024</td>
+        <td class="px-6 py-4">$89.99</td>
+        <td class="px-6 py-4"><span class="inline-flex items-center px-2 py-1 text-xs font-bold text-green-800 bg-green-200 rounded-full">Đã thanh toán</span></td>
+      </tr>
+    `;
+    console.log('Lịch sử hóa đơn:', rows);
+    alert('Lịch sử hóa đơn của bạn:\n\n1. Advanced Python Course - $99.99 (15/11/2024)\n2. Web Development Bootcamp - $89.99 (10/11/2024)');
+  }
+
+  showInstructorTab() {
+    alert('Mục "Thông tin giảng viên" - Chuyển đổi tài khoản của bạn thành tài khoản giảng viên');
+  }
+
+  loadProfile() {
+    const saved = localStorage.getItem('userProfile');
+    return saved ? JSON.parse(saved) : {
+      displayName: 'Nguyễn Văn A',
+      email: 'nva@email.com',
+      bio: '',
+      socialLink: '',
+      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDwQYIjyuUqzYb2DINbsNsCLymY5PTOLPn5me5b-II4TqdWtvyJlP0ENoUXq9J0FW16pZVN5kp-Ho3IbOr43gCUxHewI5ESzZIbNyJvan70Ra7kn9oDU3GVhtLaHoSJAIUq4ppTceVvbXS0AJ1fN2S8g4m7QMsMkEluAQzzKEs0AfQtqAWEbHQ79Ak1b3FkNgFvlNZly90CYAam4wmRo8pxApVp19gLqpvbyb0J395omaN-KqSF5xx9-xGNDMkluyjBbmAGcxmS5OI'
+    };
+  }
+
+  loadUserData() {
+    const displayNameInput = document.querySelector('input#displayName');
+    const emailInput = document.querySelector('input#email');
+    const bioTextarea = document.querySelector('textarea#bio');
+    const socialLinkInput = document.querySelector('input#socialLink');
+
+    if (displayNameInput) displayNameInput.value = this.userProfile.displayName;
+    if (emailInput) emailInput.value = this.userProfile.email;
+    if (bioTextarea) bioTextarea.value = this.userProfile.bio;
+    if (socialLinkInput) socialLinkInput.value = this.userProfile.socialLink;
+  }
+
+  markFormDirty() {
+    const saveBtn = document.querySelector('button:contains("Lưu thay đổi")');
+    if (saveBtn) {
+      saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      saveBtn.disabled = false;
+    }
+  }
+
+  saveProfile() {
+    const displayNameInput = document.querySelector('input#displayName');
+    const bioTextarea = document.querySelector('textarea#bio');
+    const socialLinkInput = document.querySelector('input#socialLink');
+
+    this.userProfile.displayName = displayNameInput?.value || this.userProfile.displayName;
+    this.userProfile.bio = bioTextarea?.value || '';
+    this.userProfile.socialLink = socialLinkInput?.value || '';
+
+    localStorage.setItem('userProfile', JSON.stringify(this.userProfile));
+    alert('✓ Hồ sơ của bạn đã được lưu thành công!');
+    
+    console.log('Hồ sơ đã lưu:', this.userProfile);
+  }
+
+  cancelChanges() {
+    if (confirm('Bạn chắc chắn muốn hủy các thay đổi?')) {
+      this.loadUserData();
+      alert('Các thay đổi đã bị hủy bỏ');
+    }
+  }
+
+  changeAvatar() {
+    const newUrl = prompt('Nhập URL ảnh mới:');
+    if (newUrl) {
+      this.userProfile.avatar = newUrl;
+      this.saveProfile();
+      alert('✓ Ảnh đại diện đã được cập nhật!');
+      location.reload();
+    }
+  }
+
+  removeAvatar() {
+    if (confirm('Bạn chắc chắn muốn xóa ảnh đại diện?')) {
+      this.userProfile.avatar = '';
+      this.saveProfile();
+      alert('✓ Ảnh đại diện đã bị xóa!');
+      location.reload();
+    }
+  }
+
+  logout(e) {
+    e.preventDefault();
+    if (confirm('Bạn chắc chắn muốn đăng xuất?')) {
+      localStorage.removeItem('userProfile');
+      localStorage.removeItem('cart');
+      alert('✓ Đã đăng xuất. Chuyển hướng đến trang đăng nhập...');
+      window.location.href = '/';
+    }
+  }
+}
+
+// Initialize profile settings when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  new ProfileSettings();
+  
+  // Add form validation
+  const emailInput = document.querySelector('input#email');
+  if (emailInput) {
+    emailInput.addEventListener('blur', (e) => {
+      const email = e.target.value;
+      const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!isValid && email) {
+        e.target.classList.add('ring-2', 'ring-red-500');
+        alert('Email không hợp lệ!');
+      } else {
+        e.target.classList.remove('ring-2', 'ring-red-500');
+      }
+    });
+  }
+});
+</script>
+</body></html>

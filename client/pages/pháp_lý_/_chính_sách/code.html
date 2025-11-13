@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pháp lý &amp; Chính sách - LMS Platform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": {
+                DEFAULT: "#d92446", // Red
+                dark: "#0a2540" // Dark Blue
+              },
+              "background-light": "#f6f7f8",
+              "background-dark": "#0a1d33",
+              "text-light-primary": "#0d141b",
+              "text-light-secondary": "#4c739a",
+              "border-light": "#e7edf3",
+              "text-dark-primary": "#f6f7f8",
+              "text-dark-secondary": "#aeb8c4",
+              "border-dark": "#2c3a4a"
+            },
+            fontFamily: {
+              "display": ["Lexend", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+      }
+    </style>
+</head>
+<body class="font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="flex flex-1 justify-center py-5 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40">
+<div class="layout-content-container flex flex-col w-full max-w-5xl flex-1">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-border-light dark:border-border-dark px-4 sm:px-6 lg:px-10 py-3">
+<div class="flex items-center gap-4 text-text-light-primary dark:text-text-dark-primary">
+<div class="size-6 text-primary">
+<svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
+</svg>
+</div>
+<h2 class="text-text-light-primary dark:text-text-dark-primary text-lg font-bold leading-tight tracking-[-0.015em]">LMS Platform</h2>
+</div>
+<div class="hidden lg:flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-text-light-primary dark:text-text-dark-primary text-sm font-medium leading-normal" href="#">Trang chủ</a>
+<a class="text-text-light-primary dark:text-text-dark-primary text-sm font-medium leading-normal" href="#">Khóa học</a>
+<a class="text-text-light-primary dark:text-text-dark-primary text-sm font-medium leading-normal" href="#">Giảng viên</a>
+<a class="text-text-light-primary dark:text-text-dark-primary text-sm font-medium leading-normal" href="#">Hỗ trợ</a>
+</div>
+<div class="flex gap-2">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Đăng nhập</span>
+</button>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-border-light dark:bg-border-dark text-text-light-primary dark:text-text-dark-primary text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Đăng ký</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-4 lg:hidden">
+<button class="p-2">
+<span class="material-symbols-outlined text-text-light-primary dark:text-text-dark-primary">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-grow">
+<div class="flex flex-wrap items-center justify-between gap-4 p-4 py-8 md:py-12 bg-primary-dark rounded-xl mt-6 text-white">
+<div class="flex flex-col gap-2">
+<h1 class="text-4xl sm:text-5xl font-extrabold leading-tight tracking-tighter">Pháp lý &amp; Chính sách</h1>
+<p class="text-base font-normal leading-normal text-white/80">Cập nhật lần cuối: 15/10/2023</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center gap-2 rounded-full h-10 px-4 bg-white/10 text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined text-lg">print</span>
+<span class="truncate hidden sm:inline">In trang</span>
+</button>
+<button class="flex items-center justify-center gap-2 rounded-full h-10 px-4 bg-white/10 text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+<span class="truncate hidden sm:inline">Tải PDF</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 px-4 py-8">
+<aside class="md:col-span-1">
+<div class="sticky top-8">
+<nav class="flex flex-col gap-1">
+<a class="group flex items-center gap-3 rounded-lg px-4 py-3 bg-primary-dark text-white font-bold" href="#">
+<span class="material-symbols-outlined text-primary">description</span>
+<span class="truncate">Điều khoản Dịch vụ</span>
+</a>
+<a class="group flex items-center gap-3 rounded-lg px-4 py-3 text-text-light-secondary dark:text-text-dark-secondary font-semibold hover:bg-gray-100 dark:hover:bg-border-dark transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary-dark">privacy_tip</span>
+<span class="truncate">Chính sách Quyền riêng tư</span>
+</a>
+<a class="group flex items-center gap-3 rounded-lg px-4 py-3 text-text-light-secondary dark:text-text-dark-secondary font-semibold hover:bg-gray-100 dark:hover:bg-border-dark transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary-dark">receipt_long</span>
+<span class="truncate">Chính sách Hoàn tiền</span>
+</a>
+<a class="group flex items-center gap-3 rounded-lg px-4 py-3 text-text-light-secondary dark:text-text-dark-secondary font-semibold hover:bg-gray-100 dark:hover:bg-border-dark transition-colors" href="#">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary-dark">copyright</span>
+<span class="truncate">Sở hữu Trí tuệ</span>
+</a>
+</nav>
+</div>
+</aside>
+<div class="md:col-span-3">
+<div class="prose prose-lg dark:prose-invert max-w-none text-text-light-primary dark:text-text-dark-primary prose-headings:font-extrabold prose-headings:text-primary-dark dark:prose-headings:text-white prose-a:text-primary prose-strong:text-text-light-primary dark:prose-strong:text-text-dark-primary prose-ul:list-disc prose-ul:pl-6 prose-ul:space-y-2 prose-ol:list-decimal prose-ol:pl-6 prose-ol:space-y-2">
+<h2 class="text-4xl font-extrabold !text-primary mt-0 tracking-tight">Điều khoản Dịch vụ</h2>
+<p class="text-text-light-secondary dark:text-text-dark-secondary !mt-4 !mb-8">Chào mừng bạn đến với Nền tảng LMS của chúng tôi. Bằng cách truy cập hoặc sử dụng Dịch vụ của chúng tôi, bạn đồng ý bị ràng buộc bởi các Điều khoản Dịch vụ này ("Điều khoản") và Chính sách Quyền riêng tư của chúng tôi. Nếu bạn không đồng ý với các Điều khoản này, bạn không được sử dụng Dịch vụ của chúng tôi.</p>
+<h3 class="!mt-12 !mb-4">1. Giới thiệu chung và Định nghĩa</h3>
+<p>Các thuật ngữ sau đây có ý nghĩa được chỉ định khi được sử dụng trong các Điều khoản này:</p>
+<ul>
+<li><strong>"Dịch vụ"</strong> có nghĩa là các dịch vụ quản lý học tập, nội dung khóa học và các tính năng khác được cung cấp thông qua trang web và ứng dụng của chúng tôi.</li>
+<li><strong>"Người dùng"</strong> có nghĩa là bất kỳ cá nhân nào, bao gồm cả Học viên và Giảng viên, truy cập hoặc sử dụng Dịch vụ.</li>
+<li><strong>"Nội dung"</strong> có nghĩa là tất cả các tài liệu, video, văn bản và các thông tin khác có sẵn trên Dịch vụ.</li>
+</ul>
+<h3 class="!mt-12 !mb-4">2. Quyền và Trách nhiệm của Người dùng</h3>
+<p>Bạn có trách nhiệm duy trì tính bảo mật của tài khoản và mật khẩu của mình. Bạn đồng ý chấp nhận trách nhiệm cho tất cả các hoạt động xảy ra dưới tài khoản của bạn. Bạn không được sử dụng Dịch vụ cho bất kỳ mục đích bất hợp pháp hoặc trái phép nào.</p>
+<h3 class="!mt-12 !mb-4">3. Quy định về Hành vi bị cấm</h3>
+<p>Nghiêm cấm các hành vi sau đây:</p>
+<ol>
+<li>Sử dụng Dịch vụ để đăng tải hoặc truyền bá bất kỳ nội dung nào là bất hợp pháp, có hại, đe dọa, lạm dụng, quấy rối, hoặc vi phạm quyền sở hữu trí tuệ.</li>
+<li>Cố gắng truy cập trái phép vào hệ thống máy tính của chúng tôi hoặc tham gia vào bất kỳ hoạt động nào làm gián đoạn, giảm chất lượng, hoặc cản trở hiệu suất của Dịch vụ.</li>
+<li>Sử dụng bất kỳ robot, spider hoặc thiết bị tự động nào khác để truy cập Dịch vụ cho bất kỳ mục đích nào.</li>
+</ol>
+<h3 class="!mt-12 !mb-4">4. Giới hạn Trách nhiệm pháp lý</h3>
+<p>Trong phạm vi tối đa được pháp luật cho phép, Nền tảng LMS sẽ không chịu trách nhiệm cho bất kỳ thiệt hại gián tiếp, ngẫu nhiên, đặc biệt, do hậu quả hoặc trừng phạt nào, hoặc bất kỳ tổn thất nào về lợi nhuận hoặc doanh thu, cho dù phát sinh trực tiếp hay gián tiếp, hoặc bất kỳ mất mát dữ liệu, sử dụng, thiện chí, hoặc các tổn thất vô hình khác, do (i) việc bạn truy cập hoặc sử dụng hoặc không thể truy cập hoặc sử dụng dịch vụ; (ii) bất kỳ hành vi hoặc nội dung nào của bất kỳ bên thứ ba nào trên dịch vụ; hoặc (iii) truy cập, sử dụng hoặc thay đổi trái phép các nội dung truyền tải hoặc nội dung của bạn.</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

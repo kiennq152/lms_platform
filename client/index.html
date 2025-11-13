@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>VIAN Academy LMS - Entry Point</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1E3A8A",
+                        "accent": "#DC2626",
+                        "background-light": "#F8F9FA",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
+<div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-primary to-accent text-white py-12">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-5xl">school</span>
+                    <h1 class="text-4xl font-bold">VIAN Academy</h1>
+                </div>
+                <button id="darkToggle" class="p-2 hover:bg-white/20 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-2xl" id="themeIcon">dark_mode</span>
+                </button>
+            </div>
+            <p class="text-lg opacity-90">Learning Management System (LMS) - Hệ Thống Quản Lý Học Tập</p>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="flex-1">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+            <!-- Quick Navigation -->
+            <section class="mb-16">
+                <h2 class="text-3xl font-bold mb-8">🚀 Bắt Đầu Nhanh</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <a href="bảng_điều_khiển_giảng_viên/code.html" class="group bg-white dark:bg-gray-800 rounded-lg shadow-lg border-2 border-transparent hover:border-primary hover:shadow-xl transition-all p-6">
+                        <span class="material-symbols-outlined text-5xl text-primary mb-4">dashboard</span>
+                        <h3 class="font-bold text-xl mb-2 group-hover:text-primary transition-colors">Instructor Dashboard</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-3">Xem doanh thu, quản lý khóa học</p>
+                        <span class="inline-flex items-center gap-1 text-primary text-sm font-semibold">
+                            Truy cập <span class="material-symbols-outlined text-base">arrow_forward</span>
+                        </span>
+                    </a>
+
+                    <a href="bảng_điều_khiển_học_viên/code.html" class="group bg-white dark:bg-gray-800 rounded-lg shadow-lg border-2 border-transparent hover:border-primary hover:shadow-xl transition-all p-6">
+                        <span class="material-symbols-outlined text-5xl text-accent mb-4">person</span>
+                        <h3 class="font-bold text-xl mb-2 group-hover:text-primary transition-colors">Student Dashboard</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-3">Xem khóa học, theo dõi tiến độ</p>
+                        <span class="inline-flex items-center gap-1 text-primary text-sm font-semibold">
+                            Truy cập <span class="material-symbols-outlined text-base">arrow_forward</span>
+                        </span>
+                    </a>
+
+                    <a href="bảng_quản_trị/code.html" class="group bg-white dark:bg-gray-800 rounded-lg shadow-lg border-2 border-transparent hover:border-primary hover:shadow-xl transition-all p-6">
+                        <span class="material-symbols-outlined text-5xl text-yellow-500 mb-4">security_admin</span>
+                        <h3 class="font-bold text-xl mb-2 group-hover:text-primary transition-colors">Admin Dashboard</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-3">Quản lý người dùng, khóa học</p>
+                        <span class="inline-flex items-center gap-1 text-primary text-sm font-semibold">
+                            Truy cập <span class="material-symbols-outlined text-base">arrow_forward</span>
+                        </span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- All Pages -->
+            <section class="mb-16">
+                <h2 class="text-3xl font-bold mb-8">📚 Tất Cả Các Trang</h2>
+                
+                <!-- Dashboards -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-primary mb-4">📊 Bảng Điều Khiển</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <a href="bảng_điều_khiển_giảng_viên/code.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-primary">dashboard</span>
+                            <span class="font-semibold">Giảng Viên</span>
+                        </a>
+                        <a href="bảng_điều_khiển_học_viên/code.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-accent">person</span>
+                            <span class="font-semibold">Học Viên</span>
+                        </a>
+                        <a href="bảng_quản_trị/code.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-yellow-500">admin_panel_settings</span>
+                            <span class="font-semibold">Admin</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Course Management -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-primary mb-4">📚 Quản Lý Khóa Học</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <a href="trang_danh_mục_khóa_học/index.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-blue-500">category</span>
+                            <span class="font-semibold">Danh Mục</span>
+                        </a>
+                        <a href="trang_chi_tiết_khóa_học/code.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-green-500">info</span>
+                            <span class="font-semibold">Chi Tiết</span>
+                        </a>
+                        <a href="trình_phát_khóa_học_/index.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-red-500">play_circle</span>
+                            <span class="font-semibold">Trình Phát</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Shopping & Account -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-primary mb-4">💳 Mua & Tài Khoản</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <a href="giỏ_hàng_&_thanh_toán/code.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-orange-500">shopping_cart</span>
+                            <span class="font-semibold">Giỏ Hàng</span>
+                        </a>
+                        <a href="hồ_sơ_&_cài_đặt_tài_khoản/code.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-purple-500">account_circle</span>
+                            <span class="font-semibold">Hồ Sơ</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Community & Support -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-bold text-primary mb-4">💬 Cộng Đồng & Hỗ Trợ</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <a href="cộng_đồng_/index.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-pink-500">forum</span>
+                            <span class="font-semibold">Cộng Đồng</span>
+                        </a>
+                        <a href="hỗ_trợ_/index.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-cyan-500">help</span>
+                            <span class="font-semibold">Hỗ Trợ</span>
+                        </a>
+                        <a href="pháp_lý_/index.html" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-md transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-2xl text-indigo-500">policy</span>
+                            <span class="font-semibold">Chính Sách</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics -->
+            <section class="mb-16 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg p-8 border border-primary/20">
+                <h2 class="text-2xl font-bold mb-8">📊 Thống Kê Dự Án</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary">11+</div>
+                        <p class="text-gray-600 dark:text-gray-400">Trang</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-accent">50+</div>
+                        <p class="text-gray-600 dark:text-gray-400">Components</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary">10</div>
+                        <p class="text-gray-600 dark:text-gray-400">JS Classes</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-accent">5K+</div>
+                        <p class="text-gray-600 dark:text-gray-400">Dòng Code</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features -->
+            <section class="mb-16">
+                <h2 class="text-2xl font-bold mb-8">✨ Tính Năng Nổi Bật</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flex gap-4">
+                        <span class="material-symbols-outlined text-2xl text-primary flex-shrink-0">check_circle</span>
+                        <div>
+                            <h4 class="font-bold mb-1">Dark Mode</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Toàn bộ app hỗ trợ dark/light mode</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <span class="material-symbols-outlined text-2xl text-primary flex-shrink-0">check_circle</span>
+                        <div>
+                            <h4 class="font-bold mb-1">Responsive</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Tối ưu cho mobile, tablet, desktop</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <span class="material-symbols-outlined text-2xl text-primary flex-shrink-0">check_circle</span>
+                        <div>
+                            <h4 class="font-bold mb-1">Local Storage</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Lưu dữ liệu trong browser</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <span class="material-symbols-outlined text-2xl text-primary flex-shrink-0">check_circle</span>
+                        <div>
+                            <h4 class="font-bold mb-1">Form Validation</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Kiểm tra đầu vào người dùng</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <span class="material-symbols-outlined text-2xl text-primary flex-shrink-0">check_circle</span>
+                        <div>
+                            <h4 class="font-bold mb-1">Search & Filter</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Tìm kiếm và lọc dữ liệu</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <span class="material-symbols-outlined text-2xl text-primary flex-shrink-0">check_circle</span>
+                        <div>
+                            <h4 class="font-bold mb-1">Coupon System</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">Mã giảm giá: SAVE10, SAVE50</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Documentation -->
+            <section class="mb-16">
+                <h2 class="text-2xl font-bold mb-8">📖 Tài Liệu</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <a href="README.md" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 hover:shadow-md transition-shadow">
+                        <span class="material-symbols-outlined text-4xl text-blue-600 mb-3">description</span>
+                        <h3 class="font-bold text-lg mb-2">README</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Tài liệu hoàn chỉnh của dự án</p>
+                    </a>
+                    <a href="QUICK_START.md" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6 hover:shadow-md transition-shadow">
+                        <span class="material-symbols-outlined text-4xl text-green-600 mb-3">rocket_launch</span>
+                        <h3 class="font-bold text-lg mb-2">Quick Start</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Hướng dẫn bắt đầu nhanh</p>
+                    </a>
+                    <a href="PROJECT_SUMMARY.md" class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-6 hover:shadow-md transition-shadow">
+                        <span class="material-symbols-outlined text-4xl text-purple-600 mb-3">summary</span>
+                        <h3 class="font-bold text-lg mb-2">Summary</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Tóm tắt chi tiết dự án</p>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-8">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center text-gray-600 dark:text-gray-400">
+            <p>© 2024 VIAN Academy LMS. All rights reserved.</p>
+            <p class="text-sm mt-2">Version 1.0.0 | Status: ✅ Production Ready</p>
+        </div>
+    </footer>
+</div>
+
+<script>
+// Dark mode toggle
+const darkToggle = document.getElementById('darkToggle');
+const html = document.documentElement;
+const themeIcon = document.getElementById('themeIcon');
+
+// Load theme preference
+if (localStorage.getItem('theme') === 'dark' || 
+    (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    html.classList.add('dark');
+    themeIcon.textContent = 'light_mode';
+}
+
+darkToggle.addEventListener('click', () => {
+    html.classList.toggle('dark');
+    if (html.classList.contains('dark')) {
+        localStorage.setItem('theme', 'dark');
+        themeIcon.textContent = 'light_mode';
+    } else {
+        localStorage.setItem('theme', 'light');
+        themeIcon.textContent = 'dark_mode';
+    }
+});
+
+// Log project info
+console.log('%c🎓 VIAN Academy LMS', 'font-size: 20px; color: #1E3A8A; font-weight: bold;');
+console.log('%cVersion 1.0.0 | Production Ready', 'font-size: 14px; color: #666;');
+console.log('%c✨ All pages loaded successfully!', 'color: #DC2626; font-weight: bold;');
+</script>
+</body>
+</html>

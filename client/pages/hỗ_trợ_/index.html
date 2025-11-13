@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>VIAN Academy - Hỗ Trợ</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1E3A8A",
+                        "accent": "#DC2626",
+                        "background-light": "#F8F9FA",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
+<div class="flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="sticky top-0 z-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 lg:px-8 py-4">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-2xl font-bold">VIAN Help Center</h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-1">Tìm câu trả lời cho những câu hỏi của bạn</p>
+        </div>
+    </header>
+
+    <main class="flex-1 p-6 lg:p-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Search -->
+            <div class="mb-12">
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2">search</span>
+                    <input type="text" placeholder="Tìm kiếm câu hỏi thường gặp..." class="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-lg focus:ring-2 focus:ring-primary" id="helpSearch"/>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow cursor-pointer">
+                    <span class="material-symbols-outlined text-4xl text-primary">help</span>
+                    <h3 class="font-bold text-lg mt-4">FAQ</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Xem các câu hỏi thường gặp</p>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow cursor-pointer">
+                    <span class="material-symbols-outlined text-4xl text-accent">email</span>
+                    <h3 class="font-bold text-lg mt-4">Liên Hệ</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Gửi email cho đội hỗ trợ</p>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow cursor-pointer">
+                    <span class="material-symbols-outlined text-4xl" style="color: #10B981;">chat</span>
+                    <h3 class="font-bold text-lg mt-4">Chat Trực Tiếp</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">Trò chuyện với nhân viên hỗ trợ</p>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-bold mb-6">Câu Hỏi Thường Gặp</h2>
+                
+                <details class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <summary class="flex items-center justify-between p-6 cursor-pointer font-semibold hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <span>Làm sao để đăng ký khóa học?</span>
+                        <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                    </summary>
+                    <div class="border-t border-gray-200 dark:border-gray-700 p-6">
+                        <p class="text-gray-700 dark:text-gray-300 mb-3">
+                            Để đăng ký khóa học, bạn cần:
+                        </p>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">
+                            <li>Đăng nhập vào tài khoản của bạn</li>
+                            <li>Tìm khóa học bạn muốn tham gia</li>
+                            <li>Nhấp vào "Thêm vào giỏ hàng"</li>
+                            <li>Hoàn thành thanh toán</li>
+                            <li>Bắt đầu học lập tức</li>
+                        </ol>
+                    </div>
+                </details>
+
+                <details class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <summary class="flex items-center justify-between p-6 cursor-pointer font-semibold hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <span>Có thể hoàn lại tiền không?</span>
+                        <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                    </summary>
+                    <div class="border-t border-gray-200 dark:border-gray-700 p-6">
+                        <p class="text-gray-700 dark:text-gray-300">
+                            Có, chúng tôi cung cấp chính sách hoàn lại tiền 30 ngày. Nếu bạn không hài lòng với khóa học, 
+                            vui lòng liên hệ với đội hỗ trợ của chúng tôi trong vòng 30 ngày kể từ ngày mua để yêu cầu hoàn lại tiền.
+                        </p>
+                    </div>
+                </details>
+
+                <details class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <summary class="flex items-center justify-between p-6 cursor-pointer font-semibold hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <span>Làm sao để lấy chứng chỉ?</span>
+                        <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                    </summary>
+                    <div class="border-t border-gray-200 dark:border-gray-700 p-6">
+                        <p class="text-gray-700 dark:text-gray-300">
+                            Sau khi hoàn thành tất cả các bài tập và đạt điểm vượt qua của khóa học, 
+                            bạn sẽ tự động nhận được chứng chỉ. Bạn có thể tải xuống từ phần "Chứng chỉ" trong hồ sơ của mình.
+                        </p>
+                    </div>
+                </details>
+
+                <details class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <summary class="flex items-center justify-between p-6 cursor-pointer font-semibold hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <span>Có hỗ trợ khác ngôn ngữ không?</span>
+                        <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                    </summary>
+                    <div class="border-t border-gray-200 dark:border-gray-700 p-6">
+                        <p class="text-gray-700 dark:text-gray-300">
+                            Hiện tại, VIAN Academy cung cấp khóa học chủ yếu bằng tiếng Việt. Tuy nhiên, 
+                            chúng tôi đang phát triển các khóa học bằng tiếng Anh và các ngôn ngữ khác.
+                        </p>
+                    </div>
+                </details>
+
+                <details class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <summary class="flex items-center justify-between p-6 cursor-pointer font-semibold hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <span>Tôi có thể tác động với giảng viên không?</span>
+                        <span class="material-symbols-outlined transition-transform group-open:rotate-180">expand_more</span>
+                    </summary>
+                    <div class="border-t border-gray-200 dark:border-gray-700 p-6">
+                        <p class="text-gray-700 dark:text-gray-300">
+                            Có, bạn có thể liên hệ với giảng viên thông qua phần bình luận khóa học hoặc gửi thư riêng. 
+                            Các giảng viên thường trả lời trong vòng 24-48 giờ.
+                        </p>
+                    </div>
+                </details>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="mt-12 bg-primary text-white rounded-lg p-8">
+                <h2 class="text-2xl font-bold mb-4">Không tìm thấy câu trả lời?</h2>
+                <p class="mb-6">Liên hệ trực tiếp với đội hỗ trợ của chúng tôi</p>
+                
+                <form class="space-y-4" id="contactForm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" placeholder="Tên của bạn" class="px-4 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-accent"/>
+                        <input type="email" placeholder="Email của bạn" class="px-4 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-accent"/>
+                    </div>
+                    <select class="w-full px-4 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-accent">
+                        <option>Vấn đề: Chọn một vấn đề...</option>
+                        <option>Vấn đề Thanh Toán</option>
+                        <option>Vấn đề Kỹ Thuật</option>
+                        <option>Khóa Học & Nội Dung</option>
+                        <option>Chứng Chỉ & Tài Khoản</option>
+                    </select>
+                    <textarea placeholder="Mô tả vấn đề của bạn..." rows="5" class="w-full px-4 py-2 rounded-lg text-gray-900 focus:ring-2 focus:ring-accent"></textarea>
+                    <button type="submit" class="w-full bg-accent text-white font-semibold py-2 rounded-lg hover:bg-accent/90 transition-colors">Gửi Yêu Cầu Hỗ Trợ</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+class HelpCenter {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        // Search
+        document.getElementById('helpSearch').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            console.log('Searching for:', query);
+        });
+
+        // Quick links
+        document.querySelectorAll('[class*="bg-white"][class*="rounded-lg"]').forEach(link => {
+            link.addEventListener('click', () => {
+                const title = link.querySelector('h3').textContent;
+                console.log('Clicked:', title);
+            });
+        });
+
+        // Details expand
+        document.querySelectorAll('details').forEach(detail => {
+            detail.addEventListener('toggle', () => {
+                if (detail.open) {
+                    document.querySelectorAll('details').forEach(d => {
+                        if (d !== detail) d.open = false;
+                    });
+                }
+            });
+        });
+
+        // Contact form
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('✓ Yêu cầu hỗ trợ của bạn đã được gửi. Đội hỗ trợ sẽ liên hệ với bạn trong vòng 24 giờ.');
+            e.target.reset();
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new HelpCenter();
+});
+</script>
+</body>
+</html>
