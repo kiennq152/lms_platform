@@ -1,0 +1,14 @@
+{
+  "name": "stitch-lms-dashboard",
+  "version": "1.0.0",
+  "description": "VIAN Academy LMS Dashboard",
+  "scripts": {
+    "dev": "cd server && npm run dev",
+    "start": "cd server && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "your-repo-url"
+  }
+}
+
