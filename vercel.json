@@ -1,27 +1,17 @@
 {
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ],
   "version": 2,
   "builds": [
-    {
-      "src": "server/server.js",
-      "use": "@vercel/node"
-    }
+    { "src": "server/server.js", "use": "@vercel/node" },
+    { "src": "client/**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    {
-      "src": "/health",
-      "dest": "server/server.js"
-    },
-    {
-      "src": "/docs/(.*)",
-      "dest": "docs/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "client/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "server/server.js"
-    }
+    { "src": "/health", "dest": "server/server.js" },
+    { "src": "/api/(.*)", "dest": "server/server.js" },
+    { "src": "/docs/(.*)", "dest": "docs/$1" },
+
+    { "src": "/(.*)", "dest": "client/index.html" }
   ]
 }
