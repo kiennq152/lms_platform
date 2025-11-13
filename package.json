@@ -9,6 +9,11 @@
   "repository": {
     "type": "git",
     "url": "your-repo-url"
+  },
+  "vercel": {
+    "buildCommand": null,
+    "outputDirectory": "client",
+    "installCommand": null
   }
 }
 
