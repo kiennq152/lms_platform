@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Course Moderation - LMS Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#DC2626",
+          "secondary": "#1E3A8A",
+          "background-light": "#F3F4F6",
+          "background-dark": "#111827",
+          "text-light-primary": "#1F2937",
+          "text-light-secondary": "#6B7280",
+          "text-dark-primary": "#F9FAFB",
+          "text-dark-secondary": "#9CA3AF",
+          "border-light": "#E5E7EB",
+          "border-dark": "#374151",
+          "card-light": "#ffffff",
+          "card-dark": "#1F2937",
+        },
+        fontFamily: {
+          "display": ["Lexend", "sans-serif"]
+        },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
+  }
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-light-primary dark:text-dark-primary">
+<div class="flex h-screen w-full">
+<aside class="flex w-64 flex-col border-r border-border-light dark:border-border-dark bg-secondary text-white">
+<div class="flex h-16 items-center gap-3 px-6 border-b border-blue-800">
+<div class="text-primary size-8">
+<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>
+</div>
+<h1 class="text-xl font-bold">LMS Admin</h1>
+</div>
+<nav class="flex flex-1 flex-col gap-2 p-4">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="code.html">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-semibold">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="user-management.html">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-semibold">User Management</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-white shadow-lg" href="course-moderation.html">
+<span class="material-symbols-outlined fill">rate_review</span>
+<p class="text-sm font-semibold">Course Moderation</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="finance.html">
+<span class="material-symbols-outlined">payments</span>
+<p class="text-sm font-semibold">Finance</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="analytics.html">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-sm font-semibold">Analytics</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="system-logs.html">
+<span class="material-symbols-outlined">history</span>
+<p class="text-sm font-semibold">System Logs</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="monitoring.html">
+<span class="material-symbols-outlined">monitor_heart</span>
+<p class="text-sm font-semibold">Monitoring</p>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-2 p-4 border-t border-blue-800">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="settings.html">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-semibold">Settings</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#" onclick="handleLogout(event)">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-semibold">Logout</p>
+</a>
+</div>
+</aside>
+<main class="flex flex-1 flex-col overflow-y-auto">
+<header class="flex h-16 shrink-0 items-center justify-between border-b border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-6">
+<div class="flex-1">
+<label class="relative flex items-center max-w-sm">
+<span class="material-symbols-outlined absolute left-3 text-text-light-secondary dark:text-dark-secondary">search</span>
+<input id="searchInput" class="w-full rounded-full border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark py-2 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search courses..." type="search"/>
+</label>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-background-light dark:bg-background-dark text-text-light-secondary dark:text-dark-secondary hover:bg-primary/10 hover:text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeZgX-ScIZ6ZsUWgD8K0D_gcpKOEGl99hsnpYLUgKzWkDz9BtO2xYPD3WbXyGmTDYWtvNnN8TlR3HzI1zcVb5-w3o8Hjh0thVIxjSiLHRBaye8IrxS_2TwFvB-fbowRHr4NHi-V5vvm1Z2sazxTOUIU8CKddxVPOksqls65Ego3G7X6CcqknWQuXbqv7-iG6Fn7riN03i35tTL4bdD5n4I8zSNcVVUo8oEcyXK53bKZLpFBn4dXPg-ZS5z0youWw__xi2L9FELL0A");'></div>
+<div class="flex flex-col text-sm">
+<p class="font-bold text-text-light-primary dark:text-dark-primary">Admin Name</p>
+<p class="text-xs text-text-light-secondary dark:text-dark-secondary">Super Admin</p>
+</div>
+</div>
+</header>
+<div class="flex-1 space-y-6 p-6 md:p-8">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight">Course Moderation</h1>
+<p class="text-text-light-secondary dark:text-dark-secondary mt-1">Review and approve courses submitted by instructors</p>
+</div>
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Pending Review</p>
+<p class="text-3xl font-extrabold text-yellow-500" id="pendingCount">15</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Approved</p>
+<p class="text-3xl font-extrabold text-green-500" id="approvedCount">1,140</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Rejected</p>
+<p class="text-3xl font-extrabold text-red-500" id="rejectedCount">152</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Total Courses</p>
+<p class="text-3xl font-extrabold" id="totalCount">1,307</p>
+</div>
+</div>
+<div class="flex gap-4 items-center">
+<select id="statusFilter" class="rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary">
+<option value="all">All Status</option>
+<option value="pending">Pending</option>
+<option value="approved">Approved</option>
+<option value="rejected">Rejected</option>
+</select>
+</div>
+<div class="rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead class="bg-background-light dark:bg-background-dark text-left text-xs text-text-light-secondary dark:text-dark-secondary uppercase tracking-wider">
+<tr>
+<th class="px-6 py-3 font-bold">Course</th>
+<th class="px-6 py-3 font-bold">Instructor</th>
+<th class="px-6 py-3 font-bold">Status</th>
+<th class="px-6 py-3 font-bold">Submitted</th>
+<th class="px-6 py-3 font-bold">Actions</th>
+</tr>
+</thead>
+<tbody id="coursesTableBody" class="divide-y divide-border-light dark:divide-border-dark">
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+
+<script>
+class CourseModeration {
+  constructor() {
+    this.courses = this.loadCourses();
+    this.filteredCourses = [...this.courses];
+    this.init();
+  }
+
+  init() {
+    this.renderCourses();
+    this.setupEventListeners();
+    this.updateStats();
+  }
+
+  loadCourses() {
+    const saved = localStorage.getItem('admin_courses');
+    if (saved) return JSON.parse(saved);
+    
+    return [
+      { id: 1, title: 'Introduction to Web Development', instructor: 'Jane Smith', status: 'pending', submitted: '2024-01-15', price: '$49.99', students: 0 },
+      { id: 2, title: 'Advanced React Patterns', instructor: 'Sarah Williams', status: 'approved', submitted: '2023-12-20', price: '$79.99', students: 234 },
+      { id: 3, title: 'Python for Data Science', instructor: 'John Doe', status: 'pending', submitted: '2024-01-20', price: '$59.99', students: 0 },
+      { id: 4, title: 'UI/UX Design Fundamentals', instructor: 'Mike Johnson', status: 'rejected', submitted: '2024-01-10', price: '$39.99', students: 0 },
+      { id: 5, title: 'Machine Learning Basics', instructor: 'Sarah Williams', status: 'approved', submitted: '2023-11-15', price: '$89.99', students: 456 }
+    ];
+  }
+
+  saveCourses() {
+    localStorage.setItem('admin_courses', JSON.stringify(this.courses));
+  }
+
+  renderCourses() {
+    const tbody = document.getElementById('coursesTableBody');
+    tbody.innerHTML = this.filteredCourses.map(course => `
+      <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+        <td class="px-6 py-4">
+          <div>
+            <p class="font-bold">${course.title}</p>
+            <p class="text-xs text-text-light-secondary dark:text-dark-secondary">${course.price} • ${course.students} students</p>
+          </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">${course.instructor}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
+            course.status === 'approved' ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' :
+            course.status === 'rejected' ? 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300' :
+            'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300'
+          }">${course.status.charAt(0).toUpperCase() + course.status.slice(1)}</span>
+        </td>
+        <td class="px-6 py-4 text-text-light-secondary dark:text-dark-secondary whitespace-nowrap">${course.submitted}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <div class="flex items-center gap-2">
+            ${course.status === 'pending' ? `
+              <button onclick="courseMod.approveCourse(${course.id})" class="flex items-center gap-1 rounded-lg bg-green-500 px-3 py-1.5 text-white text-xs font-semibold hover:bg-green-600 transition-colors">
+                <span class="material-symbols-outlined text-base">check</span>
+                Approve
+              </button>
+              <button onclick="courseMod.rejectCourse(${course.id})" class="flex items-center gap-1 rounded-lg bg-red-500 px-3 py-1.5 text-white text-xs font-semibold hover:bg-red-600 transition-colors">
+                <span class="material-symbols-outlined text-base">close</span>
+                Reject
+              </button>
+            ` : ''}
+            <button onclick="courseMod.viewCourse(${course.id})" class="p-1 rounded-full hover:bg-background-light dark:hover:bg-background-dark text-text-light-secondary dark:text-dark-secondary" title="View">
+              <span class="material-symbols-outlined text-base">visibility</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  updateStats() {
+    const pending = this.courses.filter(c => c.status === 'pending').length;
+    const approved = this.courses.filter(c => c.status === 'approved').length;
+    const rejected = this.courses.filter(c => c.status === 'rejected').length;
+    const total = this.courses.length;
+    
+    document.getElementById('pendingCount').textContent = pending;
+    document.getElementById('approvedCount').textContent = approved;
+    document.getElementById('rejectedCount').textContent = rejected;
+    document.getElementById('totalCount').textContent = total;
+  }
+
+  setupEventListeners() {
+    document.getElementById('searchInput').addEventListener('input', (e) => this.handleSearch(e));
+    document.getElementById('statusFilter').addEventListener('change', () => this.applyFilters());
+  }
+
+  handleSearch(e) {
+    const query = e.target.value.toLowerCase();
+    this.applyFilters(query);
+  }
+
+  applyFilters(searchQuery = '') {
+    const statusFilter = document.getElementById('statusFilter').value;
+    
+    this.filteredCourses = this.courses.filter(course => {
+      const matchesSearch = !searchQuery || 
+        course.title.toLowerCase().includes(searchQuery) ||
+        course.instructor.toLowerCase().includes(searchQuery);
+      const matchesStatus = statusFilter === 'all' || course.status === statusFilter;
+      
+      return matchesSearch && matchesStatus;
+    });
+    
+    this.renderCourses();
+  }
+
+  approveCourse(id) {
+    const course = this.courses.find(c => c.id === id);
+    if (!course) return;
+    
+    if (confirm(`Approve "${course.title}"?`)) {
+      course.status = 'approved';
+      this.saveCourses();
+      this.applyFilters();
+      this.updateStats();
+      alert('Course approved successfully!');
+    }
+  }
+
+  rejectCourse(id) {
+    const course = this.courses.find(c => c.id === id);
+    if (!course) return;
+    
+    const reason = prompt('Enter rejection reason:');
+    if (reason) {
+      course.status = 'rejected';
+      course.rejectionReason = reason;
+      this.saveCourses();
+      this.applyFilters();
+      this.updateStats();
+      alert('Course rejected.');
+    }
+  }
+
+  viewCourse(id) {
+    const course = this.courses.find(c => c.id === id);
+    if (!course) return;
+    
+    alert(`Course: ${course.title}\nInstructor: ${course.instructor}\nStatus: ${course.status}\nPrice: ${course.price}\nStudents: ${course.students}`);
+  }
+}
+
+function handleLogout(e) {
+  e.preventDefault();
+  if (confirm('Are you sure you want to logout?')) {
+    window.location.href = '../../index.html';
+  }
+}
+
+let courseMod;
+document.addEventListener('DOMContentLoaded', () => {
+  courseMod = new CourseModeration();
+});
+</script>
+</body>
+</html>
+

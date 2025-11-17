@@ -62,41 +62,41 @@
 <h1 class="text-xl font-bold">LMS Admin</h1>
 </div>
 <nav class="flex flex-1 flex-col gap-2 p-4">
-<a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-white shadow-lg" href="#">
+<a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-white shadow-lg" href="code.html">
 <span class="material-symbols-outlined fill">dashboard</span>
 <p class="text-sm font-semibold">Dashboard</p>
 </a>
-<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="user-management.html">
 <span class="material-symbols-outlined">group</span>
 <p class="text-sm font-semibold">User Management</p>
 </a>
-<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="course-moderation.html">
 <span class="material-symbols-outlined">rate_review</span>
 <p class="text-sm font-semibold">Course Moderation</p>
 </a>
-<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="finance.html">
 <span class="material-symbols-outlined">payments</span>
 <p class="text-sm font-semibold">Finance</p>
 </a>
-<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="analytics.html">
 <span class="material-symbols-outlined">analytics</span>
 <p class="text-sm font-semibold">Analytics</p>
 </a>
-<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="system-logs.html">
 <span class="material-symbols-outlined">history</span>
 <p class="text-sm font-semibold">System Logs</p>
 </a>
-<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="monitoring.html">
 <span class="material-symbols-outlined">monitor_heart</span>
 <p class="text-sm font-semibold">Monitoring</p>
 </a>
 </nav>
 <div class="mt-auto flex flex-col gap-2 p-4 border-t border-blue-800 dark:border-blue-800">
-<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="settings.html">
 <span class="material-symbols-outlined">settings</span>
 <p class="text-sm font-semibold">Settings</p>
 </a>
-<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#" onclick="handleLogout(event)">
 <span class="material-symbols-outlined">logout</span>
 <p class="text-sm font-semibold">Logout</p>
 </a>
@@ -107,7 +107,7 @@
 <div class="flex-1">
 <label class="relative flex items-center max-w-sm">
 <span class="material-symbols-outlined absolute left-3 text-text-light-secondary dark:text-dark-secondary">search</span>
-<input class="w-full rounded-full border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark py-2 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search anything..." type="search"/>
+<input id="searchInput" class="w-full rounded-full border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark py-2 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search anything..." type="search"/>
 </label>
 </div>
 <div class="flex items-center gap-4">
@@ -312,29 +312,41 @@ class AdminDashboard {
     });
 
     // Search functionality
-    const searchInput = document.querySelector('input[placeholder="Search anything..."]');
+    const searchInput = document.getElementById('searchInput') || document.querySelector('input[placeholder="Search anything..."]');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => this.handleSearch(e));
     }
 
     // Notification button
-    const notificationBtn = document.querySelector('[class*="notifications"]').parentElement;
+    const notificationBtn = document.querySelector('button:has(span.material-symbols-outlined)') || 
+                            Array.from(document.querySelectorAll('button')).find(btn => 
+                              btn.querySelector('span.material-symbols-outlined')?.textContent === 'notifications'
+                            );
     if (notificationBtn) {
       notificationBtn.addEventListener('click', () => this.showNotifications());
     }
   }
 
   handleNavClick(e, link) {
+    // Don't prevent default if it's a valid link
+    const href = link.getAttribute('href');
+    if (href && href !== '#' && !href.startsWith('javascript:')) {
+      // Let the browser navigate normally
+      return;
+    }
+    
     e.preventDefault();
     // Remove active state from all nav items
     document.querySelectorAll('aside a').forEach(a => {
-      a.classList.remove('bg-primary');
+      a.classList.remove('bg-primary', 'text-white', 'shadow-lg');
       a.classList.add('text-gray-300', 'hover:bg-blue-800/60');
+      a.querySelector('.material-symbols-outlined')?.classList.remove('fill');
     });
     
     // Add active state to clicked item
-    link.classList.add('bg-primary');
+    link.classList.add('bg-primary', 'text-white', 'shadow-lg');
     link.classList.remove('text-gray-300', 'hover:bg-blue-800/60');
+    link.querySelector('.material-symbols-outlined')?.classList.add('fill');
     
     const section = link.textContent.trim();
     console.log('Navigated to:', section);
@@ -354,11 +366,63 @@ class AdminDashboard {
 
   loadDashboardData() {
     console.log('Dashboard data loaded');
+    
+    // Load data from localStorage if available
+    const users = JSON.parse(localStorage.getItem('admin_users') || '[]');
+    const courses = JSON.parse(localStorage.getItem('admin_courses') || '[]');
+    const transactions = JSON.parse(localStorage.getItem('admin_transactions') || '[]');
+    
+    // Update stats dynamically
+    if (users.length > 0) {
+      const activeUsers = users.filter(u => u.status === 'active').length;
+      document.querySelector('p:contains("New Users")')?.parentElement?.querySelector('.text-3xl')?.textContent = activeUsers;
+    }
+    
+    if (courses.length > 0) {
+      const pendingCourses = courses.filter(c => c.status === 'pending').length;
+      document.querySelector('p:contains("Courses Pending")')?.parentElement?.querySelector('.text-3xl')?.textContent = pendingCourses;
+    }
+    
     // In a real app, this would fetch data from an API
   }
 
   showNotifications() {
-    alert('Bạn có 3 thông báo mới:\n\n1. John Doe đã gửi khóa học mới cho phê duyệt\n2. Người dùng Jane Smith hoàn tất thanh toán $49.99\n3. Có 2 lỗi hệ thống cần được khắc phục');
+    const notifications = [
+      { type: 'course', message: 'John Doe submitted a new course for review', time: '2 hours ago' },
+      { type: 'payment', message: 'Jane Smith completed a transaction of $49.99', time: '5 hours ago' },
+      { type: 'error', message: '2 system errors need attention', time: 'Yesterday' },
+      { type: 'user', message: '3 new users registered today', time: '3 hours ago' }
+    ];
+    
+    const notificationHTML = `
+      <div style="position: fixed; top: 80px; right: 20px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 20px; min-width: 300px; z-index: 1000; max-height: 400px; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">
+          <h3 style="font-weight: bold; font-size: 18px;">Notifications</h3>
+          <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; cursor: pointer; font-size: 20px;">&times;</button>
+        </div>
+        ${notifications.map(n => `
+          <div style="padding: 12px; margin-bottom: 10px; background: #f9fafb; border-radius: 8px; border-left: 3px solid ${n.type === 'error' ? '#dc2626' : n.type === 'payment' ? '#10b981' : '#3b82f6'};">
+            <p style="font-size: 14px; margin: 0 0 5px 0;">${n.message}</p>
+            <p style="font-size: 12px; color: #6b7280; margin: 0;">${n.time}</p>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    
+    // Remove existing notification panel if any
+    const existing = document.getElementById('notificationPanel');
+    if (existing) existing.remove();
+    
+    // Create and show notification panel
+    const panel = document.createElement('div');
+    panel.id = 'notificationPanel';
+    panel.innerHTML = notificationHTML;
+    document.body.appendChild(panel);
+    
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+      if (panel.parentElement) panel.remove();
+    }, 10000);
   }
 
   setupNotifications() {
@@ -372,9 +436,16 @@ class AdminDashboard {
   }
 }
 
+function handleLogout(e) {
+  e.preventDefault();
+  if (confirm('Are you sure you want to logout?')) {
+    window.location.href = '../../index.html';
+  }
+}
+
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', () => {
-  new AdminDashboard();
+  const dashboard = new AdminDashboard();
   
   // Add smooth animations to stat cards
   const statCards = document.querySelectorAll('.hover\\:shadow-lg');
@@ -390,11 +461,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }, index * 100);
   });
   
-  // Auto-update time-based data
+  // Auto-update dashboard stats
   setInterval(() => {
-    const now = new Date();
-    console.log('Dashboard updated at:', now.toLocaleTimeString());
+    dashboard.loadDashboardData();
   }, 60000);
+  
+  // Update "time ago" text in user activities table
+  const updateTimeAgo = () => {
+    const timeElements = document.querySelectorAll('td:contains("ago")');
+    // This would update relative time if needed
+  };
+  setInterval(updateTimeAgo, 60000);
 });
 
 // Export for use in modules

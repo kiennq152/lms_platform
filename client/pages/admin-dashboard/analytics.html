@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Analytics - LMS Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#DC2626",
+          "secondary": "#1E3A8A",
+          "background-light": "#F3F4F6",
+          "background-dark": "#111827",
+          "text-light-primary": "#1F2937",
+          "text-dark-primary": "#F9FAFB",
+          "text-light-secondary": "#6B7280",
+          "text-dark-secondary": "#9CA3AF",
+          "border-light": "#E5E7EB",
+          "border-dark": "#374151",
+          "card-light": "#ffffff",
+          "card-dark": "#1F2937",
+        },
+        fontFamily: {
+          "display": ["Lexend", "sans-serif"]
+        },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
+  }
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-light-primary dark:text-dark-primary">
+<div class="flex h-screen w-full">
+<aside class="flex w-64 flex-col border-r border-border-light dark:border-border-dark bg-secondary text-white">
+<div class="flex h-16 items-center gap-3 px-6 border-b border-blue-800">
+<div class="text-primary size-8">
+<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>
+</div>
+<h1 class="text-xl font-bold">LMS Admin</h1>
+</div>
+<nav class="flex flex-1 flex-col gap-2 p-4">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="code.html">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-semibold">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="user-management.html">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-semibold">User Management</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="course-moderation.html">
+<span class="material-symbols-outlined">rate_review</span>
+<p class="text-sm font-semibold">Course Moderation</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="finance.html">
+<span class="material-symbols-outlined">payments</span>
+<p class="text-sm font-semibold">Finance</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-white shadow-lg" href="analytics.html">
+<span class="material-symbols-outlined fill">analytics</span>
+<p class="text-sm font-semibold">Analytics</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="system-logs.html">
+<span class="material-symbols-outlined">history</span>
+<p class="text-sm font-semibold">System Logs</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="monitoring.html">
+<span class="material-symbols-outlined">monitor_heart</span>
+<p class="text-sm font-semibold">Monitoring</p>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-2 p-4 border-t border-blue-800">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="settings.html">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-semibold">Settings</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#" onclick="handleLogout(event)">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-semibold">Logout</p>
+</a>
+</div>
+</aside>
+<main class="flex flex-1 flex-col overflow-y-auto">
+<header class="flex h-16 shrink-0 items-center justify-between border-b border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-6">
+<div class="flex-1"></div>
+<div class="flex items-center gap-4">
+<button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-background-light dark:bg-background-dark text-text-light-secondary dark:text-dark-secondary hover:bg-primary/10 hover:text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeZgX-ScIZ6ZsUWgD8K0D_gcpKOEGl99hsnpYLUgKzWkDz9BtO2xYPD3WbXyGmTDYWtvNnN8TlR3HzI1zcVb5-w3o8Hjh0thVIxjSiLHRBaye8IrxS_2TwFvB-fbowRHr4NHi-V5vvm1Z2sazxTOUIU8CKddxVPOksqls65Ego3G7X6CcqknWQuXbqv7-iG6Fn7riN03i35tTL4bdD5n4I8zSNcVVUo8oEcyXK53bKZLpFBn4dXPg-ZS5z0youWw__xi2L9FELL0A");'></div>
+<div class="flex flex-col text-sm">
+<p class="font-bold text-text-light-primary dark:text-dark-primary">Admin Name</p>
+<p class="text-xs text-text-light-secondary dark:text-dark-secondary">Super Admin</p>
+</div>
+</div>
+</div>
+</header>
+<div class="flex-1 space-y-6 p-6 md:p-8">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight">Analytics & Reports</h1>
+<p class="text-text-light-secondary dark:text-dark-secondary mt-1">Comprehensive insights and data visualization</p>
+</div>
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-6 shadow-sm">
+<p class="text-lg font-bold">User Growth</p>
+<div class="flex min-h-[200px] flex-1 flex-col justify-center">
+<svg fill="none" height="100%" preserveAspectRatio="none" viewBox="0 0 500 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 120C25 120 25 30 50 30C75 30 75 80 100 80C125 80 125 50 150 50C175 50 175 100 200 100C225 100 225 20 250 20C275 20 275 90 300 90C325 90 325 130 350 130C375 130 375 10 400 10C425 10 425 70 450 70C475 70 475 110 500 110V150H0V120Z" fill="url(#paint0_linear_user)" opacity="0.4"></path>
+<path d="M0 120C25 120 25 30 50 30C75 30 75 80 100 80C125 80 125 50 150 50C175 50 175 100 200 100C225 100 225 20 250 20C275 20 275 90 300 90C325 90 325 130 350 130C375 130 375 10 400 10C425 10 425 70 450 70C475 70 475 110 500 110" stroke="#1E3A8A" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<linearGradient gradientUnits="userSpaceOnUse" id="paint0_linear_user" x1="250" x2="250" y1="0" y2="150">
+<stop stop-color="#1E3A8A" stop-opacity="0.4"></stop>
+<stop offset="1" stop-color="#1E3A8A" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-6 shadow-sm">
+<p class="text-lg font-bold">Course Completion Rate</p>
+<div class="flex flex-1 items-center justify-center">
+<div class="relative size-40">
+<svg class="size-full" viewBox="0 0 36 36">
+<path class="stroke-border-light dark:stroke-border-dark" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+<path class="stroke-green-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831" fill="none" stroke-dasharray="68, 100" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-extrabold">68%</span>
+<span class="text-xs text-text-light-secondary dark:text-dark-secondary">Completion</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-6 shadow-sm">
+<p class="text-lg font-bold">Revenue Trends</p>
+<div class="flex min-h-[300px] flex-1 flex-col justify-center">
+<svg fill="none" height="100%" preserveAspectRatio="none" viewBox="0 0 500 200" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 132.8C20 132.8 20 25.6 40 25.6C60 25.6 60 49.6 80 49.6C100 49.6 100 112 120 112C140 112 140 39.2 160 39.2C180 39.2 180 120.8 200 120.8C220 120.8 220 72.8 240 72.8C260 72.8 260 53.6 280 53.6C300 53.6 300 144.8 320 144.8C340 144.8 340 178.4 360 178.4C380 178.4 380 0.799988 400 0.799988C420 0.799988 420 96.8 440 96.8C460 96.8 460 154.4 480 154.4C500 154.4 500 29.6 500 29.6V200H0V132.8Z" fill="url(#paint0_linear_revenue)"></path>
+<path d="M0 132.8C20 132.8 20 25.6 40 25.6C60 25.6 60 49.6 80 49.6C100 49.6 100 112 120 112C140 112 140 39.2 160 39.2C180 39.2 180 120.8 200 120.8C220 120.8 220 72.8 240 72.8C260 72.8 260 53.6 280 53.6C300 53.6 300 144.8 320 144.8C340 144.8 340 178.4 360 178.4C380 178.4 380 0.799988 400 0.799988C420 0.799988 420 96.8 440 96.8C460 96.8 460 154.4 480 154.4C500 154.4 500 29.6 500 29.6" stroke="#DC2626" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<linearGradient gradientUnits="userSpaceOnUse" id="paint0_linear_revenue" x1="250" x2="250" y1="0" y2="200">
+<stop stop-color="#DC2626" stop-opacity="0.4"></stop>
+<stop offset="1" stop-color="#DC2626" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+</div>
+</div>
+<div class="rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark overflow-hidden shadow-sm">
+<div class="p-4 border-b border-border-light dark:border-border-dark">
+<h3 class="text-lg font-bold">Top Performing Courses</h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead class="bg-background-light dark:bg-background-dark text-left text-xs text-text-light-secondary dark:text-dark-secondary uppercase tracking-wider">
+<tr>
+<th class="px-6 py-3 font-bold">Course</th>
+<th class="px-6 py-3 font-bold">Enrollments</th>
+<th class="px-6 py-3 font-bold">Revenue</th>
+<th class="px-6 py-3 font-bold">Rating</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-light dark:divide-border-dark">
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+<td class="px-6 py-4 font-bold">Advanced React Patterns</td>
+<td class="px-6 py-4">1,234</td>
+<td class="px-6 py-4 font-bold text-green-500">$98,666</td>
+<td class="px-6 py-4">4.8 ⭐</td>
+</tr>
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+<td class="px-6 py-4 font-bold">Machine Learning Basics</td>
+<td class="px-6 py-4">956</td>
+<td class="px-6 py-4 font-bold text-green-500">$85,964</td>
+<td class="px-6 py-4">4.9 ⭐</td>
+</tr>
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+<td class="px-6 py-4 font-bold">Python for Data Science</td>
+<td class="px-6 py-4">789</td>
+<td class="px-6 py-4 font-bold text-green-500">$47,339</td>
+<td class="px-6 py-4">4.7 ⭐</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<script>
+function handleLogout(e) {
+  e.preventDefault();
+  if (confirm('Are you sure you want to logout?')) {
+    window.location.href = '../../index.html';
+  }
+}
+</script>
+</body>
+</html>
+

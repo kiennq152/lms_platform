@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Monitoring - LMS Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#DC2626",
+          "secondary": "#1E3A8A",
+          "background-light": "#F3F4F6",
+          "background-dark": "#111827",
+          "text-light-primary": "#1F2937",
+          "text-light-secondary": "#6B7280",
+          "text-dark-primary": "#F9FAFB",
+          "text-dark-secondary": "#9CA3AF",
+          "border-light": "#E5E7EB",
+          "border-dark": "#374151",
+          "card-light": "#ffffff",
+          "card-dark": "#1F2937",
+        },
+        fontFamily: {
+          "display": ["Lexend", "sans-serif"]
+        },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
+  }
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-light-primary dark:text-dark-primary">
+<div class="flex h-screen w-full">
+<aside class="flex w-64 flex-col border-r border-border-light dark:border-border-dark bg-secondary text-white">
+<div class="flex h-16 items-center gap-3 px-6 border-b border-blue-800">
+<div class="text-primary size-8">
+<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>
+</div>
+<h1 class="text-xl font-bold">LMS Admin</h1>
+</div>
+<nav class="flex flex-1 flex-col gap-2 p-4">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="code.html">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-semibold">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="user-management.html">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-semibold">User Management</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="course-moderation.html">
+<span class="material-symbols-outlined">rate_review</span>
+<p class="text-sm font-semibold">Course Moderation</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="finance.html">
+<span class="material-symbols-outlined">payments</span>
+<p class="text-sm font-semibold">Finance</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="analytics.html">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-sm font-semibold">Analytics</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="system-logs.html">
+<span class="material-symbols-outlined">history</span>
+<p class="text-sm font-semibold">System Logs</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-white shadow-lg" href="monitoring.html">
+<span class="material-symbols-outlined fill">monitor_heart</span>
+<p class="text-sm font-semibold">Monitoring</p>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-2 p-4 border-t border-blue-800">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="settings.html">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-semibold">Settings</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#" onclick="handleLogout(event)">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-semibold">Logout</p>
+</a>
+</div>
+</aside>
+<main class="flex flex-1 flex-col overflow-y-auto">
+<header class="flex h-16 shrink-0 items-center justify-between border-b border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-6">
+<div class="flex-1"></div>
+<div class="flex items-center gap-4">
+<button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-background-light dark:bg-background-dark text-text-light-secondary dark:text-dark-secondary hover:bg-primary/10 hover:text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeZgX-ScIZ6ZsUWgD8K0D_gcpKOEGl99hsnpYLUgKzWkDz9BtO2xYPD3WbXyGmTDYWtvNnN8TlR3HzI1zcVb5-w3o8Hjh0thVIxjSiLHRBaye8IrxS_2TwFvB-fbowRHr4NHi-V5vvm1Z2sazxTOUIU8CKddxVPOksqls65Ego3G7X6CcqknWQuXbqv7-iG6Fn7riN03i35tTL4bdD5n4I8zSNcVVUo8oEcyXK53bKZLpFBn4dXPg-ZS5z0youWw__xi2L9FELL0A");'></div>
+<div class="flex flex-col text-sm">
+<p class="font-bold text-text-light-primary dark:text-dark-primary">Admin Name</p>
+<p class="text-xs text-text-light-secondary dark:text-dark-secondary">Super Admin</p>
+</div>
+</div>
+</div>
+</header>
+<div class="flex-1 space-y-6 p-6 md:p-8">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight">System Monitoring</h1>
+<p class="text-text-light-secondary dark:text-dark-secondary mt-1">Real-time system health and performance metrics</p>
+</div>
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">CPU Usage</p>
+<p class="text-3xl font-extrabold text-green-500" id="cpuUsage">45%</p>
+<div class="h-2 bg-background-light dark:bg-background-dark rounded-full overflow-hidden">
+<div class="h-full bg-green-500 rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Memory Usage</p>
+<p class="text-3xl font-extrabold text-blue-500" id="memoryUsage">62%</p>
+<div class="h-2 bg-background-light dark:bg-background-dark rounded-full overflow-hidden">
+<div class="h-full bg-blue-500 rounded-full" style="width: 62%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Disk Usage</p>
+<p class="text-3xl font-extrabold text-yellow-500" id="diskUsage">78%</p>
+<div class="h-2 bg-background-light dark:bg-background-dark rounded-full overflow-hidden">
+<div class="h-full bg-yellow-500 rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Network Traffic</p>
+<p class="text-3xl font-extrabold text-purple-500" id="networkTraffic">1.2 GB/s</p>
+<p class="text-xs text-text-light-secondary dark:text-dark-secondary">Incoming: 800 MB/s</p>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+<div class="rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-6 shadow-sm">
+<p class="text-lg font-bold mb-4">Server Status</p>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 rounded-lg bg-background-light dark:bg-background-dark">
+<span class="font-semibold">Web Server</span>
+<span class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-green-500"></span>
+<span class="text-sm text-green-500">Online</span>
+</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-background-light dark:bg-background-dark">
+<span class="font-semibold">Database</span>
+<span class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-green-500"></span>
+<span class="text-sm text-green-500">Online</span>
+</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-background-light dark:bg-background-dark">
+<span class="font-semibold">Cache Server</span>
+<span class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-green-500"></span>
+<span class="text-sm text-green-500">Online</span>
+</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-background-light dark:bg-background-dark">
+<span class="font-semibold">Email Service</span>
+<span class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-yellow-500"></span>
+<span class="text-sm text-yellow-500">Degraded</span>
+</span>
+</div>
+</div>
+</div>
+<div class="rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-6 shadow-sm">
+<p class="text-lg font-bold mb-4">Active Connections</p>
+<p class="text-4xl font-extrabold text-primary mb-2" id="activeConnections">1,234</p>
+<p class="text-sm text-text-light-secondary dark:text-dark-secondary">Current active users</p>
+<div class="mt-4 space-y-2">
+<div class="flex items-center justify-between text-sm">
+<span>API Requests/min</span>
+<span class="font-bold" id="apiRequests">456</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span>Page Views/min</span>
+<span class="font-bold" id="pageViews">789</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<script>
+class SystemMonitoring {
+  constructor() {
+    this.init();
+    this.startMonitoring();
+  }
+
+  init() {
+    this.updateMetrics();
+  }
+
+  updateMetrics() {
+    // Simulate real-time metrics
+    const cpu = Math.floor(Math.random() * 30) + 30;
+    const memory = Math.floor(Math.random() * 20) + 55;
+    const disk = Math.floor(Math.random() * 10) + 73;
+    const network = (Math.random() * 0.5 + 0.8).toFixed(1);
+    const connections = Math.floor(Math.random() * 200) + 1100;
+    const apiRequests = Math.floor(Math.random() * 100) + 400;
+    const pageViews = Math.floor(Math.random() * 150) + 700;
+    
+    document.getElementById('cpuUsage').textContent = `${cpu}%`;
+    document.querySelector('#cpuUsage').nextElementSibling.querySelector('div').style.width = `${cpu}%`;
+    
+    document.getElementById('memoryUsage').textContent = `${memory}%`;
+    document.querySelector('#memoryUsage').nextElementSibling.querySelector('div').style.width = `${memory}%`;
+    
+    document.getElementById('diskUsage').textContent = `${disk}%`;
+    document.querySelector('#diskUsage').nextElementSibling.querySelector('div').style.width = `${disk}%`;
+    
+    document.getElementById('networkTraffic').textContent = `${network} GB/s`;
+    document.getElementById('activeConnections').textContent = connections.toLocaleString();
+    document.getElementById('apiRequests').textContent = apiRequests.toLocaleString();
+    document.getElementById('pageViews').textContent = pageViews.toLocaleString();
+  }
+
+  startMonitoring() {
+    setInterval(() => {
+      this.updateMetrics();
+    }, 5000);
+  }
+}
+
+function handleLogout(e) {
+  e.preventDefault();
+  if (confirm('Are you sure you want to logout?')) {
+    window.location.href = '../../index.html';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  new SystemMonitoring();
+});
+</script>
+</body>
+</html>
+

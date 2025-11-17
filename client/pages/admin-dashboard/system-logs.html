@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Logs - LMS Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#DC2626",
+          "secondary": "#1E3A8A",
+          "background-light": "#F3F4F6",
+          "background-dark": "#111827",
+          "text-light-primary": "#1F2937",
+          "text-light-secondary": "#6B7280",
+          "text-dark-primary": "#F9FAFB",
+          "text-dark-secondary": "#9CA3AF",
+          "border-light": "#E5E7EB",
+          "border-dark": "#374151",
+          "card-light": "#ffffff",
+          "card-dark": "#1F2937",
+        },
+        fontFamily: {
+          "display": ["Lexend", "sans-serif"]
+        },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
+  }
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-light-primary dark:text-dark-primary">
+<div class="flex h-screen w-full">
+<aside class="flex w-64 flex-col border-r border-border-light dark:border-border-dark bg-secondary text-white">
+<div class="flex h-16 items-center gap-3 px-6 border-b border-blue-800">
+<div class="text-primary size-8">
+<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>
+</div>
+<h1 class="text-xl font-bold">LMS Admin</h1>
+</div>
+<nav class="flex flex-1 flex-col gap-2 p-4">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="code.html">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-semibold">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="user-management.html">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-semibold">User Management</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="course-moderation.html">
+<span class="material-symbols-outlined">rate_review</span>
+<p class="text-sm font-semibold">Course Moderation</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="finance.html">
+<span class="material-symbols-outlined">payments</span>
+<p class="text-sm font-semibold">Finance</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="analytics.html">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-sm font-semibold">Analytics</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-white shadow-lg" href="system-logs.html">
+<span class="material-symbols-outlined fill">history</span>
+<p class="text-sm font-semibold">System Logs</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="monitoring.html">
+<span class="material-symbols-outlined">monitor_heart</span>
+<p class="text-sm font-semibold">Monitoring</p>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-2 p-4 border-t border-blue-800">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="settings.html">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-semibold">Settings</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#" onclick="handleLogout(event)">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-semibold">Logout</p>
+</a>
+</div>
+</aside>
+<main class="flex flex-1 flex-col overflow-y-auto">
+<header class="flex h-16 shrink-0 items-center justify-between border-b border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-6">
+<div class="flex-1">
+<label class="relative flex items-center max-w-sm">
+<span class="material-symbols-outlined absolute left-3 text-text-light-secondary dark:text-dark-secondary">search</span>
+<input id="searchInput" class="w-full rounded-full border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark py-2 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search logs..." type="search"/>
+</label>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-background-light dark:bg-background-dark text-text-light-secondary dark:text-dark-secondary hover:bg-primary/10 hover:text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeZgX-ScIZ6ZsUWgD8K0D_gcpKOEGl99hsnpYLUgKzWkDz9BtO2xYPD3WbXyGmTDYWtvNnN8TlR3HzI1zcVb5-w3o8Hjh0thVIxjSiLHRBaye8IrxS_2TwFvB-fbowRHr4NHi-V5vvm1Z2sazxTOUIU8CKddxVPOksqls65Ego3G7X6CcqknWQuXbqv7-iG6Fn7riN03i35tTL4bdD5n4I8zSNcVVUo8oEcyXK53bKZLpFBn4dXPg-ZS5z0youWw__xi2L9FELL0A");'></div>
+<div class="flex flex-col text-sm">
+<p class="font-bold text-text-light-primary dark:text-dark-primary">Admin Name</p>
+<p class="text-xs text-text-light-secondary dark:text-dark-secondary">Super Admin</p>
+</div>
+</div>
+</div>
+</header>
+<div class="flex-1 space-y-6 p-6 md:p-8">
+<div class="flex items-center justify-between">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight">System Logs</h1>
+<p class="text-text-light-secondary dark:text-dark-secondary mt-1">View all system activities and events</p>
+</div>
+<button id="clearLogsBtn" class="flex items-center gap-2 rounded-lg border border-red-500 px-4 py-2 text-red-500 font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+<span class="material-symbols-outlined">delete_sweep</span>
+Clear Logs
+</button>
+</div>
+<div class="flex gap-4 items-center">
+<select id="levelFilter" class="rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary">
+<option value="all">All Levels</option>
+<option value="info">Info</option>
+<option value="warning">Warning</option>
+<option value="error">Error</option>
+<option value="success">Success</option>
+</select>
+<select id="typeFilter" class="rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary">
+<option value="all">All Types</option>
+<option value="user">User Action</option>
+<option value="system">System Event</option>
+<option value="security">Security</option>
+<option value="payment">Payment</option>
+</select>
+</div>
+<div class="rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead class="bg-background-light dark:bg-background-dark text-left text-xs text-text-light-secondary dark:text-dark-secondary uppercase tracking-wider">
+<tr>
+<th class="px-6 py-3 font-bold">Timestamp</th>
+<th class="px-6 py-3 font-bold">Level</th>
+<th class="px-6 py-3 font-bold">Type</th>
+<th class="px-6 py-3 font-bold">Message</th>
+<th class="px-6 py-3 font-bold">User</th>
+</tr>
+</thead>
+<tbody id="logsTableBody" class="divide-y divide-border-light dark:divide-border-dark">
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<script>
+class SystemLogs {
+  constructor() {
+    this.logs = this.loadLogs();
+    this.filteredLogs = [...this.logs];
+    this.init();
+  }
+
+  init() {
+    this.renderLogs();
+    this.setupEventListeners();
+    this.startAutoRefresh();
+  }
+
+  loadLogs() {
+    const saved = localStorage.getItem('admin_logs');
+    if (saved) return JSON.parse(saved);
+    
+    return [
+      { id: 1, timestamp: new Date().toISOString(), level: 'info', type: 'user', message: 'User John Doe logged in successfully', user: 'John Doe' },
+      { id: 2, timestamp: new Date(Date.now() - 3600000).toISOString(), level: 'success', type: 'payment', message: 'Payment transaction completed: $49.99', user: 'Jane Smith' },
+      { id: 3, timestamp: new Date(Date.now() - 7200000).toISOString(), level: 'warning', type: 'security', message: 'Multiple failed login attempts detected', user: 'Mike Johnson' },
+      { id: 4, timestamp: new Date(Date.now() - 10800000).toISOString(), level: 'info', type: 'system', message: 'Course "Advanced React Patterns" approved', user: 'Admin' },
+      { id: 5, timestamp: new Date(Date.now() - 14400000).toISOString(), level: 'error', type: 'system', message: 'Database connection timeout', user: 'System' }
+    ];
+  }
+
+  saveLogs() {
+    localStorage.setItem('admin_logs', JSON.stringify(this.logs));
+  }
+
+  renderLogs() {
+    const tbody = document.getElementById('logsTableBody');
+    tbody.innerHTML = this.filteredLogs.map(log => {
+      const date = new Date(log.timestamp);
+      const timeStr = date.toLocaleString();
+      
+      return `
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <td class="px-6 py-4 whitespace-nowrap font-mono text-xs text-text-light-secondary dark:text-dark-secondary">${timeStr}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
+              log.level === 'error' ? 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300' :
+              log.level === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300' :
+              log.level === 'success' ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' :
+              'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300'
+            }">${log.level.toUpperCase()}</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">${log.type}</td>
+          <td class="px-6 py-4">${log.message}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${log.user}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  setupEventListeners() {
+    document.getElementById('searchInput').addEventListener('input', (e) => this.handleSearch(e));
+    document.getElementById('levelFilter').addEventListener('change', () => this.applyFilters());
+    document.getElementById('typeFilter').addEventListener('change', () => this.applyFilters());
+    document.getElementById('clearLogsBtn').addEventListener('click', () => this.clearLogs());
+  }
+
+  handleSearch(e) {
+    const query = e.target.value.toLowerCase();
+    this.applyFilters(query);
+  }
+
+  applyFilters(searchQuery = '') {
+    const levelFilter = document.getElementById('levelFilter').value;
+    const typeFilter = document.getElementById('typeFilter').value;
+    
+    this.filteredLogs = this.logs.filter(log => {
+      const matchesSearch = !searchQuery || 
+        log.message.toLowerCase().includes(searchQuery) ||
+        log.user.toLowerCase().includes(searchQuery);
+      const matchesLevel = levelFilter === 'all' || log.level === levelFilter;
+      const matchesType = typeFilter === 'all' || log.type === typeFilter;
+      
+      return matchesSearch && matchesLevel && matchesType;
+    });
+    
+    this.renderLogs();
+  }
+
+  clearLogs() {
+    if (!confirm('Are you sure you want to clear all logs?')) return;
+    
+    this.logs = [];
+    this.saveLogs();
+    this.applyFilters();
+    alert('Logs cleared successfully!');
+  }
+
+  startAutoRefresh() {
+    setInterval(() => {
+      const newLog = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        level: ['info', 'success', 'warning'][Math.floor(Math.random() * 3)],
+        type: ['user', 'system', 'payment'][Math.floor(Math.random() * 3)],
+        message: 'System activity logged',
+        user: 'System'
+      };
+      this.logs.unshift(newLog);
+      if (this.logs.length > 100) this.logs.pop();
+      this.saveLogs();
+      this.applyFilters();
+    }, 30000);
+  }
+}
+
+function handleLogout(e) {
+  e.preventDefault();
+  if (confirm('Are you sure you want to logout?')) {
+    window.location.href = '../../index.html';
+  }
+}
+
+let systemLogs;
+document.addEventListener('DOMContentLoaded', () => {
+  systemLogs = new SystemLogs();
+});
+</script>
+</body>
+</html>
+

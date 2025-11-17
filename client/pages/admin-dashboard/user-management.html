@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Management - LMS Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#DC2626",
+          "secondary": "#1E3A8A",
+          "background-light": "#F3F4F6",
+          "background-dark": "#111827",
+          "text-light-primary": "#1F2937",
+          "text-light-secondary": "#6B7280",
+          "text-dark-primary": "#F9FAFB",
+          "text-dark-secondary": "#9CA3AF",
+          "border-light": "#E5E7EB",
+          "border-dark": "#374151",
+          "card-light": "#ffffff",
+          "card-dark": "#1F2937",
+        },
+        fontFamily: {
+          "display": ["Lexend", "sans-serif"]
+        },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
+  }
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-light-primary dark:text-dark-primary">
+<div class="flex h-screen w-full">
+<aside class="flex w-64 flex-col border-r border-border-light dark:border-border-dark bg-secondary text-white">
+<div class="flex h-16 items-center gap-3 px-6 border-b border-blue-800">
+<div class="text-primary size-8">
+<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>
+</div>
+<h1 class="text-xl font-bold">LMS Admin</h1>
+</div>
+<nav class="flex flex-1 flex-col gap-2 p-4">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="code.html">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-semibold">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-white shadow-lg" href="user-management.html">
+<span class="material-symbols-outlined fill">group</span>
+<p class="text-sm font-semibold">User Management</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="course-moderation.html">
+<span class="material-symbols-outlined">rate_review</span>
+<p class="text-sm font-semibold">Course Moderation</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="finance.html">
+<span class="material-symbols-outlined">payments</span>
+<p class="text-sm font-semibold">Finance</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="analytics.html">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-sm font-semibold">Analytics</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="system-logs.html">
+<span class="material-symbols-outlined">history</span>
+<p class="text-sm font-semibold">System Logs</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="monitoring.html">
+<span class="material-symbols-outlined">monitor_heart</span>
+<p class="text-sm font-semibold">Monitoring</p>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-2 p-4 border-t border-blue-800">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="settings.html">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-semibold">Settings</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#" onclick="handleLogout(event)">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-semibold">Logout</p>
+</a>
+</div>
+</aside>
+<main class="flex flex-1 flex-col overflow-y-auto">
+<header class="flex h-16 shrink-0 items-center justify-between border-b border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-6">
+<div class="flex-1">
+<label class="relative flex items-center max-w-sm">
+<span class="material-symbols-outlined absolute left-3 text-text-light-secondary dark:text-dark-secondary">search</span>
+<input id="searchInput" class="w-full rounded-full border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark py-2 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search users..." type="search"/>
+</label>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-background-light dark:bg-background-dark text-text-light-secondary dark:text-dark-secondary hover:bg-primary/10 hover:text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeZgX-ScIZ6ZsUWgD8K0D_gcpKOEGl99hsnpYLUgKzWkDz9BtO2xYPD3WbXyGmTDYWtvNnN8TlR3HzI1zcVb5-w3o8Hjh0thVIxjSiLHRBaye8IrxS_2TwFvB-fbowRHr4NHi-V5vvm1Z2sazxTOUIU8CKddxVPOksqls65Ego3G7X6CcqknWQuXbqv7-iG6Fn7riN03i35tTL4bdD5n4I8zSNcVVUo8oEcyXK53bKZLpFBn4dXPg-ZS5z0youWw__xi2L9FELL0A");'></div>
+<div class="flex flex-col text-sm">
+<p class="font-bold text-text-light-primary dark:text-dark-primary">Admin Name</p>
+<p class="text-xs text-text-light-secondary dark:text-dark-secondary">Super Admin</p>
+</div>
+</div>
+</div>
+</header>
+<div class="flex-1 space-y-6 p-6 md:p-8">
+<div class="flex items-center justify-between">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight">User Management</h1>
+<p class="text-text-light-secondary dark:text-dark-secondary mt-1">Manage all users, roles, and permissions</p>
+</div>
+<button id="addUserBtn" class="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-white font-semibold hover:bg-red-700 transition-colors">
+<span class="material-symbols-outlined">person_add</span>
+Add User
+</button>
+</div>
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Total Users</p>
+<p class="text-3xl font-extrabold" id="totalUsers">1,234</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Active Users</p>
+<p class="text-3xl font-extrabold text-green-500" id="activeUsers">1,089</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Instructors</p>
+<p class="text-3xl font-extrabold text-blue-500" id="instructors">145</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Students</p>
+<p class="text-3xl font-extrabold text-purple-500" id="students">1,089</p>
+</div>
+</div>
+<div class="flex gap-4 items-center">
+<select id="roleFilter" class="rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary">
+<option value="all">All Roles</option>
+<option value="admin">Admin</option>
+<option value="instructor">Instructor</option>
+<option value="student">Student</option>
+</select>
+<select id="statusFilter" class="rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary">
+<option value="all">All Status</option>
+<option value="active">Active</option>
+<option value="inactive">Inactive</option>
+<option value="suspended">Suspended</option>
+</select>
+<button id="exportBtn" class="flex items-center gap-2 rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-4 py-2 text-sm font-semibold hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+<span class="material-symbols-outlined text-base">download</span>
+Export
+</button>
+</div>
+<div class="rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead class="bg-background-light dark:bg-background-dark text-left text-xs text-text-light-secondary dark:text-dark-secondary uppercase tracking-wider">
+<tr>
+<th class="px-6 py-3 font-bold">User</th>
+<th class="px-6 py-3 font-bold">Role</th>
+<th class="px-6 py-3 font-bold">Status</th>
+<th class="px-6 py-3 font-bold">Joined</th>
+<th class="px-6 py-3 font-bold">Last Active</th>
+<th class="px-6 py-3 font-bold">Actions</th>
+</tr>
+</thead>
+<tbody id="usersTableBody" class="divide-y divide-border-light dark:divide-border-dark">
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<script>
+class UserManagement {
+  constructor() {
+    this.users = this.loadUsers();
+    this.filteredUsers = [...this.users];
+    this.init();
+  }
+
+  init() {
+    this.renderUsers();
+    this.setupEventListeners();
+    this.updateStats();
+  }
+
+  loadUsers() {
+    const saved = localStorage.getItem('admin_users');
+    if (saved) return JSON.parse(saved);
+    
+    return [
+      { id: 1, name: 'John Doe', email: 'john.doe@example.com', role: 'student', status: 'active', joined: '2024-01-15', lastActive: '2 hours ago', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAcssMM4wedIRWm_Geo75iYvQAAxOnqCAp5dbvaBzrsrS-Zsv06VTyXnMAH5SEYm5U4CXiOJtxE_E03Xkm-1kDVXBcEXUuu1Ss3cv3IBAIYvJqWg8jaHqhO3Ad3vPFDqIZ2kVMUSgco2xfE5IvpVF74pjZ2P_xV_ZV2L77Ew4ZN9NCyghm0pmstLHi1HqO1dwqNILAssh22ZUhVvyNsQ0caUm5AXTv9-DDAZreTexPRHNrXMHJzAk_4PADHi2kUUEmBgLauqa3EbUA' },
+      { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com', role: 'instructor', status: 'active', joined: '2023-11-20', lastActive: '5 hours ago', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGrTHmQf9dUMLCAKVlCNR5IwZFKNPlP_I6Pd5o6YETB9VHGsGMv_giowUTs9D--M86FGud2YIOin1Y_hq2s5NjWdQTAqu5IGkCVycXMJD3dL1GUpDc3MumskZ5FC7GiW_FUeEaQvKxiIJh5_9oACcG9Jy7UHpXo-zNCnu2QBznh2GV3X8F2NVenIgBYkUz9oEiWugYEBq88ok7lpq0m2FNWUrOvTgs8atAc_RIOOJp_J7ZwxLjhBvIOlFIVxt-QqSU8LEhCr25GUM' },
+      { id: 3, name: 'Mike Johnson', email: 'mike.j@example.com', role: 'student', status: 'suspended', joined: '2024-02-10', lastActive: 'Yesterday', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyhx1NmZaN7wUBZYTWVfrMYkAMvMBsNYJqYtBi_AuNKYfwxT9SD4l_Il8D9v888SB-XD6cDHGQRZ0SaHeByVlKFSOtU5DrthY95e2epJTK02dEAlSmHVFm3JZtctslGf86MM1Qu0SE4QUIz_L7G9kjcn3h-OipY8wbgU4SGnYo7sHEkFSisimH9ZhwCtvL9TLY_7MIB7bmIqQ2AD_9YX4C9v9HBQajQXd-MKnwpaV-rLVZyASKVgHnQUcKrJm1KJZl65Khy6KNPzA' },
+      { id: 4, name: 'Sarah Williams', email: 'sarah.w@example.com', role: 'instructor', status: 'active', joined: '2023-09-05', lastActive: '1 hour ago', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAeZgX-ScIZ6ZsUWgD8K0D_gcpKOEGl99hsnpYLUgKzWkDz9BtO2xYPD3WbXyGmTDYWtvNnN8TlR3HzI1zcVb5-w3o8Hjh0thVIxjSiLHRBaye8IrxS_2TwFvB-fbowRHr4NHi-V5vvm1Z2sazxTOUIU8CKddxVPOksqls65Ego3G7X6CcqknWQuXbqv7-iG6Fn7riN03i35tTL4bdD5n4I8zSNcVVUo8oEcyXK53bKZLpFBn4dXPg-ZS5z0youWw__xi2L9FELL0A' },
+      { id: 5, name: 'David Brown', email: 'david.b@example.com', role: 'student', status: 'active', joined: '2024-03-01', lastActive: '30 minutes ago', avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAcssMM4wedIRWm_Geo75iYvQAAxOnqCAp5dbvaBzrsrS-Zsv06VTyXnMAH5SEYm5U4CXiOJtxE_E03Xkm-1kDVXBcEXUuu1Ss3cv3IBAIYvJqWg8jaHqhO3Ad3vPFDqIZ2kVMUSgco2xfE5IvpVF74pjZ2P_xV_ZV2L77Ew4ZN9NCyghm0pmstLHi1HqO1dwqNILAssh22ZUhVvyNsQ0caUm5AXTv9-DDAZreTexPRHNrXMHJzAk_4PADHi2kUUEmBgLauqa3EbUA' }
+    ];
+  }
+
+  saveUsers() {
+    localStorage.setItem('admin_users', JSON.stringify(this.users));
+  }
+
+  renderUsers() {
+    const tbody = document.getElementById('usersTableBody');
+    tbody.innerHTML = this.filteredUsers.map(user => `
+      <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+        <td class="px-6 py-4 whitespace-nowrap">
+          <div class="flex items-center gap-3">
+            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9" style='background-image: url("${user.avatar}");'></div>
+            <div>
+              <p class="font-bold">${user.name}</p>
+              <p class="text-xs text-text-light-secondary dark:text-dark-secondary">${user.email}</p>
+            </div>
+          </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
+            user.role === 'admin' ? 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300' :
+            user.role === 'instructor' ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300' :
+            'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300'
+          }">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
+            user.status === 'active' ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' :
+            user.status === 'suspended' ? 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300' :
+            'bg-gray-100 dark:bg-gray-900/50 text-gray-800 dark:text-gray-300'
+          }">${user.status.charAt(0).toUpperCase() + user.status.slice(1)}</span>
+        </td>
+        <td class="px-6 py-4 text-text-light-secondary dark:text-dark-secondary whitespace-nowrap">${user.joined}</td>
+        <td class="px-6 py-4 text-text-light-secondary dark:text-dark-secondary whitespace-nowrap">${user.lastActive}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <div class="flex items-center gap-2">
+            <button onclick="userMgmt.editUser(${user.id})" class="p-1 rounded-full hover:bg-background-light dark:hover:bg-background-dark text-text-light-secondary dark:text-dark-secondary" title="Edit">
+              <span class="material-symbols-outlined text-base">edit</span>
+            </button>
+            <button onclick="userMgmt.toggleStatus(${user.id})" class="p-1 rounded-full hover:bg-background-light dark:hover:bg-background-dark text-text-light-secondary dark:text-dark-secondary" title="${user.status === 'active' ? 'Suspend' : 'Activate'}">
+              <span class="material-symbols-outlined text-base">${user.status === 'active' ? 'block' : 'check_circle'}</span>
+            </button>
+            <button onclick="userMgmt.deleteUser(${user.id})" class="p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500" title="Delete">
+              <span class="material-symbols-outlined text-base">delete</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  updateStats() {
+    const total = this.users.length;
+    const active = this.users.filter(u => u.status === 'active').length;
+    const instructors = this.users.filter(u => u.role === 'instructor').length;
+    const students = this.users.filter(u => u.role === 'student').length;
+    
+    document.getElementById('totalUsers').textContent = total.toLocaleString();
+    document.getElementById('activeUsers').textContent = active.toLocaleString();
+    document.getElementById('instructors').textContent = instructors.toLocaleString();
+    document.getElementById('students').textContent = students.toLocaleString();
+  }
+
+  setupEventListeners() {
+    document.getElementById('searchInput').addEventListener('input', (e) => this.handleSearch(e));
+    document.getElementById('roleFilter').addEventListener('change', () => this.applyFilters());
+    document.getElementById('statusFilter').addEventListener('change', () => this.applyFilters());
+    document.getElementById('addUserBtn').addEventListener('click', () => this.showAddUserModal());
+    document.getElementById('exportBtn').addEventListener('click', () => this.exportUsers());
+  }
+
+  handleSearch(e) {
+    const query = e.target.value.toLowerCase();
+    this.applyFilters(query);
+  }
+
+  applyFilters(searchQuery = '') {
+    const roleFilter = document.getElementById('roleFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    
+    this.filteredUsers = this.users.filter(user => {
+      const matchesSearch = !searchQuery || 
+        user.name.toLowerCase().includes(searchQuery) ||
+        user.email.toLowerCase().includes(searchQuery);
+      const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+      const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+      
+      return matchesSearch && matchesRole && matchesStatus;
+    });
+    
+    this.renderUsers();
+  }
+
+  showAddUserModal() {
+    const name = prompt('Enter user name:');
+    if (!name) return;
+    const email = prompt('Enter user email:');
+    if (!email) return;
+    const role = prompt('Enter role (admin/instructor/student):');
+    if (!role) return;
+    
+    const newUser = {
+      id: Date.now(),
+      name,
+      email,
+      role: role.toLowerCase(),
+      status: 'active',
+      joined: new Date().toISOString().split('T')[0],
+      lastActive: 'Just now',
+      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAeZgX-ScIZ6ZsUWgD8K0D_gcpKOEGl99hsnpYLUgKzWkDz9BtO2xYPD3WbXyGmTDYWtvNnN8TlR3HzI1zcVb5-w3o8Hjh0thVIxjSiLHRBaye8IrxS_2TwFvB-fbowRHr4NHi-V5vvm1Z2sazxTOUIU8CKddxVPOksqls65Ego3G7X6CcqknWQuXbqv7-iG6Fn7riN03i35tTL4bdD5n4I8zSNcVVUo8oEcyXK53bKZLpFBn4dXPg-ZS5z0youWw__xi2L9FELL0A'
+    };
+    
+    this.users.push(newUser);
+    this.saveUsers();
+    this.applyFilters();
+    this.updateStats();
+    alert('User added successfully!');
+  }
+
+  editUser(id) {
+    const user = this.users.find(u => u.id === id);
+    if (!user) return;
+    
+    const newName = prompt('Enter new name:', user.name);
+    if (newName) user.name = newName;
+    
+    const newEmail = prompt('Enter new email:', user.email);
+    if (newEmail) user.email = newEmail;
+    
+    this.saveUsers();
+    this.applyFilters();
+  }
+
+  toggleStatus(id) {
+    const user = this.users.find(u => u.id === id);
+    if (!user) return;
+    
+    user.status = user.status === 'active' ? 'suspended' : 'active';
+    user.lastActive = 'Just now';
+    this.saveUsers();
+    this.applyFilters();
+    this.updateStats();
+  }
+
+  deleteUser(id) {
+    if (!confirm('Are you sure you want to delete this user?')) return;
+    
+    this.users = this.users.filter(u => u.id !== id);
+    this.saveUsers();
+    this.applyFilters();
+    this.updateStats();
+  }
+
+  exportUsers() {
+    const csv = [
+      ['Name', 'Email', 'Role', 'Status', 'Joined', 'Last Active'],
+      ...this.filteredUsers.map(u => [u.name, u.email, u.role, u.status, u.joined, u.lastActive])
+    ].map(row => row.join(',')).join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `users_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+}
+
+function handleLogout(e) {
+  e.preventDefault();
+  if (confirm('Are you sure you want to logout?')) {
+    window.location.href = '../../index.html';
+  }
+}
+
+let userMgmt;
+document.addEventListener('DOMContentLoaded', () => {
+  userMgmt = new UserManagement();
+});
+</script>
+</body>
+</html>
+

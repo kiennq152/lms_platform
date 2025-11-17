@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Finance - LMS Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#DC2626",
+          "secondary": "#1E3A8A",
+          "background-light": "#F3F4F6",
+          "background-dark": "#111827",
+          "text-light-primary": "#1F2937",
+          "text-light-secondary": "#6B7280",
+          "text-dark-primary": "#F9FAFB",
+          "text-dark-secondary": "#9CA3AF",
+          "border-light": "#E5E7EB",
+          "border-dark": "#374151",
+          "card-light": "#ffffff",
+          "card-dark": "#1F2937",
+        },
+        fontFamily: {
+          "display": ["Lexend", "sans-serif"]
+        },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
+  }
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-light-primary dark:text-dark-primary">
+<div class="flex h-screen w-full">
+<aside class="flex w-64 flex-col border-r border-border-light dark:border-border-dark bg-secondary text-white">
+<div class="flex h-16 items-center gap-3 px-6 border-b border-blue-800">
+<div class="text-primary size-8">
+<svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>
+</div>
+<h1 class="text-xl font-bold">LMS Admin</h1>
+</div>
+<nav class="flex flex-1 flex-col gap-2 p-4">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="code.html">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-semibold">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="user-management.html">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-semibold">User Management</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="course-moderation.html">
+<span class="material-symbols-outlined">rate_review</span>
+<p class="text-sm font-semibold">Course Moderation</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-white shadow-lg" href="finance.html">
+<span class="material-symbols-outlined fill">payments</span>
+<p class="text-sm font-semibold">Finance</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="analytics.html">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-sm font-semibold">Analytics</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="system-logs.html">
+<span class="material-symbols-outlined">history</span>
+<p class="text-sm font-semibold">System Logs</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="monitoring.html">
+<span class="material-symbols-outlined">monitor_heart</span>
+<p class="text-sm font-semibold">Monitoring</p>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-2 p-4 border-t border-blue-800">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="settings.html">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-semibold">Settings</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-gray-300 hover:bg-blue-800/60 hover:text-white transition-colors" href="#" onclick="handleLogout(event)">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-semibold">Logout</p>
+</a>
+</div>
+</aside>
+<main class="flex flex-1 flex-col overflow-y-auto">
+<header class="flex h-16 shrink-0 items-center justify-between border-b border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-6">
+<div class="flex-1">
+<label class="relative flex items-center max-w-sm">
+<span class="material-symbols-outlined absolute left-3 text-text-light-secondary dark:text-dark-secondary">search</span>
+<input id="searchInput" class="w-full rounded-full border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark py-2 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search transactions..." type="search"/>
+</label>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-background-light dark:bg-background-dark text-text-light-secondary dark:text-dark-secondary hover:bg-primary/10 hover:text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeZgX-ScIZ6ZsUWgD8K0D_gcpKOEGl99hsnpYLUgKzWkDz9BtO2xYPD3WbXyGmTDYWtvNnN8TlR3HzI1zcVb5-w3o8Hjh0thVIxjSiLHRBaye8IrxS_2TwFvB-fbowRHr4NHi-V5vvm1Z2sazxTOUIU8CKddxVPOksqls65Ego3G7X6CcqknWQuXbqv7-iG6Fn7riN03i35tTL4bdD5n4I8zSNcVVUo8oEcyXK53bKZLpFBn4dXPg-ZS5z0youWw__xi2L9FELL0A");'></div>
+<div class="flex flex-col text-sm">
+<p class="font-bold text-text-light-primary dark:text-dark-primary">Admin Name</p>
+<p class="text-xs text-text-light-secondary dark:text-dark-secondary">Super Admin</p>
+</div>
+</div>
+</div>
+</header>
+<div class="flex-1 space-y-6 p-6 md:p-8">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight">Finance Management</h1>
+<p class="text-text-light-secondary dark:text-dark-secondary mt-1">Track revenue, transactions, and financial reports</p>
+</div>
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Total Revenue</p>
+<p class="text-3xl font-extrabold text-green-500" id="totalRevenue">$125,430</p>
+<p class="text-sm font-bold text-green-500">+2.5% from last month</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">This Month</p>
+<p class="text-3xl font-extrabold" id="monthRevenue">$32,150</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Total Transactions</p>
+<p class="text-3xl font-extrabold text-blue-500" id="totalTransactions">1,234</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark p-5 shadow-sm">
+<p class="text-sm font-semibold text-text-light-secondary dark:text-dark-secondary">Pending Payouts</p>
+<p class="text-3xl font-extrabold text-yellow-500" id="pendingPayouts">$8,450</p>
+</div>
+</div>
+<div class="flex gap-4 items-center">
+<select id="periodFilter" class="rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary">
+<option value="all">All Time</option>
+<option value="today">Today</option>
+<option value="week">This Week</option>
+<option value="month">This Month</option>
+<option value="year">This Year</option>
+</select>
+<button id="exportBtn" class="flex items-center gap-2 rounded-lg border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark px-4 py-2 text-sm font-semibold hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+<span class="material-symbols-outlined text-base">download</span>
+Export Report
+</button>
+</div>
+<div class="rounded-xl border border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead class="bg-background-light dark:bg-background-dark text-left text-xs text-text-light-secondary dark:text-dark-secondary uppercase tracking-wider">
+<tr>
+<th class="px-6 py-3 font-bold">Transaction ID</th>
+<th class="px-6 py-3 font-bold">User</th>
+<th class="px-6 py-3 font-bold">Course</th>
+<th class="px-6 py-3 font-bold">Amount</th>
+<th class="px-6 py-3 font-bold">Status</th>
+<th class="px-6 py-3 font-bold">Date</th>
+<th class="px-6 py-3 font-bold">Actions</th>
+</tr>
+</thead>
+<tbody id="transactionsTableBody" class="divide-y divide-border-light dark:divide-border-dark">
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+
+<script>
+class FinanceManagement {
+  constructor() {
+    this.transactions = this.loadTransactions();
+    this.filteredTransactions = [...this.transactions];
+    this.init();
+  }
+
+  init() {
+    this.renderTransactions();
+    this.setupEventListeners();
+    this.updateStats();
+  }
+
+  loadTransactions() {
+    const saved = localStorage.getItem('admin_transactions');
+    if (saved) return JSON.parse(saved);
+    
+    return [
+      { id: 'TXN001', userId: 1, userName: 'John Doe', course: 'Introduction to Web Development', amount: 49.99, status: 'completed', date: '2024-01-15', method: 'Credit Card' },
+      { id: 'TXN002', userId: 2, userName: 'Jane Smith', course: 'Advanced React Patterns', amount: 79.99, status: 'completed', date: '2024-01-14', method: 'PayPal' },
+      { id: 'TXN003', userId: 3, userName: 'Mike Johnson', course: 'Python for Data Science', amount: 59.99, status: 'pending', date: '2024-01-20', method: 'Credit Card' },
+      { id: 'TXN004', userId: 4, userName: 'Sarah Williams', course: 'Machine Learning Basics', amount: 89.99, status: 'completed', date: '2024-01-18', method: 'Bank Transfer' },
+      { id: 'TXN005', userId: 5, userName: 'David Brown', course: 'UI/UX Design Fundamentals', amount: 39.99, status: 'refunded', date: '2024-01-10', method: 'Credit Card' }
+    ];
+  }
+
+  saveTransactions() {
+    localStorage.setItem('admin_transactions', JSON.stringify(this.transactions));
+  }
+
+  renderTransactions() {
+    const tbody = document.getElementById('transactionsTableBody');
+    tbody.innerHTML = this.filteredTransactions.map(txn => `
+      <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+        <td class="px-6 py-4 whitespace-nowrap font-mono text-xs">${txn.id}</td>
+        <td class="px-6 py-4 whitespace-nowrap">${txn.userName}</td>
+        <td class="px-6 py-4">${txn.course}</td>
+        <td class="px-6 py-4 whitespace-nowrap font-bold">$${txn.amount.toFixed(2)}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
+            txn.status === 'completed' ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' :
+            txn.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300' :
+            txn.status === 'refunded' ? 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300' :
+            'bg-gray-100 dark:bg-gray-900/50 text-gray-800 dark:text-gray-300'
+          }">${txn.status.charAt(0).toUpperCase() + txn.status.slice(1)}</span>
+        </td>
+        <td class="px-6 py-4 text-text-light-secondary dark:text-dark-secondary whitespace-nowrap">${txn.date}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <button onclick="financeMgmt.viewDetails('${txn.id}')" class="p-1 rounded-full hover:bg-background-light dark:hover:bg-background-dark text-text-light-secondary dark:text-dark-secondary" title="View Details">
+            <span class="material-symbols-outlined text-base">visibility</span>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  updateStats() {
+    const total = this.transactions.filter(t => t.status === 'completed').reduce((sum, t) => sum + t.amount, 0);
+    const monthTotal = this.transactions.filter(t => t.status === 'completed' && t.date.startsWith('2024-01')).reduce((sum, t) => sum + t.amount, 0);
+    const pending = this.transactions.filter(t => t.status === 'pending').reduce((sum, t) => sum + t.amount, 0);
+    
+    document.getElementById('totalRevenue').textContent = `$${total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    document.getElementById('monthRevenue').textContent = `$${monthTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    document.getElementById('totalTransactions').textContent = this.transactions.length;
+    document.getElementById('pendingPayouts').textContent = `$${pending.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  }
+
+  setupEventListeners() {
+    document.getElementById('searchInput').addEventListener('input', (e) => this.handleSearch(e));
+    document.getElementById('periodFilter').addEventListener('change', () => this.applyFilters());
+    document.getElementById('exportBtn').addEventListener('click', () => this.exportReport());
+  }
+
+  handleSearch(e) {
+    const query = e.target.value.toLowerCase();
+    this.applyFilters(query);
+  }
+
+  applyFilters(searchQuery = '') {
+    const periodFilter = document.getElementById('periodFilter').value;
+    const now = new Date();
+    
+    this.filteredTransactions = this.transactions.filter(txn => {
+      const matchesSearch = !searchQuery || 
+        txn.id.toLowerCase().includes(searchQuery) ||
+        txn.userName.toLowerCase().includes(searchQuery) ||
+        txn.course.toLowerCase().includes(searchQuery);
+      
+      let matchesPeriod = true;
+      if (periodFilter !== 'all') {
+        const txnDate = new Date(txn.date);
+        if (periodFilter === 'today') {
+          matchesPeriod = txnDate.toDateString() === now.toDateString();
+        } else if (periodFilter === 'week') {
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          matchesPeriod = txnDate >= weekAgo;
+        } else if (periodFilter === 'month') {
+          matchesPeriod = txnDate.getMonth() === now.getMonth() && txnDate.getFullYear() === now.getFullYear();
+        } else if (periodFilter === 'year') {
+          matchesPeriod = txnDate.getFullYear() === now.getFullYear();
+        }
+      }
+      
+      return matchesSearch && matchesPeriod;
+    });
+    
+    this.renderTransactions();
+  }
+
+  viewDetails(id) {
+    const txn = this.transactions.find(t => t.id === id);
+    if (!txn) return;
+    
+    alert(`Transaction Details:\n\nID: ${txn.id}\nUser: ${txn.userName}\nCourse: ${txn.course}\nAmount: $${txn.amount.toFixed(2)}\nStatus: ${txn.status}\nDate: ${txn.date}\nMethod: ${txn.method}`);
+  }
+
+  exportReport() {
+    const csv = [
+      ['Transaction ID', 'User', 'Course', 'Amount', 'Status', 'Date'],
+      ...this.filteredTransactions.map(t => [t.id, t.userName, t.course, t.amount, t.status, t.date])
+    ].map(row => row.join(',')).join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `finance_report_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+}
+
+function handleLogout(e) {
+  e.preventDefault();
+  if (confirm('Are you sure you want to logout?')) {
+    window.location.href = '../../index.html';
+  }
+}
+
+let financeMgmt;
+document.addEventListener('DOMContentLoaded', () => {
+  financeMgmt = new FinanceManagement();
+});
+</script>
+</body>
+</html>
+
