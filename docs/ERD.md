@@ -1,8 +1,9 @@
 # Entity Relationship Diagram (ERD)
 ## VIAN Academy Learning Management System
 
-**Document Version:** 1.0  
+**Document Version:** 1.1  
 **Date:** 2024-01-20  
+**Last Updated:** 2024-01-20  
 **Project:** VIAN Academy LMS Dashboard
 
 ---
@@ -45,6 +46,13 @@ This document describes the Entity Relationship Diagram (ERD) for the VIAN Acade
 - `avatar_url` - Profile picture URL
 - `phone` - Phone number
 - `bio` - User biography
+- `social_link` - Social media profile link
+- `email_verified` - Whether email is verified
+- `email_verification_token` - Email verification token
+- `email_verified_at` - Email verification timestamp
+- `admin_approved` - Whether account is approved by admin (for instructors)
+- `admin_approved_at` - Admin approval timestamp
+- `approved_by` (FK) - Reference to Users (admin who approved) - **Admin can create other admins**
 - `created_at` - Account creation timestamp
 - `updated_at` - Last update timestamp
 - `last_login` - Last login timestamp
@@ -53,15 +61,48 @@ This document describes the Entity Relationship Diagram (ERD) for the VIAN Acade
 - Email must be unique
 - Role must be one of: student, instructor, admin
 - Status must be one of: active, inactive, suspended
+- `approved_by` references `users(user_id)` - Allows admin to create/approve other admins
+
+**Role-Specific Information**:
+
+#### Students
+- Can enroll in courses
+- Can view course content after enrollment
+- Can track progress and earn certificates
+- Can participate in forums and reviews
+- Auto-approved (`admin_approved = true`)
+
+#### Instructors
+- **Course CRUD Operations**: Instructors can Create, Read, Update, and Delete their own courses
+  - **Create**: Instructors can create new courses via `/api/courses` (POST)
+  - **Read**: Instructors can view their courses via `/api/instructor/courses` (GET)
+  - **Update**: Instructors can update their courses via `/api/courses/:id` (PUT)
+  - **Delete**: Instructors can delete their courses via `/api/courses/:id` (DELETE)
+- Can manage course modules and lessons
+- Can upload course materials (videos, documents, exercises)
+- Can view student enrollments and analytics
+- Can track revenue and earnings
+- Require admin approval before login (`admin_approved = false` initially)
+- Can only modify courses they own (enforced by `instructor_id` foreign key)
+
+#### Admins
+- Can manage all users (create, edit, delete, suspend)
+- **Can create other admins**: Admins can create new admin accounts via `/api/users` (POST) with `role='admin'` and `approved_by` set to the creating admin's `user_id`
+- Can approve/reject instructor accounts
+- Can approve/reject course submissions
+- Can view system logs and monitoring
+- Can manage system settings
+- Can view financial reports and analytics
+- Full access to all system features
 
 ---
 
 ### 2.2 Courses Entity
-**Purpose**: Stores course information
+**Purpose**: Stores course information created by instructors
 
 **Attributes**:
 - `course_id` (PK) - Unique identifier
-- `instructor_id` (FK) - Reference to Users (instructor)
+- `instructor_id` (FK) - Reference to Users (instructor) - **Enforces ownership for CRUD operations**
 - `title` - Course title
 - `description` - Course description
 - `short_description` - Brief course summary
@@ -70,8 +111,8 @@ This document describes the Entity Relationship Diagram (ERD) for the VIAN Acade
 - `thumbnail_url` - Course thumbnail image
 - `status` - Course status (draft, pending, approved, rejected, published)
 - `rating` - Average rating (0-5)
-- `total_enrollments` - Number of enrollments
-- `total_lessons` - Total number of lessons
+- `total_enrollments` - Number of enrollments (auto-calculated)
+- `total_lessons` - Total number of lessons (auto-calculated)
 - `duration_hours` - Course duration in hours
 - `level` - Course level (beginner, intermediate, advanced)
 - `language` - Course language
@@ -83,6 +124,14 @@ This document describes the Entity Relationship Diagram (ERD) for the VIAN Acade
 - Price must be >= 0
 - Rating must be between 0 and 5
 - Status must be one of: draft, pending, approved, rejected, published
+- `instructor_id` references `users(user_id)` with `ON DELETE CASCADE` - Ensures instructor ownership
+
+**Instructor Course CRUD Operations**:
+- **Create**: Instructors create courses via API, `instructor_id` is automatically set to the authenticated instructor's `user_id`
+- **Read**: Instructors can read their own courses; admins can read all courses
+- **Update**: Instructors can only update courses where `instructor_id` matches their `user_id`; admins can update any course
+- **Delete**: Instructors can only delete courses where `instructor_id` matches their `user_id`; admins can delete any course
+- **Ownership Enforcement**: All CRUD operations check `instructor_id` to ensure instructors can only manage their own courses
 
 ---
 
@@ -345,7 +394,15 @@ This document describes the Entity Relationship Diagram (ERD) for the VIAN Acade
 ## 3. Relationship Descriptions
 
 ### 3.1 User Relationships
-- **Users → Courses** (One-to-Many): An instructor can create many courses
+- **Users → Courses** (One-to-Many): An instructor can create many courses (CRUD operations)
+  - **CRUD Enforcement**: `instructor_id` foreign key ensures instructors can only manage their own courses
+  - **Create**: Instructors create courses, `instructor_id` automatically set
+  - **Read**: Instructors read their courses via `/api/instructor/courses`
+  - **Update**: Instructors update courses where `instructor_id` matches
+  - **Delete**: Instructors delete courses where `instructor_id` matches
+- **Users → Users** (Self-referential via `approved_by`): Admins can create/approve other admins and instructors
+  - **Admin Creation**: When an admin creates another admin, `approved_by` is set to the creating admin's `user_id`
+  - **Instructor Approval**: When an admin approves an instructor, `approved_by` is set to the approving admin's `user_id`
 - **Users → Enrollments** (One-to-Many): A student can have many enrollments
 - **Users → Transactions** (One-to-Many): A student can have many transactions
 - **Users → Reviews** (One-to-Many): A student can write many reviews
@@ -353,6 +410,7 @@ This document describes the Entity Relationship Diagram (ERD) for the VIAN Acade
 - **Users → Forum Replies** (One-to-Many): A user can write many replies
 - **Users → System Logs** (One-to-Many): A user can have many log entries
 - **Users → Notifications** (One-to-Many): A user can have many notifications
+- **Users → Settings** (One-to-Many via `updated_by`): Admins can update system settings
 
 ### 3.2 Course Relationships
 - **Courses → Modules** (One-to-Many): A course has many modules
@@ -377,17 +435,22 @@ This document describes the Entity Relationship Diagram (ERD) for the VIAN Acade
 ## 4. ERD Diagram
 
 ```
-┌─────────────┐
-│    Users    │
-│─────────────│
-│ user_id (PK)│
-│ email       │
-│ password    │
-│ role        │
-│ status      │
-└──────┬──────┘
+┌─────────────────────────────────────────────────────────────┐
+│                         Users                               │
+│─────────────────────────────────────────────────────────────│
+│ user_id (PK)                                                 │
+│ email (UNIQUE)                                               │
+│ password_hash                                                │
+│ first_name, last_name                                        │
+│ role (student/instructor/admin)                             │
+│ status (active/inactive/suspended)                           │
+│ admin_approved (for instructors)                             │
+│ approved_by (FK → Users) ⭐ Admin can create admins          │
+└──────┬──────────────────────────────────────────────────────┘
        │
-       │ 1:N
+       │ 1:N (instructor_id)
+       │ ⭐ Instructor CRUD: Only manage courses where
+       │    instructor_id = user_id
        │
        ├─────────────────────────────────────────────┐
        │                                             │
@@ -395,27 +458,34 @@ This document describes the Entity Relationship Diagram (ERD) for the VIAN Acade
 ┌──────▼──────┐                              ┌──────▼──────┐
 │  Courses    │                              │ Enrollments │
 │─────────────│                              │─────────────│
-│ course_id   │                              │ enrollment_ │
+│ course_id   │                              │ enrollment_│
 │ instructor_ │◄────────────────────────────│ id          │
-│ id (FK)     │                              │ student_id  │
+│ id (FK) ⭐  │                              │ student_id  │
 │ title       │                              │ course_id   │
-│ price       │                              │ progress    │
+│ description │                              │ progress    │
+│ price       │                              │ status      │
 │ status      │                              └──────┬──────┘
+│ (draft/     │                                     │
+│ pending/    │                                     │ 1:1
+│ published)  │                                     │
 └──────┬──────┘                                     │
-       │                                            │ 1:1
-       │ 1:N                                       │
        │                                            │
+       │ 1:N                                       │
+       │                                           │
        ├──────────────┐                   ┌────────▼────────┐
        │              │                   │  Certificates   │
 ┌──────▼──────┐  ┌────▼──────┐            │─────────────────│
 │  Modules    │  │ Lessons   │            │ certificate_id  │
 │─────────────│  │───────────│            │ enrollment_id   │
-│ module_id   │  │ lesson_id │            └─────────────────┘
-│ course_id   │  │ module_id │
-│ title       │  │ title     │
-└──────┬──────┘  │ video_url │
+│ module_id   │  │ lesson_id │            │ certificate_num │
+│ course_id   │  │ module_id │            │ issued_date     │
+│ title       │  │ title     │            └─────────────────┘
+│ order_index │  │ content_  │
+└──────┬──────┘  │ type      │
+       │         │ content_  │
+       │ 1:N     │ data      │
+       │         │ order_idx │
        │         └───────────┘
-       │ 1:N
        │
 ┌──────▼──────┐
 │Lesson Progress│
@@ -424,26 +494,26 @@ This document describes the Entity Relationship Diagram (ERD) for the VIAN Acade
 │ enrollment_id│
 │ lesson_id    │
 │ is_completed │
+│ watch_time   │
+│ last_position│
 └──────────────┘
 
-┌─────────────┐
-│Transactions │
-│─────────────│
-│ transaction │
-│ _id (PK)    │
-│ student_id  │
-│ course_id   │
-│ amount      │
+┌─────────────┐         ┌─────────────┐
+│Transactions │         │  Categories │
+│─────────────│         │─────────────│
+│ transaction │         │ category_id │
+│ _id (PK)    │         │ name        │
+│ student_id  │         │ slug        │
+│ course_id   │         │ parent_id   │
+│ amount      │         └─────────────┘
 │ status      │
 └─────────────┘
 
-┌─────────────┐
-│  Categories │
-│─────────────│
-│ category_id │
-│ name        │
-│ parent_id   │
-└─────────────┘
+⭐ Key Relationships:
+- Users → Courses: Instructor CRUD (instructor_id enforces ownership)
+- Users → Users: Admin can create admins (approved_by tracks creator)
+- Courses → Modules → Lessons: Hierarchical course structure
+- Enrollments → Certificates: One certificate per completed course
 ```
 
 ---
@@ -454,16 +524,121 @@ See `database/schema.sql` for the complete SQL schema definition.
 
 ### 5.1 Key Relationships Summary
 
-| Parent Entity | Child Entity | Relationship Type | Foreign Key |
-|---------------|--------------|-------------------|-------------|
-| Users | Courses | One-to-Many | instructor_id |
-| Users | Enrollments | One-to-Many | student_id |
-| Users | Transactions | One-to-Many | student_id |
-| Courses | Modules | One-to-Many | course_id |
-| Modules | Lessons | One-to-Many | module_id |
-| Enrollments | Lesson Progress | One-to-Many | enrollment_id |
-| Enrollments | Certificates | One-to-One | enrollment_id |
-| Courses | Categories | Many-to-One | category_id |
+| Parent Entity | Child Entity | Relationship Type | Foreign Key | Notes |
+|---------------|--------------|-------------------|-------------|-------|
+| Users | Courses | One-to-Many | instructor_id | **Instructor CRUD**: Instructors can only manage courses where `instructor_id` matches their `user_id` |
+| Users | Users | Self-referential | approved_by | **Admin Creation**: Admins can create other admins; `approved_by` tracks the creating admin |
+| Users | Enrollments | One-to-Many | student_id | Students enroll in courses |
+| Users | Transactions | One-to-Many | student_id | Students make payments |
+| Courses | Modules | One-to-Many | course_id | Courses contain modules |
+| Modules | Lessons | One-to-Many | module_id | Modules contain lessons |
+| Enrollments | Lesson Progress | One-to-Many | enrollment_id | Track progress per lesson |
+| Enrollments | Certificates | One-to-One | enrollment_id | One certificate per completed enrollment |
+| Courses | Categories | Many-to-One | category_id | Courses belong to categories |
+
+### 5.2 Role-Based Access Control
+
+#### Instructor Permissions
+- **Course CRUD**: Full CRUD operations on courses where `instructor_id = user_id`
+  - Create: `POST /api/courses` (sets `instructor_id` automatically)
+  - Read: `GET /api/instructor/courses` (filters by `instructor_id`)
+  - Update: `PUT /api/courses/:id` (validates `instructor_id` matches)
+  - Delete: `DELETE /api/courses/:id` (validates `instructor_id` matches)
+- **Module/Lesson Management**: Can create/update modules and lessons for their courses
+- **Student Management**: Can view students enrolled in their courses
+- **Analytics**: Can view revenue and analytics for their courses only
+
+#### Admin Permissions
+- **User Management**: Full CRUD on all users
+  - **Admin Creation**: Can create new admin accounts via `POST /api/users` with `role='admin'` and `approved_by=admin_user_id`
+  - **Instructor Approval**: Can approve/reject instructors via `POST /api/users/:id/approve`
+- **Course Moderation**: Can approve/reject courses, edit any course
+- **System Management**: Can manage settings, view logs, monitor system
+- **Financial Reports**: Can view all financial data
+
+#### Student Permissions
+- **Course Enrollment**: Can enroll in published courses
+- **Progress Tracking**: Can track their own progress
+- **Certificates**: Can view/download their certificates
+- **Community**: Can participate in forums and reviews
+
+---
+
+## 6. Access Control and Permissions
+
+### 6.1 Instructor Course CRUD Operations
+
+Instructors have full CRUD (Create, Read, Update, Delete) capabilities for courses they own:
+
+**Database-Level Enforcement**:
+- `courses.instructor_id` foreign key references `users.user_id`
+- `ON DELETE CASCADE` ensures courses are deleted when instructor is deleted
+- Index on `instructor_id` for efficient queries
+
+**API-Level Enforcement**:
+- **Create**: `POST /api/courses` - `instructor_id` automatically set from authenticated user
+- **Read**: `GET /api/instructor/courses` - Filters by `instructor_id = req.user.user_id`
+- **Update**: `PUT /api/courses/:id` - Validates `instructor_id` matches before update
+- **Delete**: `DELETE /api/courses/:id` - Validates `instructor_id` matches before delete
+
+**Example SQL Queries**:
+```sql
+-- Create course (instructor_id set automatically)
+INSERT INTO courses (instructor_id, title, description, price, ...)
+VALUES ($instructor_id, $title, $description, $price, ...);
+
+-- Read instructor's courses
+SELECT * FROM courses WHERE instructor_id = $instructor_id;
+
+-- Update course (with ownership check)
+UPDATE courses SET title = $title, ...
+WHERE course_id = $course_id AND instructor_id = $instructor_id;
+
+-- Delete course (with ownership check)
+DELETE FROM courses 
+WHERE course_id = $course_id AND instructor_id = $instructor_id;
+```
+
+### 6.2 Admin Creation by Admin
+
+Admins can create other admin accounts:
+
+**Database Schema**:
+- `users.approved_by` foreign key references `users(user_id)`
+- When admin creates another admin: `approved_by` = creating admin's `user_id`
+- `admin_approved` set to `true` for admin accounts
+
+**API Endpoint**:
+- `POST /api/users` - Admin can create users with `role='admin'`
+- `approved_by` field tracks which admin created/approved the account
+
+**Example**:
+```sql
+-- Admin creates another admin
+INSERT INTO users (email, password_hash, first_name, last_name, role, admin_approved, approved_by)
+VALUES ($email, $hash, $first, $last, 'admin', TRUE, $creating_admin_id);
+```
+
+**Workflow**:
+1. Admin A creates Admin B via API
+2. `approved_by` = Admin A's `user_id`
+3. `admin_approved` = `true` (admins are auto-approved)
+4. Admin B can immediately login and has full admin privileges
+
+### 6.3 Instructor Approval Workflow
+
+1. User registers as instructor → `admin_approved = false`
+2. Admin reviews and approves → `admin_approved = true`, `approved_by` = admin's `user_id`
+3. Instructor can now login and create courses
+
+---
+
+## 7. Change History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2024-01-20 | Initial ERD Document |
+| 1.1 | 2024-01-20 | Added instructor CRUD details, admin creation by admin, role-based permissions |
 
 ---
 

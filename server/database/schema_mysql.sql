@@ -41,9 +41,17 @@ CREATE TABLE users (
     avatar_url TEXT,
     phone VARCHAR(20),
     bio TEXT,
+    email_verified BOOLEAN DEFAULT FALSE,
+    email_verification_token VARCHAR(255),
+    email_verified_at TIMESTAMP NULL,
+    admin_approved BOOLEAN DEFAULT FALSE,
+    admin_approved_at TIMESTAMP NULL,
+    approved_by INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     last_login TIMESTAMP NULL,
+    
+    FOREIGN KEY (approved_by) REFERENCES users(user_id) ON DELETE SET NULL,
     
     INDEX idx_email (email),
     INDEX idx_role (role),
@@ -377,6 +385,23 @@ CREATE TABLE notifications (
     INDEX idx_user (user_id),
     INDEX idx_read (is_read),
     INDEX idx_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- 17. EMAIL VERIFICATION TOKENS TABLE
+-- =====================================================
+CREATE TABLE email_verification_tokens (
+    token_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) UNIQUE NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    used_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_token (token),
+    INDEX idx_user (user_id),
+    INDEX idx_expires (expires_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================

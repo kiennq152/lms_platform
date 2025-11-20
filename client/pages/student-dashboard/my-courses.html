@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Khóa học của tôi - VIAN Academy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#1E3A8A",
+          "accent": "#DC2626",
+          "background-light": "#F8F9FA",
+          "background-dark": "#101922",
+          "text-primary-light": "#1F2937",
+          "text-primary-dark": "#F8F9FA",
+          "text-secondary-light": "#6B7280",
+          "text-secondary-dark": "#A9B1B9",
+          "card-light": "#FFFFFF",
+          "card-dark": "#182431",
+          "border-light": "#E9ECEF",
+          "border-dark": "#2A3B4D",
+        },
+        fontFamily: {
+          "display": ["Lexend", "sans-serif"]
+        },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
+  }
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-primary-light dark:text-text-primary-dark">
+<div class="relative flex min-h-screen w-full">
+<aside class="sticky top-0 flex h-screen flex-col border-r border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark w-64 p-4">
+<div class="flex items-center gap-2 px-2 pb-6">
+<span class="material-symbols-outlined text-primary text-3xl">school</span>
+<h1 class="text-xl font-bold text-text-primary-light dark:text-text-primary-dark">VIAN Academy</h1>
+</div>
+<div class="flex flex-col justify-between h-full">
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="code.html">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-medium">Bảng điều khiển</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary" href="my-courses.html">
+<span class="material-symbols-outlined fill">import_contacts</span>
+<p class="text-sm font-medium">Khóa học của tôi</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="certificates.html">
+<span class="material-symbols-outlined">workspace_premium</span>
+<p class="text-sm font-medium">Chứng chỉ</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="../../community/index.html">
+<span class="material-symbols-outlined">forum</span>
+<p class="text-sm font-medium">Diễn đàn</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="payments.html">
+<span class="material-symbols-outlined">credit_card</span>
+<p class="text-sm font-medium">Thanh toán</p>
+</a>
+</div>
+<div class="flex flex-col gap-1 border-t border-border-light dark:border-border-dark pt-4">
+<div class="flex items-center gap-3 px-3 py-2" id="userProfile">
+<div class="bg-primary text-white rounded-full size-10 flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-sm font-medium leading-normal text-text-primary-light dark:text-text-primary-dark" id="userName">Loading...</h1>
+<p class="text-xs font-normal leading-normal text-text-secondary-light dark:text-text-secondary-dark" id="userEmail">Loading...</p>
+</div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="../../profile-settings/code.html">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium leading-normal">Cài đặt</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="../../support/index.html">
+<span class="material-symbols-outlined">help</span>
+<p class="text-sm font-medium leading-normal">Hỗ trợ</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-500/10" href="#" id="logoutBtn">
+<span class="material-symbols-outlined">logout</span>
+<p class="text-sm font-medium leading-normal">Đăng xuất</p>
+</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 p-6 lg:p-8">
+<div class="max-w-7xl mx-auto">
+<header class="flex flex-wrap justify-between items-center gap-4 mb-8">
+<div class="flex flex-col gap-1">
+<h1 class="text-3xl font-bold tracking-tight text-text-primary-light dark:text-text-primary-dark">Khóa học của tôi</h1>
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Quản lý và theo dõi tiến độ học tập của bạn</p>
+</div>
+<a href="../../course-catalog/index.html" class="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-base">add</span>
+Khám phá khóa học
+</a>
+</header>
+
+<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark">
+<div class="p-5">
+<h2 class="text-xl font-extrabold text-text-primary-light dark:text-text-primary-dark bg-primary text-white inline-block px-4 py-2 -ml-1 mb-4" style="clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%);">KHÓA HỌC CỦA TÔI</h2>
+</div>
+<div class="flex px-5 pb-4">
+<div class="flex h-11 w-full max-w-md items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 p-1.5 gap-1.5">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded px-2 has-[:checked]:bg-accent has-[:checked]:text-white text-text-secondary-light dark:text-text-secondary-dark has-[:checked]:font-bold text-sm transition-all duration-300">
+<span class="truncate">Đang tiến hành</span>
+<input checked="" class="invisible w-0" name="course-status" type="radio" value="active" id="filterActive"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded px-2 has-[:checked]:bg-accent has-[:checked]:text-white text-text-secondary-light dark:text-text-secondary-dark has-[:checked]:font-bold text-sm transition-all duration-300">
+<span class="truncate">Đã hoàn thành</span>
+<input class="invisible w-0" name="course-status" type="radio" value="completed" id="filterCompleted"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded px-2 has-[:checked]:bg-accent has-[:checked]:text-white text-text-secondary-light dark:text-text-secondary-dark has-[:checked]:font-bold text-sm transition-all duration-300">
+<span class="truncate">Tất cả</span>
+<input class="invisible w-0" name="course-status" type="radio" value="all" id="filterAll"/>
+</label>
+</div>
+</div>
+<div id="coursesContainer" class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5 pt-0">
+<div class="flex items-center justify-center py-12">
+<div class="text-center">
+<span class="material-symbols-outlined text-6xl text-text-secondary-light dark:text-text-secondary-dark mb-4">hourglass_empty</span>
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Đang tải khóa học...</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<script src="../../js/api.js"></script>
+<script>
+class MyCoursesManager {
+  constructor() {
+    this.api = null;
+    this.enrollments = [];
+    this.currentFilter = 'active';
+    this.init();
+  }
+
+  async init() {
+    await this.waitForAPI();
+    await this.loadUserInfo();
+    await this.loadEnrollments();
+    this.setupEventListeners();
+  }
+
+  async waitForAPI() {
+    return new Promise((resolve) => {
+      if (window.api) {
+        this.api = window.api;
+        resolve();
+      } else {
+        let attempts = 0;
+        const maxAttempts = 20;
+        const checkInterval = setInterval(() => {
+          attempts++;
+          if (window.api) {
+            this.api = window.api;
+            clearInterval(checkInterval);
+            resolve();
+          } else if (attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+            console.error('API service failed to load');
+            resolve();
+          }
+        }, 200);
+      }
+    });
+  }
+
+  async loadUserInfo() {
+    try {
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        document.getElementById('userName').textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User';
+        document.getElementById('userEmail').textContent = user.email || '';
+      } else if (this.api && this.api.getCurrentUser) {
+        const userData = await this.api.getCurrentUser();
+        if (userData && userData.user) {
+          document.getElementById('userName').textContent = `${userData.user.first_name || ''} ${userData.user.last_name || ''}`.trim() || 'User';
+          document.getElementById('userEmail').textContent = userData.user.email || '';
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user info:', error);
+    }
+  }
+
+  async loadEnrollments() {
+    try {
+      if (!this.api) {
+        throw new Error('API not available');
+      }
+
+      const response = await this.api.getEnrollments();
+      this.enrollments = response.enrollments || [];
+      this.renderCourses();
+    } catch (error) {
+      console.error('Error loading enrollments:', error);
+      document.getElementById('coursesContainer').innerHTML = `
+        <div class="col-span-full flex items-center justify-center py-12">
+          <div class="text-center">
+            <span class="material-symbols-outlined text-6xl text-red-500 mb-4">error</span>
+            <p class="text-text-secondary-light dark:text-text-secondary-dark">Không thể tải khóa học. Vui lòng thử lại.</p>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  setupEventListeners() {
+    // Filter buttons
+    document.getElementById('filterActive')?.addEventListener('change', () => {
+      this.currentFilter = 'active';
+      this.renderCourses();
+    });
+    document.getElementById('filterCompleted')?.addEventListener('change', () => {
+      this.currentFilter = 'completed';
+      this.renderCourses();
+    });
+    document.getElementById('filterAll')?.addEventListener('change', () => {
+      this.currentFilter = 'all';
+      this.renderCourses();
+    });
+
+    // Logout
+    document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.handleLogout();
+    });
+  }
+
+  renderCourses() {
+    const container = document.getElementById('coursesContainer');
+    
+    let filtered = this.enrollments;
+    if (this.currentFilter === 'active') {
+      filtered = this.enrollments.filter(e => e.status === 'active' && (e.progress_percentage || 0) < 100);
+    } else if (this.currentFilter === 'completed') {
+      filtered = this.enrollments.filter(e => e.status === 'completed' || (e.progress_percentage || 0) >= 100);
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="col-span-full flex items-center justify-center py-12">
+          <div class="text-center">
+            <span class="material-symbols-outlined text-6xl text-text-secondary-light dark:text-text-secondary-dark mb-4">book</span>
+            <p class="text-text-secondary-light dark:text-text-secondary-dark">Chưa có khóa học nào.</p>
+            <a href="../../course-catalog/index.html" class="mt-4 inline-block bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+              Khám phá khóa học
+            </a>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.map(enrollment => {
+      const progress = Math.round(enrollment.progress_percentage || 0);
+      const thumbnail = enrollment.thumbnail_url || 'https://via.placeholder.com/400x225?text=Course';
+      
+      return `
+        <div class="flex flex-col gap-3 cursor-pointer group" onclick="window.location.href='../../course-player/index.html?course=${enrollment.course_id}&enrollment=${enrollment.enrollment_id}'">
+          <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg group-hover:opacity-90 transition-opacity" style="background-image: url('${thumbnail}')"></div>
+          <div class="flex flex-col gap-1.5">
+            <p class="font-bold leading-tight">${enrollment.course_title || 'Khóa học'}</p>
+            ${enrollment.instructor_name ? `<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Bởi ${enrollment.instructor_name}</p>` : ''}
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div class="bg-primary h-2 rounded-full transition-all" style="width: ${progress}%"></div>
+            </div>
+            <p class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">Đã hoàn thành ${progress}%</p>
+            <button class="mt-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors w-full">
+              Tiếp tục học
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  handleLogout() {
+    if (confirm('Bạn có chắc muốn đăng xuất?')) {
+      if (this.api && this.api.logout) {
+        this.api.logout();
+      }
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('authToken');
+      window.location.href = '../../pages/auth/login.html';
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  new MyCoursesManager();
+});
+</script>
+</body>
+</html>
+
+

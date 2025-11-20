@@ -58,23 +58,27 @@
 </div>
 <div class="flex flex-col justify-between h-full">
 <div class="flex flex-col gap-2">
-<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary" href="#">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary" href="code.html">
 <span class="material-symbols-outlined fill">dashboard</span>
 <p class="text-sm font-medium">Bảng điều khiển</p>
 </a>
-<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
-<span class="material-symbols-outlined">import_contacts</span>
-<p class="text-sm font-medium">Khóa học của tôi</p>
-</a>
-<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
-<span class="material-symbols-outlined">workspace_premium</span>
-<p class="text-sm font-medium">Chứng chỉ</p>
-</a>
-<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="my-courses.html">
+                <span class="material-symbols-outlined">import_contacts</span>
+                <p class="text-sm font-medium">Khóa học của tôi</p>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="../../course-catalog/index.html">
+                <span class="material-symbols-outlined">search</span>
+                <p class="text-sm font-medium">Danh mục khóa học</p>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="certificates.html">
+                <span class="material-symbols-outlined">workspace_premium</span>
+                <p class="text-sm font-medium">Chứng chỉ</p>
+            </a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="../../community/index.html">
 <span class="material-symbols-outlined">forum</span>
 <p class="text-sm font-medium">Diễn đàn</p>
 </a>
-<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="payments.html">
 <span class="material-symbols-outlined">credit_card</span>
 <p class="text-sm font-medium">Thanh toán</p>
 </a>
@@ -87,15 +91,15 @@
 <p class="text-xs font-normal leading-normal text-text-secondary-light dark:text-text-secondary-dark">minhanh@email.com</p>
 </div>
 </div>
-<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="../../profile-settings/code.html">
 <span class="material-symbols-outlined">settings</span>
 <p class="text-sm font-medium leading-normal">Cài đặt</p>
 </a>
-<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="#">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" href="../../support/index.html">
 <span class="material-symbols-outlined">help</span>
 <p class="text-sm font-medium leading-normal">Hỗ trợ</p>
 </a>
-<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-500/10" href="#">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-500/10" href="#" id="logoutBtn">
 <span class="material-symbols-outlined">logout</span>
 <p class="text-sm font-medium leading-normal">Đăng xuất</p>
 </a>
@@ -114,10 +118,10 @@
 <span class="material-symbols-outlined">notifications</span>
 <span class="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-background-light dark:ring-background-dark"></span>
 </button>
-<button class="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors">
+                        <a href="../../course-catalog/index.html" class="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors">
 <span class="material-symbols-outlined text-base">add</span>
                              Khám phá khóa học
-                        </button>
+                        </a>
 </div>
 </header>
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -138,59 +142,26 @@
 </label>
 </div>
 </div>
-<div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5 pt-0">
-<div class="flex flex-col gap-3">
-<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg" data-alt="Course thumbnail for Advanced UX Design" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDowZiNNA73OtOmWq59kzIo6zk7oDhVJSljswxPSCjKme3oOtwBGIVJFtSEPUOdaKXjKcQTXRDntRetoqMYBT_mgs34Qm1DaZPRGShjZ_EqpxPj77t7oT31LCLdZscO6NpyZTsSmnIWx4-DNynvGP2bmB1z0dp4WyCzQdJCWCZZXv4nyQvK1oRQCPgEMdRGWWcj8XsM0GMdrvJc983aWoMneGlnzDdEyqItgAycZKKKepa0Lblp6kuZOZ-f0nhNUothtDAQVBKSBRg");'></div>
-<div class="flex flex-col gap-1.5">
-<p class="font-bold leading-tight">Thiết kế UX Nâng cao</p>
-<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-<div class="bg-primary h-2 rounded-full" style="width: 65%"></div>
-</div>
-<p class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">Đã hoàn thành 65%</p>
-</div>
-</div>
-<div class="flex flex-col gap-3">
-<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg" data-alt="Course thumbnail for Data Science with Python" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAz5T72BTcqNvO2Kc9a5N-nZBmyOWIyYfLXggf_FOQbVG0MD9smEMRhI82J4vF4nn26Vnym053bPLfQ5lMGzXetmcJfHr-JFhASxjYqfTowBIDxvAJWkHZozfQxi9VXg8abfoOE6UP_u_JjAMQJPLzawtcDCBh1PStI3680Kocy8OwMphKalN1ivFpLL6O0Peb0RvlHLNkOunhuspDNuNzX4HB2rOHfkt0Ep9cxjjvxmovtKTE5NDIYV06Cv1y9BxzLXRTzBUeQKeo");'></div>
-<div class="flex flex-col gap-1.5">
-<p class="font-bold leading-tight">Khoa học Dữ liệu với Python</p>
-<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-<div class="bg-primary h-2 rounded-full" style="width: 30%"></div>
-</div>
-<p class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">Đã hoàn thành 30%</p>
-</div>
-</div>
-<div class="flex flex-col gap-3">
-<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg" data-alt="Course thumbnail for Digital Marketing Fundamentals" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC8pywUwU_TnI1FnhVhLvoz9_wB4uNp6bYNa5Qmoeawbq2MFDID5BcwERdXR_ILZOhMf1mQFHyAMQID06KeS-U1eWMbP3YhbEIvK9BDCTgIOwFukGsj-1N3xHi4l-4fx5aM2WDCmWeMTN62OSHp5nRPSc05YojouWIVyCRF4oIu-7qZFdxEOVaQd7Fs6Es0sA4BkiXZ2YvBl9wM4wzPxKSeYDyzFaCZrcbjy8eG2BligieU5A6lhhwlXppqQNXE8WltV6wpbnUQ-uo");'></div>
-<div class="flex flex-col gap-1.5">
-<p class="font-bold leading-tight">Marketing Kỹ thuật số Cơ bản</p>
-<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-<div class="bg-primary h-2 rounded-full" style="width: 80%"></div>
-</div>
-<p class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">Đã hoàn thành 80%</p>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 p-5 pt-0" id="myCoursesGrid">
+<div class="col-span-full flex items-center justify-center py-12">
+<div class="text-center">
+<span class="material-symbols-outlined text-6xl text-text-secondary-light dark:text-text-secondary-dark mb-4">hourglass_empty</span>
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Đang tải khóa học...</p>
 </div>
 </div>
 </div>
 </div>
-<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark p-5">
-<h2 class="text-xl font-extrabold mb-4 text-text-primary-light dark:text-text-primary-dark">KHÓA HỌC ĐỀ XUẤT</h2>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-<div class="flex flex-col gap-2 p-2 rounded-lg border border-border-light dark:border-border-dark">
-<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-md" data-alt="Abstract gradient image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAZp67uNX-dfQY8Gddi8Tt5E6V3DEfa4QyrkfX6-OlVdCGHtIjL1SIhM_3FJXX9n_snUOFGJ0I1RGwmBLdVmMtMXy3LNzM0E4zwjNKgsmKEhAp8ufrvr5i48RdPFZBtyoB1sdR1jOlupIy80pLy4s2Xwoox4GCNFqM7hq0kTp68gYcLXIf5og8o_QV-JWJ7LA5UYkIhwl2J6rarzhBvXXdj1XR1J2v3g4JbWNFj-GnPkoxYXplVMsrzJh_FVigtXtriXiny2_GP7sY");'></div>
-<p class="font-bold text-sm">Lập trình ReactJS từ A-Z</p>
-<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Bởi John Doe</p>
-</div>
-<div class="flex flex-col gap-2 p-2 rounded-lg border border-border-light dark:border-border-dark">
-<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-md" data-alt="Abstract gradient image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAcKNdn2RNaAivAvQX7Q4Wh0IIDIfNbsTRW3LioACPYV2jL-qpaDobgbZCU9da9S-ahXl35lkK_KNHJGvtrFGxhlxmdPAtWv3nDaB7DdF9-QeGnaY7H_tq6oZt2rQQ-aYsbzJXvTid8dv7M2nhGFH64KOgxB8G21RTH32fzPWqerRDNVsSCJKC4PlFZH9zjFMbWjlN83VTQwQ6ajB0iXEafDxq4mHOzF-74t2vmViIP3aetKh-niUT6QQAFwKjBPyDBcYYg3VQ60C8");'></div>
-<p class="font-bold text-sm">Quản lý dự án Agile</p>
-<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Bởi Jane Smith</p>
-</div>
-<div class="flex flex-col gap-2 p-2 rounded-lg border border-border-light dark:border-border-dark">
-<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-md" data-alt="Abstract gradient image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAzPVKchDZeL_0Xmkhfi1KYmVR4Iw19FvoEAxuAiDFQXz_XsRNVMQtCa5hBbHkSqRn7FWy-X3ofTz7sxaDGo9UWKxEnd00ULeqbA8sWPKRinWnQAEGsS8RcWpHQ4qsUu_GIZpdNDA68UAfdLcH2KwQ-dC6K_G3SGiKxjcKRKNsXp0itmsF80hmhro-mnLLFLMxLAqMPjZSQKcwREHfEO9-vKDUi5QuyVovDSY6cDnC7Gn8Izowef5gI-1r9PJCnlhOtE-hzTcG9Spo");'></div>
-<p class="font-bold text-sm">Machine Learning cho người mới</p>
-<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Bởi Sam Wilson</p>
-</div>
-</div>
-</div>
+            <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark p-5">
+            <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-extrabold text-text-primary-light dark:text-text-primary-dark">KHÓA HỌC CÓ THỂ ĐĂNG KÝ</h2>
+            <a href="../../course-catalog/index.html" class="text-primary hover:underline text-sm font-semibold">Xem tất cả →</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="recommendedCoursesGrid">
+            <div class="col-span-full flex items-center justify-center py-8">
+            <span class="text-text-secondary-light dark:text-text-secondary-dark">Đang tải khóa học...</span>
+            </div>
+            </div>
+            </div>
 <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark p-5">
 <h2 class="text-xl font-extrabold mb-4 text-text-primary-light dark:text-text-primary-dark">LỊCH SỬ THANH TOÁN</h2>
 <div class="overflow-x-auto">
@@ -203,28 +174,14 @@
 <th class="px-4 py-3 font-bold" scope="col">Trạng thái</th>
 </tr>
 </thead>
-<tbody>
-<tr class="border-b border-border-light dark:border-border-dark">
-<td class="px-4 py-3 font-semibold">Thiết kế UX Nâng cao</td>
-<td class="px-4 py-3">15/05/2024</td>
-<td class="px-4 py-3">1.200.000đ</td>
-<td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs font-bold me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Thành công</span></td>
-</tr>
-<tr class="border-b border-border-light dark:border-border-dark">
-<td class="px-4 py-3 font-semibold">Khoa học Dữ liệu với Python</td>
-<td class="px-4 py-3">10/04/2024</td>
-<td class="px-4 py-3">1.500.000đ</td>
-<td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs font-bold me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Thành công</span></td>
-</tr>
+<tbody id="paymentHistoryBody">
 <tr>
-<td class="px-4 py-3 font-semibold">Marketing Kỹ thuật số Cơ bản</td>
-<td class="px-4 py-3">01/03/2024</td>
-<td class="px-4 py-3">900.000đ</td>
-<td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs font-bold me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Thành công</span></td>
+<td colspan="4" class="px-4 py-4 text-center text-text-secondary-light dark:text-text-secondary-dark">Đang tải...</td>
 </tr>
 </tbody>
 </table>
 </div>
+<a href="payments.html" class="mt-4 inline-block text-primary hover:underline text-sm font-semibold">Xem tất cả giao dịch →</a>
 </div>
 </div>
 <div class="lg:col-span-1 flex flex-col gap-8">
@@ -299,30 +256,336 @@
 </div>
 <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark p-5">
 <h2 class="text-xl font-extrabold mb-4 text-text-primary-light dark:text-text-primary-dark">CHỨNG CHỈ</h2>
-<div class="flex flex-col gap-3">
-<div class="flex items-center gap-3 p-3 border border-border-light dark:border-border-dark rounded-lg">
-<div class="flex-shrink-0 bg-primary/10 text-primary p-2.5 rounded-md">
-<span class="material-symbols-outlined fill">workspace_premium</span>
-</div>
-<div class="flex-1">
-<p class="font-bold text-sm">Lập trình Web cơ bản</p>
-<a class="text-xs text-primary font-semibold hover:underline" href="#">Xem chứng chỉ</a>
+<div id="certificatesList" class="flex flex-col gap-3">
+<div class="flex items-center justify-center py-4">
+<span class="text-text-secondary-light dark:text-text-secondary-dark">Đang tải...</span>
 </div>
 </div>
-<div class="flex items-center gap-3 p-3 border border-border-light dark:border-border-dark rounded-lg">
-<div class="flex-shrink-0 bg-primary/10 text-primary p-2.5 rounded-md">
-<span class="material-symbols-outlined fill">workspace_premium</span>
-</div>
-<div class="flex-1">
-<p class="font-bold text-sm">Giới thiệu về SQL</p>
-<a class="text-xs text-primary font-semibold hover:underline" href="#">Xem chứng chỉ</a>
-</div>
-</div>
-</div>
+<a href="certificates.html" class="mt-4 inline-block text-primary hover:underline text-sm font-semibold">Xem tất cả chứng chỉ →</a>
 </div>
 </div>
 </div>
 </div>
 </main>
 </div>
-</body></html>
+
+<script src="../../js/api.js"></script>
+<script>
+class StudentDashboard {
+  constructor() {
+    this.api = null;
+    this.enrollments = [];
+    this.init();
+  }
+
+  async init() {
+    await this.waitForAPI();
+    await this.loadUserInfo();
+    await this.loadEnrollments();
+    await this.loadRecommendedCourses();
+    this.setupEventListeners();
+    this.setupCourseFilters();
+  }
+
+  async waitForAPI() {
+    return new Promise((resolve) => {
+      if (window.api) {
+        this.api = window.api;
+        resolve();
+      } else {
+        let attempts = 0;
+        const maxAttempts = 20;
+        const checkInterval = setInterval(() => {
+          attempts++;
+          if (window.api) {
+            this.api = window.api;
+            clearInterval(checkInterval);
+            resolve();
+          } else if (attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+            resolve();
+          }
+        }, 200);
+      }
+    });
+  }
+
+  async loadUserInfo() {
+    try {
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        const userName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'User';
+        const welcomeText = document.querySelector('h1.text-3xl');
+        if (welcomeText) {
+          welcomeText.textContent = `Chào mừng đến với VIAN Academy, ${userName}!`;
+        }
+        
+        const sidebarName = document.querySelector('aside h1.text-sm');
+        const sidebarEmail = document.querySelector('aside p.text-xs');
+        if (sidebarName) sidebarName.textContent = userName;
+        if (sidebarEmail) sidebarEmail.textContent = user.email || '';
+      } else if (this.api && this.api.getCurrentUser) {
+        const userData = await this.api.getCurrentUser();
+        if (userData && userData.user) {
+          const userName = `${userData.user.first_name || ''} ${userData.user.last_name || ''}`.trim() || 'User';
+          const welcomeText = document.querySelector('h1.text-3xl');
+          if (welcomeText) {
+            welcomeText.textContent = `Chào mừng đến với VIAN Academy, ${userName}!`;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user info:', error);
+    }
+  }
+
+  async loadEnrollments() {
+    try {
+      if (!this.api) return;
+      
+      const response = await this.api.getEnrollments();
+      this.enrollments = response.enrollments || [];
+      this.renderMyCourses();
+      this.renderPaymentHistory();
+      this.renderCertificates();
+      // Reload recommended courses after enrollments are loaded to filter them out
+      await this.loadRecommendedCourses();
+    } catch (error) {
+      console.error('Error loading enrollments:', error);
+    }
+  }
+
+  async loadRecommendedCourses() {
+    try {
+      if (!this.api) return;
+      
+      // Get all published courses
+      const response = await this.api.getCourses({ status: 'published' });
+      const allCourses = response.courses || [];
+      
+      // Filter out courses user is already enrolled in
+      const enrolledCourseIds = this.enrollments.map(e => e.course_id || e.course?.course_id);
+      const availableCourses = allCourses.filter(course => {
+        const courseId = course.course_id || course.id;
+        return !enrolledCourseIds.includes(courseId);
+      });
+      
+      // Show up to 6 courses available for registration
+      this.renderRecommendedCourses(availableCourses.slice(0, 6));
+    } catch (error) {
+      console.error('Error loading recommended courses:', error);
+      const container = document.getElementById('recommendedCoursesGrid');
+      if (container) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-8">
+            <span class="material-symbols-outlined text-6xl text-text-secondary-light dark:text-text-secondary-dark mb-4">school</span>
+            <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">Không thể tải khóa học. Vui lòng thử lại sau.</p>
+            <a href="../../course-catalog/index.html" class="inline-block bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+              Xem danh mục khóa học
+            </a>
+          </div>
+        `;
+      }
+    }
+  }
+
+  setupEventListeners() {
+    document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.handleLogout();
+    });
+
+    const notificationBtn = Array.from(document.querySelectorAll('button')).find(btn => 
+      btn.querySelector('.material-symbols-outlined')?.textContent === 'notifications'
+    );
+    if (notificationBtn) {
+      notificationBtn.addEventListener('click', () => {
+        alert('Thông báo:\n\n- Không có thông báo mới');
+      });
+    }
+  }
+
+  setupCourseFilters() {
+    const filters = document.querySelectorAll('input[name="course-status"]');
+    filters.forEach(filter => {
+      filter.addEventListener('change', () => {
+        this.renderMyCourses();
+      });
+    });
+  }
+
+  renderMyCourses() {
+    const container = document.getElementById('myCoursesGrid');
+    if (!container) return;
+
+    const selectedFilter = document.querySelector('input[name="course-status"]:checked')?.value || 'In Progress';
+    let filtered = this.enrollments;
+    
+    if (selectedFilter === 'In Progress') {
+      filtered = this.enrollments.filter(e => e.status === 'active' && (e.progress_percentage || 0) < 100);
+    } else if (selectedFilter === 'Completed') {
+      filtered = this.enrollments.filter(e => e.status === 'completed' || (e.progress_percentage || 0) >= 100);
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="col-span-full flex items-center justify-center py-12">
+          <div class="text-center">
+            <span class="material-symbols-outlined text-6xl text-text-secondary-light dark:text-text-secondary-dark mb-4">book</span>
+            <p class="text-text-secondary-light dark:text-text-secondary-dark">Chưa có khóa học nào.</p>
+            <a href="../../course-catalog/index.html" class="mt-4 inline-block bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+              Khám phá khóa học
+            </a>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.slice(0, 3).map(enrollment => {
+      const progress = Math.round(enrollment.progress_percentage || 0);
+      const thumbnail = enrollment.thumbnail_url || 'https://via.placeholder.com/400x225?text=Course';
+      
+      return `
+        <div class="flex flex-col gap-3 cursor-pointer group" onclick="window.location.href='../../course-player/index.html?course=${enrollment.course_id}&enrollment=${enrollment.enrollment_id}'">
+          <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg group-hover:opacity-90 transition-opacity" style="background-image: url('${thumbnail}')"></div>
+          <div class="flex flex-col gap-1.5">
+            <p class="font-bold leading-tight">${enrollment.course_title || 'Khóa học'}</p>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div class="bg-primary h-2 rounded-full transition-all" style="width: ${progress}%"></div>
+            </div>
+            <p class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">Đã hoàn thành ${progress}%</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  renderRecommendedCourses(courses) {
+    const container = document.getElementById('recommendedCoursesGrid');
+    if (!container) return;
+    
+    if (!courses.length) {
+      container.innerHTML = `
+        <div class="col-span-full text-center py-8">
+          <span class="material-symbols-outlined text-6xl text-text-secondary-light dark:text-text-secondary-dark mb-4">school</span>
+          <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">Chưa có khóa học nào có sẵn để đăng ký.</p>
+          <a href="../../course-catalog/index.html" class="inline-block bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+            Khám phá tất cả khóa học
+          </a>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = courses.map(course => {
+      const thumbnail = course.thumbnail_url || course.thumbnail || 'https://via.placeholder.com/400x225?text=Course';
+      const price = course.price ? `$${parseFloat(course.price).toFixed(2)}` : 'Miễn phí';
+      const rating = course.rating || course.average_rating || 0;
+      const students = course.enrollment_count || course.students || 0;
+      
+      return `
+        <div class="flex flex-col gap-2 p-3 rounded-lg border border-border-light dark:border-border-dark cursor-pointer hover:shadow-md hover:border-primary transition-all group" onclick="window.location.href='../../course-detail/code.html?id=${course.course_id || course.id}'">
+          <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-md group-hover:opacity-90 transition-opacity" style="background-image: url('${thumbnail}')"></div>
+          <div class="flex flex-col gap-1">
+            <p class="font-bold text-sm line-clamp-2">${course.title}</p>
+            <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Bởi ${course.instructor_name || course.instructor || 'Giảng viên'}</p>
+            <div class="flex items-center justify-between mt-2">
+              <div class="flex items-center gap-1 text-xs">
+                <span class="material-symbols-outlined text-amber-400 text-sm">grade</span>
+                <span class="font-semibold">${rating.toFixed(1)}</span>
+                <span class="text-text-secondary-light dark:text-text-secondary-dark">(${students})</span>
+              </div>
+              <span class="font-bold text-primary text-sm">${price}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  renderPaymentHistory() {
+    const tbody = document.getElementById('paymentHistoryBody');
+    if (!tbody) return;
+
+    const transactions = this.enrollments.slice(0, 3).map(e => ({
+      course_title: e.course_title,
+      date: e.enrollment_date,
+      amount: e.price || 0
+    }));
+
+    if (transactions.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4" class="px-4 py-4 text-center text-text-secondary-light dark:text-text-secondary-dark">Chưa có giao dịch nào</td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = transactions.map(trans => {
+      const date = new Date(trans.date);
+      const formattedDate = date.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const formattedAmount = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trans.amount);
+      
+      return `
+        <tr class="border-b border-border-light dark:border-border-dark">
+          <td class="px-4 py-3 font-semibold">${trans.course_title}</td>
+          <td class="px-4 py-3">${formattedDate}</td>
+          <td class="px-4 py-3">${formattedAmount}</td>
+          <td class="px-4 py-3"><span class="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Thành công</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  renderCertificates() {
+    const container = document.getElementById('certificatesList');
+    if (!container) return;
+
+    const certificates = this.enrollments.filter(e => (e.progress_percentage || 0) >= 100).slice(0, 2);
+
+    if (certificates.length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-4">
+          <span class="material-symbols-outlined text-4xl text-text-secondary-light dark:text-text-secondary-dark mb-2">workspace_premium</span>
+          <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Chưa có chứng chỉ nào</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = certificates.map(enrollment => {
+      return `
+        <div class="flex items-center gap-3 p-3 border border-border-light dark:border-border-dark rounded-lg">
+          <div class="flex-shrink-0 bg-primary/10 text-primary p-2.5 rounded-md">
+            <span class="material-symbols-outlined fill">workspace_premium</span>
+          </div>
+          <div class="flex-1">
+            <p class="font-bold text-sm">${enrollment.course_title}</p>
+            <a href="certificates.html" class="text-xs text-primary font-semibold hover:underline">Xem chứng chỉ</a>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  handleLogout() {
+    if (confirm('Bạn có chắc muốn đăng xuất?')) {
+      if (this.api && this.api.logout) {
+        this.api.logout();
+      }
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('authToken');
+      window.location.href = '../../pages/auth/login.html';
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  new StudentDashboard();
+});
+</script>
+</body>
+</html>

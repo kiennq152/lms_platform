@@ -177,26 +177,34 @@ class ProfileSettings {
       link.addEventListener('click', (e) => this.handleTabClick(e, link));
     });
 
-    // Save button
-    const saveBtn = document.querySelector('button:contains("Lưu thay đổi")');
+    // Save button - use proper selector
+    const saveBtn = Array.from(document.querySelectorAll('button')).find(btn => 
+      btn.textContent.includes('Lưu thay đổi')
+    );
     if (saveBtn) {
       saveBtn.addEventListener('click', () => this.saveProfile());
     }
 
-    // Cancel button
-    const cancelBtn = document.querySelector('button:contains("Hủy")');
+    // Cancel button - use proper selector
+    const cancelBtn = Array.from(document.querySelectorAll('button')).find(btn => 
+      btn.textContent.includes('Hủy')
+    );
     if (cancelBtn) {
       cancelBtn.addEventListener('click', () => this.cancelChanges());
     }
 
-    // Change avatar button
-    const changeAvatarBtn = document.querySelector('button:contains("Đổi ảnh")');
+    // Change avatar button - use proper selector
+    const changeAvatarBtn = Array.from(document.querySelectorAll('button')).find(btn => 
+      btn.textContent.includes('Đổi ảnh')
+    );
     if (changeAvatarBtn) {
       changeAvatarBtn.addEventListener('click', () => this.changeAvatar());
     }
 
-    // Remove avatar button
-    const removeAvatarBtn = document.querySelector('button:contains("Xóa ảnh")');
+    // Remove avatar button - use proper selector
+    const removeAvatarBtn = Array.from(document.querySelectorAll('button')).find(btn => 
+      btn.textContent.includes('Xóa ảnh')
+    );
     if (removeAvatarBtn) {
       removeAvatarBtn.addEventListener('click', () => this.removeAvatar());
     }
@@ -206,8 +214,10 @@ class ProfileSettings {
       input.addEventListener('change', () => this.markFormDirty());
     });
 
-    // Logout link
-    const logoutLink = document.querySelector('a:contains("Đăng xuất")');
+    // Logout link - use proper selector
+    const logoutLink = Array.from(document.querySelectorAll('a')).find(link => 
+      link.textContent.includes('Đăng xuất')
+    );
     if (logoutLink) {
       logoutLink.addEventListener('click', (e) => this.logout(e));
     }
@@ -317,7 +327,9 @@ class ProfileSettings {
   }
 
   markFormDirty() {
-    const saveBtn = document.querySelector('button:contains("Lưu thay đổi")');
+    const saveBtn = Array.from(document.querySelectorAll('button')).find(btn => 
+      btn.textContent.includes('Lưu thay đổi')
+    );
     if (saveBtn) {
       saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
       saveBtn.disabled = false;

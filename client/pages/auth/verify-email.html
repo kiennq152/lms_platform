@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Verify Email - VIAN Academy LMS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#1E3A8A",
+          "accent": "#DC2626",
+          "background-light": "#F8F9FA",
+          "background-dark": "#101922",
+        },
+        fontFamily: {
+          "display": ["Lexend", "sans-serif"]
+        },
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
+  }
+</style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
+<div class="min-h-screen flex items-center justify-center px-4 py-12">
+<div class="w-full max-w-md">
+<div class="text-center mb-8">
+<div class="flex items-center justify-center gap-3 mb-4">
+<span class="material-symbols-outlined text-5xl text-primary">school</span>
+<h1 class="text-4xl font-bold">VIAN Academy</h1>
+</div>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
+<div id="verificationStatus">
+<div class="mb-6">
+<span class="material-symbols-outlined text-6xl text-primary mb-4">mark_email_read</span>
+<h2 class="text-2xl font-bold mb-2">Verify Your Email</h2>
+<p class="text-gray-600 dark:text-gray-400 mb-6">We've sent a verification link to your email address</p>
+</div>
+<div id="emailDisplay" class="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+<p class="text-sm text-gray-600 dark:text-gray-400">Email sent to:</p>
+<p class="font-semibold" id="emailAddress"></p>
+</div>
+<div class="space-y-4">
+<p class="text-sm text-gray-600 dark:text-gray-400">Click the link in the email to verify your account.</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Didn't receive the email? Check your spam folder or</p>
+<button id="resendBtn" class="text-primary hover:underline font-semibold">Resend verification email</button>
+</div>
+</div>
+<div class="mt-6 text-center">
+<a href="login.html" class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary">Back to Login</a>
+</div>
+</div>
+</div>
+</div>
+
+<script src="../../js/api.js"></script>
+<script>
+class EmailVerification {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const email = urlParams.get('email');
+
+    if (email) {
+      document.getElementById('emailAddress').textContent = email;
+    }
+
+    if (token) {
+      this.verifyToken(token);
+    } else {
+      this.setupResendButton(email);
+    }
+  }
+
+  async verifyToken(token) {
+    try {
+      const response = await api.verifyEmail(token);
+      
+      // Get user info to show success message
+      // In a real app, you might want to get user info from the response or make another API call
+      const user = {
+        role: 'student', // Default, could be enhanced
+        admin_approved: false
+      };
+      
+      this.showSuccess(user);
+    } catch (error) {
+      if (error.message.includes('already verified') || error.message.includes('Invalid')) {
+        this.showAlreadyVerified();
+      } else {
+        this.showError(error.message || 'Verification failed. Please try again.');
+      }
+    }
+  }
+
+  showSuccess(user) {
+    const statusDiv = document.getElementById('verificationStatus');
+    statusDiv.innerHTML = `
+      <div class="mb-6">
+        <span class="material-symbols-outlined text-6xl text-green-500 mb-4">check_circle</span>
+        <h2 class="text-2xl font-bold mb-2 text-green-600 dark:text-green-400">Email Verified!</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Your email has been successfully verified.</p>
+      </div>
+      ${user.role === 'instructor' && !user.admin_approved ? `
+        <div class="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+          <p class="text-sm text-yellow-800 dark:text-yellow-300">
+            Your account is pending admin approval. You will receive an email notification once your account is approved.
+          </p>
+        </div>
+      ` : ''}
+      <a href="login.html" class="inline-block w-full bg-primary hover:bg-blue-800 text-white font-semibold py-3 rounded-lg transition-colors">
+        Continue to Login
+      </a>
+    `;
+  }
+
+  showAlreadyVerified() {
+    const statusDiv = document.getElementById('verificationStatus');
+    statusDiv.innerHTML = `
+      <div class="mb-6">
+        <span class="material-symbols-outlined text-6xl text-blue-500 mb-4">info</span>
+        <h2 class="text-2xl font-bold mb-2">Already Verified</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">This email has already been verified.</p>
+      </div>
+      <a href="login.html" class="inline-block w-full bg-primary hover:bg-blue-800 text-white font-semibold py-3 rounded-lg transition-colors">
+        Go to Login
+      </a>
+    `;
+  }
+
+  showError(message) {
+    const statusDiv = document.getElementById('verificationStatus');
+    statusDiv.innerHTML = `
+      <div class="mb-6">
+        <span class="material-symbols-outlined text-6xl text-red-500 mb-4">error</span>
+        <h2 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">Verification Failed</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">${message}</p>
+      </div>
+      <a href="register.html" class="inline-block w-full bg-primary hover:bg-blue-800 text-white font-semibold py-3 rounded-lg transition-colors mb-3">
+        Register Again
+      </a>
+      <a href="login.html" class="inline-block w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold py-3 rounded-lg transition-colors">
+        Back to Login
+      </a>
+    `;
+  }
+
+  setupResendButton(email) {
+    const resendBtn = document.getElementById('resendBtn');
+    if (resendBtn) {
+      resendBtn.addEventListener('click', () => {
+        if (email) {
+          this.resendVerification(email);
+        } else {
+          alert('Please provide your email address');
+        }
+      });
+    }
+  }
+
+  async resendVerification(email) {
+    try {
+      const response = await api.resendVerification(email);
+      
+      alert('Verification email has been resent. Please check your inbox.');
+      console.log('Verification link:', `${window.location.origin}/pages/auth/verify-email.html?token=${response.verificationToken}`);
+      
+      // Update URL with new token
+      window.location.href = `verify-email.html?email=${encodeURIComponent(email)}&token=${response.verificationToken}`;
+    } catch (error) {
+      alert(error.message || 'Failed to resend verification email. Please try again.');
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  new EmailVerification();
+});
+</script>
+</body>
+</html>
+

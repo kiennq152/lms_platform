@@ -37,14 +37,21 @@ CREATE TABLE users (
     avatar_url TEXT,
     phone VARCHAR(20),
     bio TEXT,
+    social_link VARCHAR(500),
+    email_verified BOOLEAN DEFAULT FALSE,
+    email_verification_token VARCHAR(255),
+    email_verified_at TIMESTAMP,
+    admin_approved BOOLEAN DEFAULT FALSE,
+    admin_approved_at TIMESTAMP,
+    approved_by INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_login TIMESTAMP,
-    
-    INDEX idx_email (email),
-    INDEX idx_role (role),
-    INDEX idx_status (status)
+    last_login TIMESTAMP
 );
+
+CREATE INDEX idx_email ON users(email);
+CREATE INDEX idx_role ON users(role);
+CREATE INDEX idx_status ON users(status);
 
 -- =====================================================
 -- 2. CATEGORIES TABLE
@@ -56,11 +63,11 @@ CREATE TABLE categories (
     description TEXT,
     icon_url TEXT,
     parent_category_id INTEGER REFERENCES categories(category_id) ON DELETE SET NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX idx_slug (slug),
-    INDEX idx_parent (parent_category_id)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_slug ON categories(slug);
+CREATE INDEX idx_parent ON categories(parent_category_id);
 
 -- =====================================================
 -- 3. COURSES TABLE
@@ -83,14 +90,14 @@ CREATE TABLE courses (
     language VARCHAR(50) DEFAULT 'English',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    published_at TIMESTAMP,
-    
-    INDEX idx_instructor (instructor_id),
-    INDEX idx_category (category_id),
-    INDEX idx_status (status),
-    INDEX idx_price (price),
-    INDEX idx_rating (rating)
+    published_at TIMESTAMP
 );
+
+CREATE INDEX idx_instructor ON courses(instructor_id);
+CREATE INDEX idx_category ON courses(category_id);
+CREATE INDEX idx_status_courses ON courses(status);
+CREATE INDEX idx_price ON courses(price);
+CREATE INDEX idx_rating ON courses(rating);
 
 -- =====================================================
 -- 4. MODULES TABLE
@@ -102,11 +109,11 @@ CREATE TABLE modules (
     description TEXT,
     order_index INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX idx_course (course_id),
-    INDEX idx_order (order_index)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_course_modules ON modules(course_id);
+CREATE INDEX idx_order_modules ON modules(order_index);
 
 -- =====================================================
 -- 5. LESSONS TABLE
@@ -118,17 +125,19 @@ CREATE TABLE lessons (
     description TEXT,
     content_type VARCHAR(20) NOT NULL CHECK (content_type IN ('video', 'text', 'quiz', 'assignment')),
     video_url TEXT,
+    youtube_url TEXT,
     video_duration INTEGER DEFAULT 0,
     content_text TEXT,
+    content_data JSONB,
     order_index INTEGER NOT NULL DEFAULT 0,
     is_preview BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX idx_module (module_id),
-    INDEX idx_order (order_index),
-    INDEX idx_content_type (content_type)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_module_lessons ON lessons(module_id);
+CREATE INDEX idx_order_lessons ON lessons(order_index);
+CREATE INDEX idx_content_type ON lessons(content_type);
 
 -- =====================================================
 -- 6. ENROLLMENTS TABLE
@@ -145,11 +154,12 @@ CREATE TABLE enrollments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    UNIQUE (student_id, course_id),
-    INDEX idx_student (student_id),
-    INDEX idx_course (course_id),
-    INDEX idx_status (status)
+    UNIQUE (student_id, course_id)
 );
+
+CREATE INDEX idx_student_enrollments ON enrollments(student_id);
+CREATE INDEX idx_course_enrollments ON enrollments(course_id);
+CREATE INDEX idx_status_enrollments ON enrollments(status);
 
 -- =====================================================
 -- 7. LESSON PROGRESS TABLE
@@ -165,11 +175,12 @@ CREATE TABLE lesson_progress (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    UNIQUE (enrollment_id, lesson_id),
-    INDEX idx_enrollment (enrollment_id),
-    INDEX idx_lesson (lesson_id),
-    INDEX idx_completed (is_completed)
+    UNIQUE (enrollment_id, lesson_id)
 );
+
+CREATE INDEX idx_enrollment_progress ON lesson_progress(enrollment_id);
+CREATE INDEX idx_lesson_progress ON lesson_progress(lesson_id);
+CREATE INDEX idx_completed_progress ON lesson_progress(is_completed);
 
 -- =====================================================
 -- 8. TRANSACTIONS TABLE
@@ -186,13 +197,13 @@ CREATE TABLE transactions (
     coupon_code VARCHAR(50),
     discount_amount DECIMAL(10, 2) DEFAULT 0.00,
     transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX idx_student (student_id),
-    INDEX idx_course (course_id),
-    INDEX idx_status (payment_status),
-    INDEX idx_date (transaction_date)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_student_transactions ON transactions(student_id);
+CREATE INDEX idx_course_transactions ON transactions(course_id);
+CREATE INDEX idx_status_transactions ON transactions(payment_status);
+CREATE INDEX idx_date_transactions ON transactions(transaction_date);
 
 -- =====================================================
 -- 9. COUPONS TABLE
@@ -210,11 +221,12 @@ CREATE TABLE coupons (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    CHECK (valid_until > valid_from),
-    INDEX idx_code (code),
-    INDEX idx_active (is_active),
-    INDEX idx_validity (valid_from, valid_until)
+    CHECK (valid_until > valid_from)
 );
+
+CREATE INDEX idx_code_coupons ON coupons(code);
+CREATE INDEX idx_active_coupons ON coupons(is_active);
+CREATE INDEX idx_validity_coupons ON coupons(valid_from, valid_until);
 
 -- =====================================================
 -- 10. CERTIFICATES TABLE
@@ -227,12 +239,12 @@ CREATE TABLE certificates (
     certificate_number VARCHAR(50) UNIQUE NOT NULL,
     issued_date DATE NOT NULL DEFAULT CURRENT_DATE,
     certificate_url TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX idx_student (student_id),
-    INDEX idx_course (course_id),
-    INDEX idx_number (certificate_number)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_student_certificates ON certificates(student_id);
+CREATE INDEX idx_course_certificates ON certificates(course_id);
+CREATE INDEX idx_number_certificates ON certificates(certificate_number);
 
 -- =====================================================
 -- 11. REVIEWS TABLE
@@ -247,12 +259,13 @@ CREATE TABLE reviews (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    UNIQUE (course_id, student_id),
-    INDEX idx_course (course_id),
-    INDEX idx_student (student_id),
-    INDEX idx_rating (rating),
-    INDEX idx_approved (is_approved)
+    UNIQUE (course_id, student_id)
 );
+
+CREATE INDEX idx_course_reviews ON reviews(course_id);
+CREATE INDEX idx_student_reviews ON reviews(student_id);
+CREATE INDEX idx_rating_reviews ON reviews(rating);
+CREATE INDEX idx_approved_reviews ON reviews(is_approved);
 
 -- =====================================================
 -- 12. FORUM TOPICS TABLE
@@ -268,13 +281,13 @@ CREATE TABLE forum_topics (
     view_count INTEGER DEFAULT 0,
     reply_count INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX idx_course (course_id),
-    INDEX idx_author (author_id),
-    INDEX idx_pinned (is_pinned),
-    INDEX idx_created (created_at)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_course_topics ON forum_topics(course_id);
+CREATE INDEX idx_author_topics ON forum_topics(author_id);
+CREATE INDEX idx_pinned_topics ON forum_topics(is_pinned);
+CREATE INDEX idx_created_topics ON forum_topics(created_at);
 
 -- =====================================================
 -- 13. FORUM REPLIES TABLE
@@ -286,13 +299,13 @@ CREATE TABLE forum_replies (
     content TEXT NOT NULL,
     is_solution BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX idx_topic (topic_id),
-    INDEX idx_author (author_id),
-    INDEX idx_solution (is_solution),
-    INDEX idx_created (created_at)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_topic_replies ON forum_replies(topic_id);
+CREATE INDEX idx_author_replies ON forum_replies(author_id);
+CREATE INDEX idx_solution_replies ON forum_replies(is_solution);
+CREATE INDEX idx_created_replies ON forum_replies(created_at);
 
 -- =====================================================
 -- 14. SYSTEM LOGS TABLE
@@ -305,13 +318,13 @@ CREATE TABLE system_logs (
     message TEXT NOT NULL,
     ip_address VARCHAR(45),
     user_agent TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX idx_user (user_id),
-    INDEX idx_level (log_level),
-    INDEX idx_type (log_type),
-    INDEX idx_created (created_at)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_user_logs ON system_logs(user_id);
+CREATE INDEX idx_level_logs ON system_logs(log_level);
+CREATE INDEX idx_type_logs ON system_logs(log_type);
+CREATE INDEX idx_created_logs ON system_logs(created_at);
 
 -- =====================================================
 -- 15. SETTINGS TABLE
@@ -323,10 +336,10 @@ CREATE TABLE settings (
     setting_type VARCHAR(20) NOT NULL CHECK (setting_type IN ('string', 'number', 'boolean', 'json')),
     description TEXT,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_by INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
-    
-    INDEX idx_key (setting_key)
+    updated_by INTEGER REFERENCES users(user_id) ON DELETE SET NULL
 );
+
+CREATE INDEX idx_key_settings ON settings(setting_key);
 
 -- =====================================================
 -- 16. NOTIFICATIONS TABLE
@@ -339,12 +352,28 @@ CREATE TABLE notifications (
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
     action_url TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX idx_user (user_id),
-    INDEX idx_read (is_read),
-    INDEX idx_created (created_at)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_user_notifications ON notifications(user_id);
+CREATE INDEX idx_read_notifications ON notifications(is_read);
+CREATE INDEX idx_created_notifications ON notifications(created_at);
+
+-- =====================================================
+-- 17. EMAIL VERIFICATION TOKENS TABLE
+-- =====================================================
+CREATE TABLE email_verification_tokens (
+    token_id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    token VARCHAR(255) UNIQUE NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    used_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_token_verification ON email_verification_tokens(token);
+CREATE INDEX idx_user_verification ON email_verification_tokens(user_id);
+CREATE INDEX idx_expires_verification ON email_verification_tokens(expires_at);
 
 -- =====================================================
 -- TRIGGERS FOR UPDATED_AT

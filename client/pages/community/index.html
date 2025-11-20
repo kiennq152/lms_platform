@@ -113,106 +113,254 @@
     </div>
 </div>
 
+<script src="../../js/api.js"></script>
 <script>
 class Community {
     constructor() {
-        this.threads = [
-            {
-                id: 1,
-                title: 'Cách Học Lập Trình Hiệu Quả?',
-                author: 'Nguyễn Văn A',
-                avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAcssMM4wedIRWm_Geo75iYvQAAxOnqCAp5dbvaBzrsrS-Zsv06VTyXnMAH5SEYm5U4CXiOJtxE_E03Xkm-1kDVXBcEXUuu1Ss3cv3IBAIYvJqWg8jaHqhO3Ad3vPFDqIZ2kVMUSgco2xfE5IvpVF74pjZ2P_xV_ZV2L77Ew4ZN9NCyghm0pmstLHi1HqO1dwqNILAssh22ZUhVvyNsQ0caUm5AXTv9-DDAZreTexPRHNrXMHJzAk_4PADHi2kUUEmBgLauqa3EbUA',
-                category: 'Hỗ Trợ Chung',
-                time: '2 giờ trước',
-                replies: 5,
-                views: 128
-            },
-            {
-                id: 2,
-                title: 'Chia Sẻ Kinh Nghiệm: Từ Newbie Đến Senior Developer',
-                author: 'Trần Thị B',
-                avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGrTHmQf9dUMLCAKVlCNR5IwZFKNPlP_I6Pd5o6YETB9VHGsGMv_giowUTs9D--M86FGud2YIOin1Y_hq2s5NjWdQTAqu5IGkCVycXMJD3dL1GUpDc3MumskZ5FC7GiW_FUeEaQvKxiIJh5_9oACcG9Jy7UHpXo-zNCnu2QBznh2GV3X8F2NVenIgBYkUz9oEiWugYEBq88ok7lpq0m2FNWUrOvTgs8atAc_RIOOJp_J7ZwxLjhBvIOlFIVxt-QqSU8LEhCr25GUM',
-                category: 'Giới Thiệu & Truyền Thông',
-                time: '4 giờ trước',
-                replies: 12,
-                views: 342
-            },
-            {
-                id: 3,
-                title: 'Tìm Bạn Hợp Tác Làm Dự Án ReactJS',
-                author: 'Phạm Văn C',
-                avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyhx1NmZaN7wUBZYTWVfrMYkAMvMBsNYJqYtBi_AuNKYfwxT9SD4l_Il8D9v888SB-XD6cDHGQRZ0SaHeByVlKFSOtU5DrthY95e2epJTK02dEAlSmHVFm3JZtctslGf86MM1Qu0SE4QUIz_L7G9kjcn3h-OipY8wbgU4SGnYo7sHEkFSisimH9ZhwCtvL9TLY_7MIB7bmIqQ2AD_9YX4C9v9HBQajQXd-MKnwpaV-rLVZyASKVgHnQUcKrJm1KJZl65Khy6KNPzA',
-                category: 'Dự Án & Hợp Tác',
-                time: '6 giờ trước',
-                replies: 8,
-                views: 215
-            }
-        ];
+        this.api = null;
+        this.topics = [];
+        this.currentFilter = 'all';
+        this.currentSort = 'newest';
+        this.searchQuery = '';
         this.init();
     }
 
-    init() {
-        this.renderThreads();
+    async init() {
+        await this.waitForAPI();
+        await this.loadTopics();
         this.setupEventListeners();
     }
 
-    renderThreads() {
-        const list = document.getElementById('threadsList');
-        list.innerHTML = this.threads.map(thread => `
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow cursor-pointer">
-                <div class="flex gap-4">
-                    <div class="w-12 h-12 rounded-full bg-cover flex-shrink-0" style="background-image: url('${thread.avatar}')"></div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="flex-1">
-                                <h3 class="font-bold text-lg hover:text-primary transition-colors">${thread.title}</h3>
-                                <div class="flex gap-3 text-sm text-gray-600 dark:text-gray-400 mt-2">
-                                    <span>${thread.author}</span>
-                                    <span>•</span>
-                                    <span>${thread.time}</span>
-                                    <span>•</span>
-                                    <span class="inline-flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-xs">bookmark</span>
-                                        ${thread.category}
-                                    </span>
-                                </div>
-                            </div>
-                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs font-semibold flex-shrink-0">
-                                <span class="material-symbols-outlined text-xs">chat</span>
-                                ${thread.replies}
-                            </span>
-                        </div>
-                    </div>
+    async waitForAPI() {
+        return new Promise((resolve) => {
+            if (window.api) {
+                this.api = window.api;
+                resolve();
+            } else {
+                let attempts = 0;
+                const maxAttempts = 20;
+                const checkInterval = setInterval(() => {
+                    attempts++;
+                    if (window.api) {
+                        this.api = window.api;
+                        clearInterval(checkInterval);
+                        resolve();
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(checkInterval);
+                        resolve();
+                    }
+                }, 200);
+            }
+        });
+    }
+
+    async loadTopics() {
+        try {
+            if (!this.api) {
+                throw new Error('API not available');
+            }
+
+            const params = {
+                sort: this.currentSort
+            };
+
+            if (this.currentFilter === 'unanswered') {
+                params.filter = 'unanswered';
+            } else if (this.currentFilter === 'solved') {
+                params.filter = 'solved';
+            } else if (this.currentFilter === 'my_posts') {
+                const response = await this.api.getMyPosts({ sort: this.currentSort });
+                this.topics = response.topics || [];
+                this.renderThreads();
+                return;
+            }
+
+            if (this.searchQuery) {
+                params.search = this.searchQuery;
+            }
+
+            const response = await this.api.getForumTopics(params);
+            this.topics = response.topics || [];
+            this.renderThreads();
+        } catch (error) {
+            console.error('Error loading topics:', error);
+            document.getElementById('threadsList').innerHTML = `
+                <div class="text-center py-12">
+                    <span class="material-symbols-outlined text-6xl text-gray-400 mb-4">error</span>
+                    <p class="text-gray-600 dark:text-gray-400">Không thể tải chủ đề. Vui lòng thử lại.</p>
                 </div>
-                <div class="flex gap-4 mt-4 text-sm text-gray-600 dark:text-gray-400 ml-16">
-                    <span class="flex items-center gap-1">
-                        <span class="material-symbols-outlined text-xs">visibility</span>
-                        ${thread.views} lượt xem
-                    </span>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }
     }
 
     setupEventListeners() {
         // New thread button
-        document.querySelector('button:contains("Tạo Chủ Đề Mới")').addEventListener('click', () => {
-            document.getElementById('newThreadModal').classList.remove('hidden');
-        });
+        const newThreadBtn = Array.from(document.querySelectorAll('button')).find(btn => 
+            btn.textContent.includes('Tạo Chủ Đề Mới')
+        );
+        if (newThreadBtn) {
+            newThreadBtn.addEventListener('click', () => {
+                document.getElementById('newThreadModal').classList.remove('hidden');
+            });
+        }
 
         // Modal form
-        document.querySelector('#newThreadModal form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('✓ Chủ đề mới đã được tạo thành công!');
-            document.getElementById('newThreadModal').classList.add('hidden');
-        });
+        const modalForm = document.querySelector('#newThreadModal form');
+        if (modalForm) {
+            modalForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.createTopic(e.target);
+            });
+        }
 
-        // Thread click
-        document.querySelectorAll('[class*="bg-white"][class*="rounded-lg"]').forEach(el => {
-            el.addEventListener('click', () => {
-                alert('✓ Chuyển đến chi tiết chủ đề');
+        // Search input
+        const searchInput = document.querySelector('input[placeholder*="Tìm"]');
+        if (searchInput) {
+            let searchTimeout;
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    this.searchQuery = e.target.value.trim();
+                    this.loadTopics();
+                }, 500);
+            });
+        }
+
+        // Sort select
+        const sortSelect = document.querySelector('select');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', (e) => {
+                this.currentSort = e.target.value === 'Mới Nhất' ? 'newest' : 
+                                  e.target.value === 'Phổ Biến Nhất' ? 'popular' : 'most_replied';
+                this.loadTopics();
+            });
+        }
+
+        // Tab buttons
+        const tabs = document.querySelectorAll('button[class*="px-4"][class*="py-3"]');
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('border-primary', 'text-primary');
+                    t.classList.add('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+                });
+                tab.classList.add('border-primary', 'text-primary');
+                tab.classList.remove('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+                
+                // Handle tab switching
+                if (index === 0) {
+                    this.currentFilter = 'all';
+                } else if (index === 1) {
+                    this.currentFilter = 'unanswered';
+                } else {
+                    this.currentFilter = 'all';
+                }
+                this.loadTopics();
             });
         });
+    }
+
+    async createTopic(form) {
+        try {
+            if (!this.api) {
+                throw new Error('API not available');
+            }
+
+            const title = form.querySelector('input[type="text"]').value.trim();
+            const content = form.querySelector('textarea').value.trim();
+            const category = form.querySelector('select').value;
+
+            if (!title || !content) {
+                alert('Vui lòng điền đầy đủ thông tin');
+                return;
+            }
+
+            const topicData = {
+                title,
+                content,
+                course_id: null // Can be linked to course later
+            };
+
+            await this.api.createTopic(topicData);
+            
+            alert('✓ Chủ đề mới đã được tạo thành công!');
+            document.getElementById('newThreadModal').classList.add('hidden');
+            form.reset();
+            await this.loadTopics();
+        } catch (error) {
+            console.error('Error creating topic:', error);
+            alert('Không thể tạo chủ đề. Vui lòng thử lại.');
+        }
+    }
+
+    formatTime(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Vừa xong';
+        if (diffMins < 60) return `${diffMins} phút trước`;
+        if (diffHours < 24) return `${diffHours} giờ trước`;
+        if (diffDays < 7) return `${diffDays} ngày trước`;
+        return date.toLocaleDateString('vi-VN');
+    }
+
+    renderThreads() {
+        const list = document.getElementById('threadsList');
+        
+        if (this.topics.length === 0) {
+            list.innerHTML = `
+                <div class="text-center py-12">
+                    <span class="material-symbols-outlined text-6xl text-gray-400 mb-4">forum</span>
+                    <p class="text-gray-600 dark:text-gray-400">Chưa có chủ đề nào.</p>
+                </div>
+            `;
+            return;
+        }
+
+        list.innerHTML = this.topics.map(topic => {
+            const avatar = topic.author_avatar || 'https://via.placeholder.com/48?text=' + (topic.author_name?.charAt(0) || 'U');
+            const timeAgo = this.formatTime(topic.created_at);
+            const hasSolution = topic.has_solution;
+            
+            return `
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='_thảo_luận_/_q&a/code.html?id=${topic.topic_id}'">
+                    <div class="flex gap-4">
+                        <div class="w-12 h-12 rounded-full bg-cover flex-shrink-0 bg-gray-200 dark:bg-gray-700" style="background-image: url('${avatar}')"></div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="flex-1">
+                                    ${topic.is_pinned ? '<span class="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-xs font-bold rounded mb-2"><span class="material-symbols-outlined text-xs">push_pin</span>Đã ghim</span>' : ''}
+                                    <h3 class="font-bold text-lg hover:text-primary transition-colors">${topic.title}</h3>
+                                    <div class="flex gap-3 text-sm text-gray-600 dark:text-gray-400 mt-2 flex-wrap">
+                                        <span>${topic.author_name || 'Người dùng'}</span>
+                                        <span>•</span>
+                                        <span>${timeAgo}</span>
+                                        ${topic.course_title ? `<span>•</span><span class="inline-flex items-center gap-1"><span class="material-symbols-outlined text-xs">book</span>${topic.course_title}</span>` : ''}
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end gap-2">
+                                    ${hasSolution ? '<span class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 text-xs font-bold rounded-full"><span class="material-symbols-outlined text-xs">check_circle</span>Đã giải quyết</span>' : ''}
+                                    <span class="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs font-semibold flex-shrink-0">
+                                        <span class="material-symbols-outlined text-xs">chat</span>
+                                        ${topic.reply_count || 0}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-4 text-sm text-gray-600 dark:text-gray-400 ml-16">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-xs">visibility</span>
+                            ${topic.view_count || 0} lượt xem
+                        </span>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 }
 

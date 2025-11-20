@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lms-ingress
+  namespace: lms
+  labels:
+    app: stitch-lms
+  annotations:
+    # For NGINX Ingress Controller
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # For SSL/TLS
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"  # If using cert-manager
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    # CORS (if needed)
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+spec:
+  ingressClassName: nginx  # Change based on your ingress controller
+  # tls:
+  # - hosts:
+  #   - lms.yourdomain.com
+  #   secretName: lms-tls-secret
+  rules:
+  - host: lms.yourdomain.com  # Replace with your domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: lms-service
+            port:
+              number: 80
+

@@ -51,16 +51,25 @@
     </style>
 </head>
 <body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
+<script src="../../js/api.js"></script>
 <div class="relative flex min-h-screen w-full flex-col">
     <header class="sticky top-0 z-20 flex items-center justify-between px-6 lg:px-10 py-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur border-b border-gray-200 dark:border-gray-700">
         <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-primary text-4xl">school</span>
-            <div>
-                <h1 class="text-2xl lg:text-3xl font-bold">VIAN Academy</h1>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Khám phá hơn 10.000+ khóa học chất lượng</p>
-            </div>
+            <a href="../../index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <span class="material-symbols-outlined text-primary text-4xl">school</span>
+                <div>
+                    <h1 class="text-2xl lg:text-3xl font-bold">VIAN Academy</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Khám phá hơn 10.000+ khóa học chất lượng</p>
+                </div>
+            </a>
         </div>
         <div class="flex items-center gap-3">
+            <nav class="hidden md:flex items-center gap-4 mr-4">
+                <a href="../../index.html" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary transition-colors">Trang chủ</a>
+                <a href="../course-catalog/index.html" class="text-sm font-semibold text-primary">Danh mục</a>
+                <a href="../community/index.html" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary transition-colors">Cộng đồng</a>
+                <a href="../support/index.html" class="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-primary transition-colors">Hỗ trợ</a>
+            </nav>
             <button id="darkToggle" class="flex items-center justify-center size-10 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                 <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
             </button>
@@ -131,9 +140,9 @@
                             </p>
                         </div>
                         <div class="flex flex-wrap gap-2">
-                            <button id="seedCoursesBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                <span class="material-symbols-outlined text-base">stadia_controller</span>
-                                Khôi phục mẫu
+                            <button id="refreshCoursesBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Tải lại danh sách khóa học">
+                                <span class="material-symbols-outlined text-base">refresh</span>
+                                Tải lại
                             </button>
                             <button id="addCourseBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold shadow hover:bg-primary/90 transition-colors">
                                 <span class="material-symbols-outlined text-base">add</span>
@@ -158,16 +167,23 @@
                 </header>
 
                 <div id="emptyState" class="hidden bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-12 text-center space-y-3">
-                    <span class="material-symbols-outlined text-5xl text-primary">auto_awesome</span>
-                    <h3 class="text-xl font-semibold">Không tìm thấy khóa học phù hợp.</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Hãy thử điều chỉnh bộ lọc hoặc thêm khóa học mới bằng nút <strong>Thêm khóa học</strong> ở phía trên.</p>
+                    <span class="material-symbols-outlined text-5xl text-primary">school</span>
+                    <h3 class="text-xl font-semibold">Chưa có khóa học nào.</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Hiện tại chưa có khóa học nào được tạo bởi giảng viên. 
+                        <br/>Vui lòng đợi giảng viên tạo khóa học hoặc thử lại sau.
+                    </p>
+                    <button onclick="catalog.refreshCourses()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors mt-4">
+                        <span class="material-symbols-outlined text-base">refresh</span>
+                        Tải lại
+                    </button>
                 </div>
 
                 <div id="courseGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
 
                 <footer class="flex flex-wrap items-center justify-between gap-4">
                     <p class="text-xs text-gray-500 dark:text-gray-400">
-                        Các khóa học được lưu trong Local Storage. Bạn có thể reload trang mà không mất dữ liệu tùy chỉnh.
+                        Hiển thị các khóa học được tạo bởi giảng viên từ hệ thống. Dữ liệu được tải từ server.
                     </p>
                     <button id="exportCoursesBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <span class="material-symbols-outlined text-base">download</span>
@@ -409,8 +425,9 @@ class CartService {
 class CourseCatalog {
     constructor() {
         this.storageKey = 'courseCatalog';
-        this.courses = this.loadCourses();
-        this.filteredCourses = [...this.courses];
+        this.api = window.api || null;
+        this.courses = [];
+        this.filteredCourses = [];
 
         this.selectedCategories = new Set();
         this.selectedLevels = new Set();
@@ -425,30 +442,74 @@ class CourseCatalog {
         this.init();
     }
 
-    loadCourses() {
-        try {
-            const raw = localStorage.getItem(this.storageKey);
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                if (Array.isArray(parsed) && parsed.length) {
-                    return parsed;
+    async loadCourses() {
+        // Only load real courses from API (instructor-created courses)
+        if (this.api) {
+            try {
+                const response = await this.api.getCourses({ status: 'published' });
+                if (response && response.courses && Array.isArray(response.courses)) {
+                    // Transform API courses to catalog format
+                    const courses = response.courses.map(course => ({
+                        id: course.course_id || course.id,
+                        title: course.title,
+                        instructor: course.instructor_name || course.instructor || 'Unknown Instructor',
+                        price: parseFloat(course.price) || 0,
+                        students: parseInt(course.enrollment_count || course.students || 0),
+                        rating: parseFloat(course.rating || course.average_rating || 4.5),
+                        category: course.category_name || course.category || 'Uncategorized',
+                        level: course.level || 'Beginner',
+                        image: course.thumbnail_url || course.thumbnail || PLACEHOLDER_IMAGE,
+                        preview: course.preview_video_id || course.preview || null,
+                        description: course.description || course.short_description || '',
+                        course_id: course.course_id || course.id
+                    }));
+                    
+                    // Only return courses if we have real instructor courses
+                    if (courses.length > 0) {
+                        return courses;
+                    }
                 }
+            } catch (error) {
+                console.error('Failed to load courses from API:', error);
+                Toast.show('Không thể tải danh sách khóa học từ server.', 'error');
             }
-        } catch (error) {
-            console.warn('Không thể đọc courseCatalog:', error);
+        } else {
+            console.warn('API not available, waiting for initialization...');
         }
-        return [...DEFAULT_COURSES];
+        
+        // Return empty array if no courses found (no fallback to defaults)
+        return [];
     }
 
     saveCourses() {
         localStorage.setItem(this.storageKey, JSON.stringify(this.courses));
     }
 
-    init() {
+    async init() {
+        await this.waitForAPI();
         this.cacheDom();
+        this.courses = await this.loadCourses();
+        this.filteredCourses = [...this.courses];
         this.renderFilterOptions();
         this.applyFilters();
         this.bindEvents();
+    }
+
+    async waitForAPI() {
+        if (this.api) return;
+        return new Promise((resolve) => {
+            const checkAPI = setInterval(() => {
+                if (window.api) {
+                    this.api = window.api;
+                    clearInterval(checkAPI);
+                    resolve();
+                }
+            }, 100);
+            setTimeout(() => {
+                clearInterval(checkAPI);
+                resolve();
+            }, 5000);
+        });
     }
 
     cacheDom() {
@@ -464,7 +525,7 @@ class CourseCatalog {
         this.courseGridEl = document.getElementById('courseGrid');
         this.emptyStateEl = document.getElementById('emptyState');
         this.addCourseBtn = document.getElementById('addCourseBtn');
-        this.seedCoursesBtn = document.getElementById('seedCoursesBtn');
+        this.refreshCoursesBtn = document.getElementById('refreshCoursesBtn');
         this.exportCoursesBtn = document.getElementById('exportCoursesBtn');
         this.resetFiltersBtn = document.getElementById('resetFiltersBtn');
         this.cartButton = document.getElementById('cartButton');
@@ -495,10 +556,17 @@ class CourseCatalog {
         });
 
         this.addCourseBtn.addEventListener('click', () => this.openForm());
-        this.seedCoursesBtn.addEventListener('click', () => this.resetCatalog());
+        if (this.refreshCoursesBtn) {
+            this.refreshCoursesBtn.addEventListener('click', () => this.refreshCourses());
+        }
         this.exportCoursesBtn.addEventListener('click', () => this.exportCatalog());
         this.resetFiltersBtn.addEventListener('click', () => this.resetFilters());
         this.cartButton.addEventListener('click', () => {
+            const cartCount = this.cartService.cart.length;
+            if (cartCount === 0) {
+                Toast.show('Giỏ hàng của bạn đang trống.', 'info');
+                return;
+            }
             window.location.href = '../cart-checkout/code.html';
         });
 
@@ -515,17 +583,23 @@ class CourseCatalog {
             this.handleSubmit(formData);
         });
 
-        document.getElementById('darkToggle').addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            document.getElementById('themeIcon').textContent = isDark ? 'light_mode' : 'dark_mode';
-        });
+        // Dark mode toggle
+        const darkToggle = document.getElementById('darkToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        if (darkToggle && themeIcon) {
+            darkToggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+            });
 
-        const storedTheme = localStorage.getItem('theme');
-        if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            document.getElementById('themeIcon').textContent = 'light_mode';
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                themeIcon.textContent = 'light_mode';
+            }
         }
     }
 
@@ -620,11 +694,11 @@ class CourseCatalog {
 
         this.emptyStateEl.classList.add('hidden');
         this.courseGridEl.innerHTML = this.filteredCourses.map(course => `
-            <article class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-shadow overflow-hidden">
+            <article class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-shadow overflow-hidden cursor-pointer" onclick="window.location.href='../course-detail/code.html?id=${course.id || course.course_id}'">
                 <div class="relative h-44 overflow-hidden">
                     <img src="${course.image || PLACEHOLDER_IMAGE}" alt="${course.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
                     <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold bg-primary text-white">${course.category}</span>
-                    <button data-action="preview" data-id="${course.id}" class="absolute bottom-3 right-3 flex items-center gap-1 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button data-action="preview" data-id="${course.id || course.course_id}" onclick="event.stopPropagation(); catalog.openPreview(${course.id || course.course_id})" class="absolute bottom-3 right-3 flex items-center gap-1 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                         <span class="material-symbols-outlined text-sm">play_circle</span> Preview
                     </button>
                 </div>
@@ -649,13 +723,7 @@ class CourseCatalog {
                     <div class="flex items-center justify-between">
                         <span class="text-xl font-bold text-primary">$${course.price.toFixed(2)}</span>
                         <div class="flex items-center gap-2">
-                            <button data-action="edit" data-id="${course.id}" class="flex items-center justify-center size-9 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                <span class="material-symbols-outlined text-base">edit</span>
-                            </button>
-                            <button data-action="delete" data-id="${course.id}" class="flex items-center justify-center size-9 rounded-full border border-red-200 text-red-500 hover:bg-red-500/10 transition-colors">
-                                <span class="material-symbols-outlined text-base">delete</span>
-                            </button>
-                            <button data-action="add-cart" data-id="${course.id}" class="flex items-center justify-center size-9 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors">
+                            <button data-action="add-cart" data-id="${course.id || course.course_id}" onclick="event.stopPropagation(); catalog.addToCart(${course.id || course.course_id})" class="flex items-center justify-center size-9 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors" title="Add to cart">
                                 <span class="material-symbols-outlined text-base">add_shopping_cart</span>
                             </button>
                         </div>
@@ -664,19 +732,7 @@ class CourseCatalog {
             </article>
         `).join('');
 
-        this.courseGridEl.querySelectorAll('button[data-action]').forEach(button => {
-            const action = button.dataset.action;
-            const courseId = Number(button.dataset.id);
-            if (action === 'add-cart') {
-                button.addEventListener('click', () => this.addToCart(courseId));
-            } else if (action === 'edit') {
-                button.addEventListener('click', () => this.openForm(courseId));
-            } else if (action === 'delete') {
-                button.addEventListener('click', () => this.deleteCourse(courseId));
-            } else if (action === 'preview') {
-                button.addEventListener('click', () => this.openPreview(courseId));
-            }
-        });
+        // Event handlers are now inline with onclick to prevent navigation when clicking buttons
     }
 
     updateSummary() {
@@ -737,7 +793,7 @@ class CourseCatalog {
         this.editingCourseId = null;
     }
 
-    handleSubmit(formData) {
+    async handleSubmit(formData) {
         const payload = {
             title: formData.get('title').trim(),
             instructor: formData.get('instructor').trim(),
@@ -759,72 +815,220 @@ class CourseCatalog {
         payload.students = Math.max(0, Math.floor(payload.students));
         payload.rating = Math.min(Math.max(payload.rating, 0), 5);
 
-        if (this.isEditMode && this.editingCourseId !== null) {
-            this.courses = this.courses.map(course => course.id === this.editingCourseId ? { ...course, ...payload } : course);
-            Toast.show('Đã cập nhật khóa học.', 'success');
+        // Try to save via API if available
+        if (this.api && this.isEditMode && this.editingCourseId !== null) {
+            try {
+                await this.api.updateCourse(this.editingCourseId, payload);
+                Toast.show('Đã cập nhật khóa học.', 'success');
+            } catch (error) {
+                console.warn('Failed to update via API, saving locally:', error);
+                this.courses = this.courses.map(course => course.id === this.editingCourseId ? { ...course, ...payload } : course);
+                this.saveCourses();
+                Toast.show('Đã cập nhật khóa học (lưu cục bộ).', 'success');
+            }
+        } else if (this.api && !this.isEditMode) {
+            try {
+                const response = await this.api.createCourse(payload);
+                if (response && response.course) {
+                    payload.id = response.course.course_id || response.course.id;
+                    this.courses.push(payload);
+                    Toast.show('Đã thêm khóa học mới.', 'success');
+                }
+            } catch (error) {
+                console.warn('Failed to create via API, saving locally:', error);
+                const newId = this.courses.length ? Math.max(...this.courses.map(course => course.id)) + 1 : 1;
+                payload.id = newId;
+                this.courses.push(payload);
+                this.saveCourses();
+                Toast.show('Đã thêm khóa học mới (lưu cục bộ).', 'success');
+            }
         } else {
-            const newId = this.courses.length ? Math.max(...this.courses.map(course => course.id)) + 1 : 1;
-            this.courses.push({ id: newId, ...payload });
-            Toast.show('Đã thêm khóa học mới.', 'success');
+            // LocalStorage fallback
+            if (this.isEditMode && this.editingCourseId !== null) {
+                this.courses = this.courses.map(course => course.id === this.editingCourseId ? { ...course, ...payload } : course);
+                Toast.show('Đã cập nhật khóa học.', 'success');
+            } else {
+                const newId = this.courses.length ? Math.max(...this.courses.map(course => course.id)) + 1 : 1;
+                payload.id = newId;
+                this.courses.push(payload);
+                Toast.show('Đã thêm khóa học mới.', 'success');
+            }
+            this.saveCourses();
         }
 
-        this.saveCourses();
         this.closeForm();
+        this.renderFilterOptions();
         this.applyFilters();
     }
 
-    deleteCourse(courseId) {
+    async deleteCourse(courseId) {
         const course = this.courses.find(item => item.id === courseId);
         if (!course) return;
         if (!confirm(`Bạn muốn xóa khóa học "${course.title}"?`)) {
             return;
         }
+        
+        // Try to delete via API if available
+        if (this.api) {
+            try {
+                await this.api.deleteCourse(courseId);
+                Toast.show('Đã xóa khóa học.', 'success');
+            } catch (error) {
+                console.warn('Failed to delete via API, deleting locally:', error);
+                Toast.show('Đã xóa khóa học (cục bộ).', 'warning');
+            }
+        }
+        
         this.courses = this.courses.filter(item => item.id !== courseId);
-        this.saveCourses();
-        this.applyFilters();
-        Toast.show('Khóa học đã được xóa.', 'warning');
-    }
-
-    addToCart(courseId) {
-        const course = this.courses.find(item => item.id === courseId);
-        if (!course) return;
-        this.cartService.add(course);
-        this.cartService.updateBadge();
-    }
-
-    openPreview(courseId) {
-        const course = this.courses.find(item => item.id === courseId);
-        if (!course || !course.preview) {
-            Toast.show('Khóa học chưa có video preview.', 'info');
-            return;
-        }
-        const url = course.preview.startsWith('http') ? course.preview : `https://www.youtube.com/watch?v=${course.preview}`;
-        window.open(url, '_blank');
-    }
-
-    resetCatalog() {
-        if (!confirm('Khôi phục về danh sách khóa học mặc định? Thay đổi hiện tại sẽ bị ghi đè.')) {
-            return;
-        }
-        this.courses = [...DEFAULT_COURSES];
         this.saveCourses();
         this.renderFilterOptions();
         this.applyFilters();
-        Toast.show('Đã khôi phục danh mục mẫu.', 'success');
+        if (!this.api) {
+            Toast.show('Khóa học đã được xóa.', 'warning');
+        }
+    }
+
+    async addToCart(courseId) {
+        const course = this.courses.find(item => item.id === courseId || item.course_id === courseId);
+        if (!course) {
+            Toast.show('Không tìm thấy khóa học.', 'error');
+            return;
+        }
+        
+        // Try to add to cart via API if available
+        if (this.api) {
+            try {
+                await this.api.addToCart(courseId);
+                Toast.show('Đã thêm khóa học vào giỏ hàng.', 'success');
+                // Reload cart badge
+                try {
+                    const cart = await this.api.getCart();
+                    if (cart && cart.items) {
+                        const badge = document.getElementById('cartCountBadge');
+                        if (badge) {
+                            badge.textContent = cart.items.length;
+                            badge.classList.toggle('hidden', cart.items.length === 0);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Failed to reload cart:', e);
+                }
+            } catch (error) {
+                console.warn('Failed to add to cart via API, using local storage:', error);
+                this.cartService.add(course);
+                this.cartService.updateBadge();
+            }
+        } else {
+            this.cartService.add(course);
+            this.cartService.updateBadge();
+        }
+    }
+
+    openPreview(courseId) {
+        const course = this.courses.find(item => item.id === courseId || item.course_id === courseId);
+        if (!course) {
+            Toast.show('Không tìm thấy khóa học.', 'error');
+            return;
+        }
+        
+        if (!course.preview) {
+            Toast.show('Khóa học chưa có video preview.', 'info');
+            return;
+        }
+        
+        // Extract YouTube video ID if it's a full URL
+        let videoId = course.preview;
+        if (course.preview.includes('youtube.com') || course.preview.includes('youtu.be')) {
+            const match = course.preview.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+            if (match) {
+                videoId = match[1];
+            }
+        }
+        
+        const url = `https://www.youtube.com/watch?v=${videoId}`;
+        window.open(url, '_blank');
+    }
+
+    async resetCatalog() {
+        if (!confirm('Tải lại danh sách khóa học từ server? Thay đổi cục bộ sẽ bị ghi đè.')) {
+            return;
+        }
+        
+        // Only reload real courses from API
+        if (this.api) {
+            try {
+                const apiCourses = await this.loadCourses();
+                if (apiCourses && apiCourses.length > 0) {
+                    this.courses = apiCourses;
+                    this.saveCourses();
+                    Toast.show(`Đã tải lại ${apiCourses.length} khóa học từ server.`, 'success');
+                } else {
+                    this.courses = [];
+                    this.saveCourses();
+                    Toast.show('Không có khóa học nào từ server. Vui lòng tạo khóa học mới.', 'info');
+                }
+            } catch (error) {
+                console.error('Failed to reload from API:', error);
+                Toast.show('Lỗi khi tải lại danh sách khóa học.', 'error');
+            }
+        } else {
+            Toast.show('API chưa sẵn sàng. Vui lòng thử lại sau.', 'warning');
+        }
+        
+        this.renderFilterOptions();
+        this.applyFilters();
+    }
+    
+    async refreshCourses() {
+        try {
+            Toast.show('Đang tải lại danh sách khóa học...', 'info');
+            this.courses = await this.loadCourses();
+            this.filteredCourses = [...this.courses];
+            this.renderFilterOptions();
+            this.applyFilters();
+            Toast.show('Đã tải lại danh sách khóa học.', 'success');
+        } catch (error) {
+            console.error('Refresh error:', error);
+            Toast.show('Lỗi khi tải lại danh sách khóa học.', 'error');
+        }
     }
 
     exportCatalog() {
-        const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(this.courses, null, 2))}`;
-        const link = document.createElement('a');
-        link.href = dataStr;
-        link.download = `course-catalog-${Date.now()}.json`;
-        link.click();
-        Toast.show('Đã xuất danh sách khóa học.', 'success');
+        try {
+            const exportData = {
+                exportedAt: new Date().toISOString(),
+                totalCourses: this.courses.length,
+                courses: this.courses.map(course => ({
+                    id: course.id || course.course_id,
+                    title: course.title,
+                    instructor: course.instructor,
+                    price: course.price,
+                    students: course.students,
+                    rating: course.rating,
+                    category: course.category,
+                    level: course.level,
+                    image: course.image,
+                    preview: course.preview,
+                    description: course.description
+                }))
+            };
+            
+            const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exportData, null, 2))}`;
+            const link = document.createElement('a');
+            link.href = dataStr;
+            link.download = `course-catalog-${Date.now()}.json`;
+            link.click();
+            Toast.show(`Đã xuất ${this.courses.length} khóa học.`, 'success');
+        } catch (error) {
+            console.error('Export error:', error);
+            Toast.show('Lỗi khi xuất danh sách khóa học.', 'error');
+        }
     }
 }
 
+let catalog;
 document.addEventListener('DOMContentLoaded', () => {
-    new CourseCatalog();
+    catalog = new CourseCatalog();
 });
 </script>
 </body>
