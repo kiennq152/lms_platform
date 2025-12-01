@@ -2,9 +2,14 @@
   "name": "stitch-lms-dashboard",
   "version": "1.0.0",
   "description": "VIAN Academy LMS Dashboard",
+  "type": "module",
   "scripts": {
     "dev": "cd server && npm run dev",
-    "start": "cd server && npm start"
+    "start": "cd server && npm start",
+    "build": "node build-web.js",
+    "build:web": "node build-web.js",
+    "build:docker": "docker build -t stitch-lms:latest .",
+    "build:all": "npm run build:web && npm run build:docker"
   },
   "repository": {
     "type": "git",
