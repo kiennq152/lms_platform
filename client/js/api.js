@@ -112,6 +112,24 @@ class API {
     return this.request('/auth/me');
   }
 
+  async requestOTP(email) {
+    return this.request('/auth/request-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async loginWithOTP(email, otp) {
+    const data = await this.request('/auth/login-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp }),
+    });
+    if (data.token) {
+      this.setToken(data.token);
+    }
+    return data;
+  }
+
   logout() {
     this.setToken(null);
     localStorage.removeItem('currentUser');

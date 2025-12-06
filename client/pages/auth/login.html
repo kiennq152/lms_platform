@@ -32,6 +32,25 @@
   .material-symbols-outlined.fill {
     font-variation-settings: 'FILL' 1;
   }
+  .login-method-btn.active {
+    background: white;
+    color: #1E3A8A;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .dark .login-method-btn.active {
+    background: #4B5563;
+    color: white;
+  }
+  .login-section {
+    transition: all 0.3s ease;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
 </style>
 </head>
 <body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
@@ -46,16 +65,35 @@
 <p class="text-gray-600 dark:text-gray-400">Sign in to your account to continue</p>
 </div>
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8">
+<!-- Login Method Toggle -->
+<div class="mb-6">
+<div class="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+<button type="button" id="passwordLoginBtn" class="flex-1 py-2 px-4 rounded-md text-sm font-semibold transition-all login-method-btn active" data-method="password">
+<span class="material-symbols-outlined text-base align-middle mr-2">lock</span>
+Password
+</button>
+<button type="button" id="otpLoginBtn" class="flex-1 py-2 px-4 rounded-md text-sm font-semibold transition-all login-method-btn" data-method="otp">
+<span class="material-symbols-outlined text-base align-middle mr-2">mail</span>
+Email OTP
+</button>
+</div>
+</div>
+
 <form id="loginForm" class="space-y-6" novalidate>
 <div id="errorMessage" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300 text-sm"></div>
 <div id="successMessage" class="hidden bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-green-700 dark:text-green-300 text-sm"></div>
+
+<!-- Email Input (always visible) -->
 <div>
-<label for="email" class="block text-sm font-semibold mb-2">Email Address or Username</label>
+<label for="email" class="block text-sm font-semibold mb-2">Email Address</label>
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">email</span>
-<input type="text" id="email" name="email" class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="your.email@example.com or admin" autocomplete="username"/>
+<input type="email" id="email" name="email" class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="your.email@example.com" autocomplete="email"/>
 </div>
 </div>
+
+<!-- Password Login Section -->
+<div id="passwordSection" class="login-section">
 <div>
 <label for="password" class="block text-sm font-semibold mb-2">Password</label>
 <div class="relative">
@@ -73,6 +111,38 @@
 </div>
 <a href="#" class="text-sm text-primary hover:underline">Forgot password?</a>
 </div>
+</div>
+
+<!-- OTP Login Section -->
+<div id="otpSection" class="login-section hidden">
+<div id="otpRequestSection">
+<p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+We'll send a 6-digit code to your email for secure login.
+</p>
+<button type="button" id="requestOTPBtn" class="w-full bg-accent hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">mail</span>
+<span>Send OTP Code</span>
+</button>
+</div>
+
+<div id="otpVerifySection" class="hidden">
+<div>
+<label for="otpCode" class="block text-sm font-semibold mb-2">Enter OTP Code</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">vpn_key</span>
+<input type="text" id="otpCode" name="otpCode" class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-center text-2xl font-mono tracking-widest" placeholder="000000" maxlength="6" autocomplete="one-time-code"/>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+Check your email for the 6-digit code. Valid for 10 minutes.
+</p>
+<button type="button" id="resendOTPBtn" class="text-sm text-primary hover:underline mt-2 w-full text-center">
+Resend OTP Code
+</button>
+</div>
+</div>
+</div>
+
+<!-- Submit Button -->
 <button type="submit" id="submitBtn" class="w-full bg-primary hover:bg-blue-800 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
 <span class="material-symbols-outlined">login</span>
 <span id="submitText">Sign In</span>
@@ -93,6 +163,7 @@ Don't have an account?
 class LoginManager {
   constructor() {
     this.api = null;
+    this.currentLoginMethod = 'password'; // 'password' or 'otp'
     this.init();
   }
 
@@ -140,6 +211,42 @@ class LoginManager {
     const passwordInput = document.getElementById('password');
     const passwordIcon = document.getElementById('passwordIcon');
     const emailInput = document.getElementById('email');
+    const passwordLoginBtn = document.getElementById('passwordLoginBtn');
+    const otpLoginBtn = document.getElementById('otpLoginBtn');
+    const passwordSection = document.getElementById('passwordSection');
+    const otpSection = document.getElementById('otpSection');
+    const requestOTPBtn = document.getElementById('requestOTPBtn');
+    const resendOTPBtn = document.getElementById('resendOTPBtn');
+    const otpRequestSection = document.getElementById('otpRequestSection');
+    const otpVerifySection = document.getElementById('otpVerifySection');
+    const otpCodeInput = document.getElementById('otpCode');
+
+    // Login method toggle
+    if (passwordLoginBtn && otpLoginBtn) {
+      passwordLoginBtn.addEventListener('click', () => this.switchLoginMethod('password'));
+      otpLoginBtn.addEventListener('click', () => this.switchLoginMethod('otp'));
+    }
+
+    // OTP request
+    if (requestOTPBtn) {
+      requestOTPBtn.addEventListener('click', () => this.handleOTPRequest());
+    }
+
+    // Resend OTP
+    if (resendOTPBtn) {
+      resendOTPBtn.addEventListener('click', () => this.handleOTPRequest());
+    }
+
+    // OTP code input - auto-submit on 6 digits
+    if (otpCodeInput) {
+      otpCodeInput.addEventListener('input', (e) => {
+        const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+        e.target.value = value;
+        if (value.length === 6) {
+          this.handleOTPLogin(value);
+        }
+      });
+    }
 
     if (form) {
       // Completely disable HTML5 validation
@@ -172,7 +279,18 @@ class LoginManager {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        this.handleLogin(e);
+        
+        // Handle OTP login if active
+        if (this.currentLoginMethod === 'otp') {
+          const otpCode = document.getElementById('otpCode')?.value.trim();
+          if (otpCode && otpCode.length === 6) {
+            this.handleOTPLogin(otpCode);
+          } else {
+            this.showError('Please enter the 6-digit OTP code');
+          }
+        } else {
+          this.handleLogin(e);
+        }
         return false;
       }, false);
     }
@@ -242,9 +360,206 @@ class LoginManager {
     }, 1500);
   }
 
+  switchLoginMethod(method) {
+    const passwordLoginBtn = document.getElementById('passwordLoginBtn');
+    const otpLoginBtn = document.getElementById('otpLoginBtn');
+    const passwordSection = document.getElementById('passwordSection');
+    const otpSection = document.getElementById('otpSection');
+    const otpRequestSection = document.getElementById('otpRequestSection');
+    const otpVerifySection = document.getElementById('otpVerifySection');
+    const otpCodeInput = document.getElementById('otpCode');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+
+    this.hideMessages();
+
+    if (method === 'password') {
+      // Show password login
+      passwordLoginBtn?.classList.add('active', 'bg-white', 'dark:bg-gray-600', 'text-primary', 'dark:text-white', 'shadow-sm');
+      passwordLoginBtn?.classList.remove('text-gray-600', 'dark:text-gray-400');
+      otpLoginBtn?.classList.remove('active', 'bg-white', 'dark:bg-gray-600', 'text-primary', 'dark:text-white', 'shadow-sm');
+      otpLoginBtn?.classList.add('text-gray-600', 'dark:text-gray-400');
+      
+      passwordSection?.classList.remove('hidden');
+      otpSection?.classList.add('hidden');
+      
+      submitBtn?.classList.remove('hidden');
+      if (submitText) submitText.textContent = 'Sign In';
+    } else {
+      // Show OTP login
+      otpLoginBtn?.classList.add('active', 'bg-white', 'dark:bg-gray-600', 'text-primary', 'dark:text-white', 'shadow-sm');
+      otpLoginBtn?.classList.remove('text-gray-600', 'dark:text-gray-400');
+      passwordLoginBtn?.classList.remove('active', 'bg-white', 'dark:bg-gray-600', 'text-primary', 'dark:text-white', 'shadow-sm');
+      passwordLoginBtn?.classList.add('text-gray-600', 'dark:text-gray-400');
+      
+      passwordSection?.classList.add('hidden');
+      otpSection?.classList.remove('hidden');
+      
+      // Reset OTP section
+      otpRequestSection?.classList.remove('hidden');
+      otpVerifySection?.classList.add('hidden');
+      if (otpCodeInput) otpCodeInput.value = '';
+      
+      submitBtn?.classList.add('hidden');
+    }
+
+    this.currentLoginMethod = method;
+  }
+
+  async handleOTPRequest() {
+    const emailInput = document.getElementById('email');
+    const email = emailInput?.value.trim();
+
+    if (!email) {
+      this.showError('Please enter your email address');
+      emailInput?.focus();
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      this.showError('Please enter a valid email address');
+      return;
+    }
+
+    const requestOTPBtn = document.getElementById('requestOTPBtn');
+    const otpRequestSection = document.getElementById('otpRequestSection');
+    const otpVerifySection = document.getElementById('otpVerifySection');
+    const otpCodeInput = document.getElementById('otpCode');
+
+    this.hideMessages();
+
+    try {
+      if (requestOTPBtn) {
+        requestOTPBtn.disabled = true;
+        requestOTPBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span><span>Sending...</span>';
+      }
+
+      if (!this.api) {
+        throw new Error('API service is not available');
+      }
+
+      const response = await this.api.requestOTP(email);
+      
+      this.showSuccess(response.message || 'OTP code has been sent to your email. Please check your inbox.');
+      
+      // Show OTP input section
+      otpRequestSection?.classList.add('hidden');
+      otpVerifySection?.classList.remove('hidden');
+      otpCodeInput?.focus();
+
+      // In development, show OTP if provided
+      if (response.otp) {
+        console.log('🔑 OTP Code (dev mode):', response.otp);
+        this.showSuccess(`OTP sent! Code: ${response.otp} (shown only in development)`);
+      }
+
+      // Start countdown timer
+      this.startOTPTimer(response.expiresIn || 10);
+    } catch (error) {
+      console.error('OTP request error:', error);
+      this.showError(error.message || 'Failed to send OTP. Please try again.');
+    } finally {
+      if (requestOTPBtn) {
+        requestOTPBtn.disabled = false;
+        requestOTPBtn.innerHTML = '<span class="material-symbols-outlined">mail</span><span>Send OTP Code</span>';
+      }
+    }
+  }
+
+  async handleOTPLogin(otpCode) {
+    const emailInput = document.getElementById('email');
+    const email = emailInput?.value.trim();
+    const otp = otpCode || document.getElementById('otpCode')?.value.trim();
+
+    if (!email || !otp) {
+      this.showError('Email and OTP code are required');
+      return;
+    }
+
+    if (otp.length !== 6) {
+      this.showError('OTP code must be 6 digits');
+      return;
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const originalText = submitText?.textContent || 'Sign In';
+
+    this.hideMessages();
+
+    try {
+      if (submitBtn) submitBtn.disabled = true;
+      if (submitText) submitText.textContent = 'Verifying...';
+
+      if (!this.api) {
+        throw new Error('API service is not available');
+      }
+
+      const response = await this.api.loginWithOTP(email, otp);
+
+      if (!response || !response.user) {
+        throw new Error('Invalid response from server');
+      }
+
+      localStorage.setItem('currentUser', JSON.stringify({
+        ...response.user,
+        authenticated: true,
+        loginTime: new Date().toISOString()
+      }));
+
+      if (response.token && this.api.setToken) {
+        this.api.setToken(response.token);
+      }
+
+      this.showSuccess('Login successful! Redirecting...');
+      
+      setTimeout(() => {
+        this.redirectUser(response.user.role);
+      }, 1000);
+    } catch (error) {
+      console.error('OTP login error:', error);
+      this.showError(error.message || 'Invalid OTP code. Please try again.');
+      if (submitBtn) submitBtn.disabled = false;
+      if (submitText) submitText.textContent = originalText;
+    }
+  }
+
+  startOTPTimer(minutes) {
+    const resendOTPBtn = document.getElementById('resendOTPBtn');
+    if (!resendOTPBtn) return;
+
+    let seconds = minutes * 60;
+    resendOTPBtn.disabled = true;
+    resendOTPBtn.textContent = `Resend OTP (${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')})`;
+
+    const timer = setInterval(() => {
+      seconds--;
+      if (seconds <= 0) {
+        clearInterval(timer);
+        resendOTPBtn.disabled = false;
+        resendOTPBtn.textContent = 'Resend OTP Code';
+      } else {
+        resendOTPBtn.textContent = `Resend OTP (${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')})`;
+      }
+    }, 1000);
+  }
+
   async handleLogin(e) {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Check if OTP login is active
+    if (this.currentLoginMethod === 'otp') {
+      const otpCode = document.getElementById('otpCode')?.value.trim();
+      if (otpCode && otpCode.length === 6) {
+        await this.handleOTPLogin(otpCode);
+      } else {
+        this.showError('Please request and enter OTP code');
+      }
+      return;
+    }
     
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
