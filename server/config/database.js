@@ -22,6 +22,31 @@ async function testConnection() {
     const client = await pool.connect();
     console.log('✅ Database connected successfully');
     console.log(`📊 Database: ${process.env.DB_NAME || 'lms_db'}`);
+    
+    // Test write operation
+    try {
+      const testWrite = await client.query(
+        'CREATE TEMP TABLE IF NOT EXISTS db_test (id SERIAL, test_data TEXT, created_at TIMESTAMP DEFAULT NOW());'
+      );
+      const insertTest = await client.query(
+        'INSERT INTO db_test (test_data) VALUES ($1) RETURNING *',
+        ['connection_test_' + Date.now()]
+      );
+      const readTest = await client.query(
+        'SELECT * FROM db_test WHERE id = $1',
+        [insertTest.rows[0].id]
+      );
+      await client.query('DROP TABLE IF EXISTS db_test');
+      
+      if (readTest.rows.length > 0) {
+        console.log('✅ Database write test passed - data can be saved');
+      } else {
+        console.warn('⚠️  Database write test failed - data may not be saved');
+      }
+    } catch (writeError) {
+      console.warn('⚠️  Database write test error:', writeError.message);
+    }
+    
     client.release();
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);

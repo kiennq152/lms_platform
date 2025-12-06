@@ -16,9 +16,22 @@ export class BaseModel {
   async query(text, params) {
     try {
       const result = await this.pool.query(text, params);
+      // Log row count for INSERT/UPDATE/DELETE
+      if (result.command === 'INSERT' || result.command === 'UPDATE' || result.command === 'DELETE') {
+        console.log(`💾 ${result.command} executed in ${this.tableName}: ${result.rowCount} row(s) affected`);
+      }
       return result;
     } catch (error) {
-      console.error(`Database query error in ${this.tableName}:`, error);
+      console.error(`❌ Database query error in ${this.tableName}:`, error.message);
+      console.error('   Error code:', error.code);
+      console.error('   Query:', text.substring(0, 200));
+      console.error('   Params:', params);
+      if (error.detail) {
+        console.error('   Detail:', error.detail);
+      }
+      if (error.hint) {
+        console.error('   Hint:', error.hint);
+      }
       throw error;
     }
   }
@@ -79,7 +92,13 @@ export class BaseModel {
    */
   async create(data, returning = '*') {
     const keys = Object.keys(data);
-    const values = Object.values(data);
+    // Convert Date objects to ISO strings for PostgreSQL
+    const values = Object.values(data).map(value => {
+      if (value instanceof Date) {
+        return value.toISOString();
+      }
+      return value;
+    });
     const placeholders = keys.map((_, index) => `$${index + 1}`).join(', ');
 
     const query = `
@@ -88,8 +107,17 @@ export class BaseModel {
       RETURNING ${returning}
     `;
 
-    const result = await this.query(query, values);
-    return result.rows[0];
+    try {
+      console.log(`📝 Creating record in ${this.tableName}:`, { keys, valuesCount: values.length });
+      const result = await this.query(query, values);
+      console.log(`✅ Record created in ${this.tableName}:`, result.rows[0]);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`❌ Failed to create record in ${this.tableName}:`, error.message);
+      console.error('   Query:', query);
+      console.error('   Values:', values);
+      throw error;
+    }
   }
 
   /**
@@ -97,7 +125,13 @@ export class BaseModel {
    */
   async update(id, data, idColumn = 'id', returning = '*') {
     const keys = Object.keys(data);
-    const values = Object.values(data);
+    // Convert Date objects to ISO strings for PostgreSQL
+    const values = Object.values(data).map(value => {
+      if (value instanceof Date) {
+        return value.toISOString();
+      }
+      return value;
+    });
     const setClause = keys.map((key, index) => `${key} = $${index + 2}`).join(', ');
 
     const query = `
@@ -107,8 +141,22 @@ export class BaseModel {
       RETURNING ${returning}
     `;
 
-    const result = await this.query(query, [id, ...values]);
-    return result.rows[0] || null;
+    try {
+      console.log(`📝 Updating record in ${this.tableName} (${idColumn}=${id}):`, { keys, valuesCount: values.length });
+      const result = await this.query(query, [id, ...values]);
+      if (result.rows[0]) {
+        console.log(`✅ Record updated in ${this.tableName}:`, result.rows[0]);
+      } else {
+        console.warn(`⚠️  No record found to update in ${this.tableName} (${idColumn}=${id})`);
+      }
+      return result.rows[0] || null;
+    } catch (error) {
+      console.error(`❌ Failed to update record in ${this.tableName}:`, error.message);
+      console.error('   Query:', query);
+      console.error('   ID:', id);
+      console.error('   Values:', values);
+      throw error;
+    }
   }
 
   /**

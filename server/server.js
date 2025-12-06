@@ -194,6 +194,15 @@ try {
   console.error('❌ Failed to register test-email routes:', error);
 }
 
+// Database test route
+try {
+  const dbTestRoutes = (await import('./routes/db-test.js')).default;
+  app.use('/api/db', dbTestRoutes);
+  console.log('✅ /api/db routes registered');
+} catch (error) {
+  console.error('❌ Failed to register db-test routes:', error);
+}
+
 // Debug: List all registered routes
 console.log('\n📋 Registered Routes:');
 app._router.stack.forEach((middleware, index) => {
