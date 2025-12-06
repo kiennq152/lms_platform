@@ -59,5 +59,23 @@ router.post('/verify-email', async (req, res, next) => {
   }
 });
 
+// Request OTP for login
+router.post('/request-otp', async (req, res, next) => {
+  try {
+    await AuthController.requestOTP(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Login with OTP
+router.post('/login-otp', async (req, res, next) => {
+  try {
+    await AuthController.loginWithOTP(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;
 

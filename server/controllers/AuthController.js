@@ -3,6 +3,8 @@
  * Handles authentication-related business logic
  */
 import UserModel from '../models/UserModel.js';
+import OTPModel from '../models/OTPModel.js';
+import EmailService from '../services/EmailService.js';
 import jwt from 'jsonwebtoken';
 
 export class AuthController {
@@ -157,6 +159,148 @@ export class AuthController {
       return res.json({ user: safeUser });
     } catch (error) {
       console.error('Get me error:', error);
+      return res.status(500).json({
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      });
+    }
+  }
+
+  /**
+   * Request OTP for login
+   */
+  async requestOTP(req, res) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      // Check if user exists
+      const user = await UserModel.findByEmail(email);
+      if (!user) {
+        // Don't reveal if user exists for security
+        return res.json({
+          message: 'If the email exists, an OTP code has been sent.',
+        });
+      }
+
+      // Check if user is approved and active
+      if (user.role === 'instructor' && !user.admin_approved) {
+        return res.status(403).json({
+          error: 'Your account is pending approval. Please wait for administrator approval.',
+        });
+      }
+
+      if (user.status !== 'active') {
+        return res.status(403).json({
+          error: `Your account is ${user.status}. Please contact administrator.`,
+        });
+      }
+
+      // Generate OTP
+      const otpRecord = await OTPModel.createOTP(email, 'login', 10);
+      
+      // Send OTP email
+      try {
+        const userName = `${user.first_name} ${user.last_name}`;
+        await EmailService.sendOTPEmail(email, otpRecord.code, userName);
+      } catch (emailError) {
+        console.error('Failed to send OTP email:', emailError);
+        // Still return success to not reveal email issues
+        return res.json({
+          message: 'If the email exists, an OTP code has been sent.',
+          // In development, return OTP for testing
+          ...(process.env.NODE_ENV === 'development' && { 
+            otp: otpRecord.code,
+            note: 'OTP shown only in development mode'
+          }),
+        });
+      }
+
+      return res.json({
+        message: 'OTP code has been sent to your email. Please check your inbox.',
+        expiresIn: 10, // minutes
+        // In development, return OTP for testing
+        ...(process.env.NODE_ENV === 'development' && { 
+          otp: otpRecord.code,
+          note: 'OTP shown only in development mode'
+        }),
+      });
+    } catch (error) {
+      console.error('Request OTP error:', error);
+      return res.status(500).json({
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      });
+    }
+  }
+
+  /**
+   * Login with OTP
+   */
+  async loginWithOTP(req, res) {
+    try {
+      const { email, otp } = req.body;
+
+      if (!email || !otp) {
+        return res.status(400).json({ error: 'Email and OTP code are required' });
+      }
+
+      // Verify OTP
+      const otpVerification = await OTPModel.verifyOTP(email, otp, 'login');
+      if (!otpVerification.valid) {
+        return res.status(401).json({ error: otpVerification.message });
+      }
+
+      // Find user
+      const user = await UserModel.findByEmail(email);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Check if user is approved and active
+      if (user.role === 'instructor' && !user.admin_approved) {
+        return res.status(403).json({
+          error: 'Your account is pending approval. Please wait for administrator approval.',
+        });
+      }
+
+      if (user.status !== 'active') {
+        return res.status(403).json({
+          error: `Your account is ${user.status}. Please contact administrator.`,
+        });
+      }
+
+      // Update last login
+      await UserModel.updateLastLogin(user.user_id);
+
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          user_id: user.user_id,
+          email: user.email,
+          role: user.role,
+        },
+        process.env.JWT_SECRET || 'secret',
+        { expiresIn: '7d' }
+      );
+
+      return res.json({
+        message: 'Login successful',
+        token,
+        user: {
+          user_id: user.user_id,
+          email: user.email,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          role: user.role,
+          status: user.status,
+        },
+      });
+    } catch (error) {
+      console.error('Login with OTP error:', error);
       return res.status(500).json({
         error: 'Internal server error',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined,
