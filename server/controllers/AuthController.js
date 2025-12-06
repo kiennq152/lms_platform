@@ -231,21 +231,37 @@ export class AuthController {
       
       return res.json({
         message: emailSent 
-          ? 'OTP code has been sent to your email. Please check your inbox.'
+          ? 'OTP code has been sent to your email. Please check your inbox (and spam folder).'
           : 'OTP code generated. ' + (emailError?.code === 'EMAIL_NOT_CONFIGURED' 
             ? 'Email service not configured. OTP shown below for testing.'
             : 'Email sending failed. OTP shown below for testing.'),
         expiresIn: 10,
+        emailSent,
+        emailConfigured: EmailService.isConfigured(),
         ...(shouldShowOTP && { 
           otp: otpRecord.code,
           note: emailSent 
             ? 'OTP shown only in development mode'
             : 'Email not sent - OTP shown for testing. Please configure email service.'
         }),
-        ...(emailError && process.env.NODE_ENV === 'development' && {
+        ...(emailError && {
           emailError: emailError.message,
-          troubleshooting: 'Check EMAIL_USER and EMAIL_PASSWORD in .env file'
+          emailErrorCode: emailError.code,
+          troubleshooting: emailError.code === 'EMAIL_NOT_CONFIGURED'
+            ? 'Set EMAIL_USER and EMAIL_PASSWORD in server/.env file'
+            : 'Check server logs for detailed error information'
         }),
+        // Helpful instructions
+        instructions: !emailSent ? [
+          '1. Use the OTP code shown above to login',
+          '2. To receive emails, configure EMAIL_USER and EMAIL_PASSWORD in server/.env',
+          '3. See server/docs/EMAIL_TROUBLESHOOTING.md for setup guide'
+        ] : [
+          '1. Check your email inbox',
+          '2. Check spam/junk folder',
+          '3. OTP expires in 10 minutes',
+          '4. If not received, use OTP from response (development mode)'
+        ],
       });
 
       return res.json({

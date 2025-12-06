@@ -203,6 +203,15 @@ try {
   console.error('❌ Failed to register db-test routes:', error);
 }
 
+// Test OTP route (for debugging)
+try {
+  const testOTPRoutes = (await import('./routes/test-otp.js')).default;
+  app.use('/api', testOTPRoutes);
+  console.log('✅ /api/test-otp routes registered');
+} catch (error) {
+  console.error('❌ Failed to register test-otp routes:', error);
+}
+
 // Debug: List all registered routes
 console.log('\n📋 Registered Routes:');
 app._router.stack.forEach((middleware, index) => {
