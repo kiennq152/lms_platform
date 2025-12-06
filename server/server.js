@@ -185,6 +185,15 @@ try {
   console.error('❌ Failed to register /test routes:', error);
 }
 
+// Test email route
+try {
+  const testEmailRoutes = (await import('./routes/test-email.js')).default;
+  app.use('/api', testEmailRoutes);
+  console.log('✅ /api/test-email routes registered');
+} catch (error) {
+  console.error('❌ Failed to register test-email routes:', error);
+}
+
 // Debug: List all registered routes
 console.log('\n📋 Registered Routes:');
 app._router.stack.forEach((middleware, index) => {

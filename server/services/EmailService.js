@@ -15,26 +15,54 @@ export class EmailService {
    */
   initializeTransporter() {
     try {
+      const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
+      const emailPassword = process.env.EMAIL_PASSWORD || process.env.GMAIL_APP_PASSWORD;
+
+      if (!emailUser || !emailPassword) {
+        console.warn('⚠️  Email service not configured. EMAIL_USER and EMAIL_PASSWORD not set in .env');
+        console.warn('💡 OTP codes will be shown in console/API response in development mode');
+        this.transporter = null;
+        return;
+      }
+
       this.transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: process.env.EMAIL_USER || process.env.GMAIL_USER,
-          pass: process.env.EMAIL_PASSWORD || process.env.GMAIL_APP_PASSWORD,
+          user: emailUser,
+          pass: emailPassword,
         },
+        // Add timeout and connection options
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
       });
 
       // Verify connection
       this.transporter.verify((error, success) => {
         if (error) {
           console.error('❌ Email service configuration error:', error.message);
-          console.log('💡 Make sure EMAIL_USER and EMAIL_PASSWORD are set in .env');
+          console.error('💡 Common issues:');
+          console.error('   1. Wrong App Password (must be 16 characters, no spaces)');
+          console.error('   2. 2-Step Verification not enabled');
+          console.error('   3. "Less secure app access" needs to be enabled (if not using App Password)');
+          console.error('   4. Check EMAIL_USER and EMAIL_PASSWORD in .env file');
+          this.transporter = null; // Disable transporter on error
         } else {
           console.log('✅ Email service ready');
+          console.log(`📧 Sending emails from: ${emailUser}`);
         }
       });
     } catch (error) {
       console.error('❌ Failed to initialize email service:', error);
+      this.transporter = null;
     }
+  }
+
+  /**
+   * Check if email service is configured
+   */
+  isConfigured() {
+    return this.transporter !== null;
   }
 
   /**
@@ -42,7 +70,9 @@ export class EmailService {
    */
   async sendEmail(to, subject, html, text = null) {
     if (!this.transporter) {
-      throw new Error('Email service not configured. Please set EMAIL_USER and EMAIL_PASSWORD in .env');
+      const error = new Error('Email service not configured');
+      error.code = 'EMAIL_NOT_CONFIGURED';
+      throw error;
     }
 
     try {
@@ -54,11 +84,26 @@ export class EmailService {
         text: text || html.replace(/<[^>]*>/g, ''), // Strip HTML for text version
       };
 
+      console.log(`📧 Attempting to send email to: ${to}`);
       const info = await this.transporter.sendMail(mailOptions);
-      console.log('✅ Email sent:', info.messageId);
+      console.log('✅ Email sent successfully:', info.messageId);
+      console.log(`   To: ${to}`);
+      console.log(`   Subject: ${subject}`);
       return info;
     } catch (error) {
-      console.error('❌ Email send error:', error);
+      console.error('❌ Email send error:', error.message);
+      console.error('   Error code:', error.code);
+      console.error('   Full error:', error);
+      
+      // Provide helpful error messages
+      if (error.code === 'EAUTH') {
+        throw new Error('Email authentication failed. Check your EMAIL_USER and EMAIL_PASSWORD in .env');
+      } else if (error.code === 'ECONNECTION') {
+        throw new Error('Cannot connect to email server. Check your internet connection.');
+      } else if (error.code === 'ETIMEDOUT') {
+        throw new Error('Email server connection timeout. Please try again.');
+      }
+      
       throw error;
     }
   }

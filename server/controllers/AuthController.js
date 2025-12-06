@@ -203,21 +203,50 @@ export class AuthController {
       const otpRecord = await OTPModel.createOTP(email, 'login', 10);
       
       // Send OTP email
+      let emailSent = false;
+      let emailError = null;
+      
       try {
+        if (!EmailService.isConfigured()) {
+          throw new Error('EMAIL_NOT_CONFIGURED');
+        }
+        
         const userName = `${user.first_name} ${user.last_name}`;
         await EmailService.sendOTPEmail(email, otpRecord.code, userName);
-      } catch (emailError) {
-        console.error('Failed to send OTP email:', emailError);
-        // Still return success to not reveal email issues
-        return res.json({
-          message: 'If the email exists, an OTP code has been sent.',
-          // In development, return OTP for testing
-          ...(process.env.NODE_ENV === 'development' && { 
-            otp: otpRecord.code,
-            note: 'OTP shown only in development mode'
-          }),
-        });
+        emailSent = true;
+        console.log(`✅ OTP email sent to ${email}`);
+      } catch (emailErr) {
+        emailError = emailErr;
+        console.error('❌ Failed to send OTP email:', emailErr.message);
+        console.error('   Error code:', emailErr.code);
+        
+        // Log detailed error for debugging
+        if (process.env.NODE_ENV === 'development') {
+          console.error('   Full error:', emailErr);
+        }
       }
+
+      // Always return OTP in development mode or if email fails
+      const shouldShowOTP = process.env.NODE_ENV === 'development' || !emailSent;
+      
+      return res.json({
+        message: emailSent 
+          ? 'OTP code has been sent to your email. Please check your inbox.'
+          : 'OTP code generated. ' + (emailError?.code === 'EMAIL_NOT_CONFIGURED' 
+            ? 'Email service not configured. OTP shown below for testing.'
+            : 'Email sending failed. OTP shown below for testing.'),
+        expiresIn: 10,
+        ...(shouldShowOTP && { 
+          otp: otpRecord.code,
+          note: emailSent 
+            ? 'OTP shown only in development mode'
+            : 'Email not sent - OTP shown for testing. Please configure email service.'
+        }),
+        ...(emailError && process.env.NODE_ENV === 'development' && {
+          emailError: emailError.message,
+          troubleshooting: 'Check EMAIL_USER and EMAIL_PASSWORD in .env file'
+        }),
+      });
 
       return res.json({
         message: 'OTP code has been sent to your email. Please check your inbox.',
