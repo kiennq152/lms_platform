@@ -21,7 +21,7 @@ export class UserModel extends BaseModel {
    * Find user by ID
    */
   async findById(userId) {
-    return await this.findById(userId, 'user_id');
+    return await super.findById(userId, 'user_id');
   }
 
   /**

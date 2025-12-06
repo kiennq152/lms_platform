@@ -5,9 +5,12 @@ import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 
-// Import routes
-import authRoutes from './routes/auth.js';
-import coursesRoutes from './routes/courses.js';
+// Import routes (MVC pattern)
+import authRoutes from './routes/auth.mvc.js';
+import coursesRoutes from './routes/courses.mvc.js';
+// Legacy routes (for backward compatibility)
+// import authRoutes from './routes/auth.js';
+// import coursesRoutes from './routes/courses.js';
 import enrollmentsRoutes from './routes/enrollments.js';
 import instructorRoutes from './routes/instructor.js';
 import contentRoutes from './routes/content.js';
