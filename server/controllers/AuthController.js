@@ -147,7 +147,7 @@ export class AuthController {
   async getMe(req, res) {
     try {
       const userId = req.user.user_id;
-      const user = await UserModel.findById(userId, 'user_id');
+      const user = await UserModel.findById(userId);
 
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
