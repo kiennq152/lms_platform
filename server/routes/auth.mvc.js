@@ -50,10 +50,28 @@ router.get('/me', authenticate, async (req, res, next) => {
   }
 });
 
-// Verify email
+// Verify email (legacy - using token)
 router.post('/verify-email', async (req, res, next) => {
   try {
     await AuthController.verifyEmail(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Verify registration with OTP
+router.post('/verify-registration', async (req, res, next) => {
+  try {
+    await AuthController.verifyRegistration(req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Resend registration OTP
+router.post('/resend-registration-otp', async (req, res, next) => {
+  try {
+    await AuthController.resendRegistrationOTP(req, res);
   } catch (error) {
     next(error);
   }

@@ -111,8 +111,12 @@ export class EmailService {
   /**
    * Send OTP email
    */
-  async sendOTPEmail(email, otpCode, userName = 'User') {
-    const subject = 'Your Login OTP Code - VIAN Academy LMS';
+  async sendOTPEmail(email, otpCode, userName = 'User', purpose = 'login') {
+    const isRegistration = purpose === 'registration';
+    const subject = isRegistration 
+      ? 'Verify Your Email - VIAN Academy LMS'
+      : 'Your Login OTP Code - VIAN Academy LMS';
+    
     const html = `
       <!DOCTYPE html>
       <html>
@@ -133,11 +137,13 @@ export class EmailService {
         <div class="container">
           <div class="header">
             <h1>🎓 VIAN Academy LMS</h1>
-            <p>Login Verification Code</p>
+            <p>${isRegistration ? 'Email Verification' : 'Login Verification Code'}</p>
           </div>
           <div class="content">
             <p>Hello ${userName},</p>
-            <p>You requested a login verification code. Use the code below to complete your login:</p>
+            <p>${isRegistration 
+              ? 'Thank you for registering! Use the code below to verify your email address:'
+              : 'You requested a login verification code. Use the code below to complete your login:'}</p>
             
             <div class="otp-box">
               <div class="otp-code">${otpCode}</div>
@@ -146,13 +152,15 @@ export class EmailService {
             <div class="warning">
               <strong>⚠️ Security Notice:</strong>
               <ul style="margin: 10px 0; padding-left: 20px;">
-                <li>This code will expire in 10 minutes</li>
+                <li>This code will expire in ${isRegistration ? '15' : '10'} minutes</li>
                 <li>Never share this code with anyone</li>
                 <li>If you didn't request this code, please ignore this email</li>
               </ul>
             </div>
             
-            <p>If you didn't request this code, please contact support immediately.</p>
+            ${isRegistration 
+              ? '<p>After verifying your email, you will be able to login to your account.</p>'
+              : '<p>If you didn\'t request this code, please contact support immediately.</p>'}
           </div>
           <div class="footer">
             <p>© ${new Date().getFullYear()} VIAN Academy LMS. All rights reserved.</p>

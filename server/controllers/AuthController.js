@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 
 export class AuthController {
   /**
-   * Register new user
+   * Register new user with OTP email verification
    */
   async register(req, res) {
     try {
@@ -21,14 +21,7 @@ export class AuthController {
         return res.status(400).json({ error: 'User already exists' });
       }
 
-      // Generate verification token
-      const verificationToken = jwt.sign(
-        { email },
-        process.env.JWT_SECRET || 'secret',
-        { expiresIn: '24h' }
-      );
-
-      // Create user
+      // Create user (not verified yet)
       const user = await UserModel.createUser({
         email,
         password,
@@ -37,31 +30,207 @@ export class AuthController {
         role: role || 'student',
         phone: phone || null,
         bio: bio || null,
-        email_verification_token: verificationToken,
         admin_approved: role === 'student', // Students auto-approved
         email_verified: false,
       });
 
+      // Generate OTP for email verification
+      const otpRecord = await OTPModel.createOTP(email, 'registration', 15); // 15 minutes expiry
+
+      // Send OTP email
+      let emailSent = false;
+      let emailError = null;
+
+      try {
+        if (EmailService.isConfigured()) {
+          const userName = `${firstName} ${lastName}`;
+          await EmailService.sendOTPEmail(email, otpRecord.code, userName);
+          emailSent = true;
+          console.log(`✅ Registration OTP email sent to ${email}`);
+        } else {
+          throw new Error('EMAIL_NOT_CONFIGURED');
+        }
+      } catch (emailErr) {
+        emailError = emailErr;
+        console.error('❌ Failed to send registration OTP email:', emailErr.message);
+      }
+
+      // Always return OTP in development mode or if email fails
+      const shouldShowOTP = process.env.NODE_ENV === 'development' || !emailSent;
+
       return res.status(201).json({
-        message: 'User registered successfully. Please verify your email.',
+        message: emailSent
+          ? 'Registration successful! Please check your email for the verification code.'
+          : 'Registration successful! OTP code generated. Email not configured - OTP shown below.',
         user: {
           user_id: user.user_id,
           email: user.email,
           first_name: user.first_name,
           last_name: user.last_name,
           role: user.role,
-          email_verified: user.email_verified,
+          email_verified: false, // Not verified yet
           admin_approved: user.admin_approved,
         },
-        verificationToken,
+        expiresIn: 15, // minutes
+        emailSent,
+        emailConfigured: EmailService.isConfigured(),
+        ...(shouldShowOTP && {
+          otp: otpRecord.code,
+          note: emailSent
+            ? 'OTP shown only in development mode'
+            : 'Email not configured - OTP shown for testing. Please verify your email with this code.',
+        }),
+        ...(emailError && {
+          emailError: emailError.message,
+          emailErrorCode: emailError.code,
+        }),
+        instructions: [
+          '1. Check your email for the verification code',
+          '2. Use the code to verify your email at /api/auth/verify-registration',
+          '3. After verification, you can login',
+          ...(shouldShowOTP ? ['4. OTP code is shown above (development/testing mode)'] : []),
+        ],
       });
     } catch (error) {
       console.error('Register error:', error);
-      
+
       if (error.code === '23505') {
         return res.status(409).json({ error: 'User already exists' });
       }
-      
+
+      return res.status(500).json({
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      });
+    }
+  }
+
+  /**
+   * Verify registration with OTP
+   */
+  async verifyRegistration(req, res) {
+    try {
+      const { email, otp } = req.body;
+
+      if (!email || !otp) {
+        return res.status(400).json({ error: 'Email and OTP code are required' });
+      }
+
+      // Verify OTP
+      const otpVerification = await OTPModel.verifyOTP(email, otp, 'registration');
+      if (!otpVerification.valid) {
+        return res.status(401).json({ error: otpVerification.message });
+      }
+
+      // Find user
+      const user = await UserModel.findByEmail(email);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Check if already verified
+      if (user.email_verified) {
+        return res.status(400).json({
+          error: 'Email already verified',
+          message: 'Your email has already been verified. You can login now.',
+        });
+      }
+
+      // Verify email
+      await UserModel.verifyEmail(user.user_id);
+
+      console.log(`✅ Email verified for user: ${email}`);
+
+      return res.json({
+        message: 'Email verified successfully! You can now login.',
+        user: {
+          user_id: user.user_id,
+          email: user.email,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          role: user.role,
+          email_verified: true,
+          admin_approved: user.admin_approved,
+        },
+      });
+    } catch (error) {
+      console.error('Verify registration error:', error);
+      return res.status(500).json({
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      });
+    }
+  }
+
+  /**
+   * Resend registration OTP
+   */
+  async resendRegistrationOTP(req, res) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      // Find user
+      const user = await UserModel.findByEmail(email);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Check if already verified
+      if (user.email_verified) {
+        return res.status(400).json({
+          error: 'Email already verified',
+          message: 'Your email has already been verified. You can login now.',
+        });
+      }
+
+      // Generate new OTP
+      const otpRecord = await OTPModel.createOTP(email, 'registration', 15);
+
+      // Send OTP email
+      let emailSent = false;
+      let emailError = null;
+
+      try {
+        if (EmailService.isConfigured()) {
+          const userName = `${user.first_name} ${user.last_name}`;
+          await EmailService.sendOTPEmail(email, otpRecord.code, userName);
+          emailSent = true;
+          console.log(`✅ Registration OTP resent to ${email}`);
+        } else {
+          throw new Error('EMAIL_NOT_CONFIGURED');
+        }
+      } catch (emailErr) {
+        emailError = emailErr;
+        console.error('❌ Failed to resend registration OTP email:', emailErr.message);
+      }
+
+      // Always return OTP in development mode or if email fails
+      const shouldShowOTP = process.env.NODE_ENV === 'development' || !emailSent;
+
+      return res.json({
+        message: emailSent
+          ? 'Verification code has been resent to your email. Please check your inbox.'
+          : 'Verification code generated. Email not configured - OTP shown below.',
+        expiresIn: 15,
+        emailSent,
+        emailConfigured: EmailService.isConfigured(),
+        ...(shouldShowOTP && {
+          otp: otpRecord.code,
+          note: emailSent
+            ? 'OTP shown only in development mode'
+            : 'Email not configured - OTP shown for testing.',
+        }),
+        ...(emailError && {
+          emailError: emailError.message,
+          emailErrorCode: emailError.code,
+        }),
+      });
+    } catch (error) {
+      console.error('Resend registration OTP error:', error);
       return res.status(500).json({
         error: 'Internal server error',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined,
