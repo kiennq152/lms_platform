@@ -516,6 +516,8 @@ class RegisterManager {
       });
 
       console.log('Registration successful:', response);
+      console.log('OTP from response:', response.otp);
+      console.log('Email sent:', response.emailSent);
 
       // Store registered email
       this.registeredEmail = data.email;
@@ -575,12 +577,26 @@ class RegisterManager {
       otpCodeInput.focus();
     }
 
-    // Show OTP in development mode
+    // Always show OTP if available (development mode or email failed)
     if (response.otp) {
       if (devOtpInfo) devOtpInfo.classList.remove('hidden');
       if (devOtpCode) devOtpCode.textContent = response.otp;
+      
+      // Show helpful message
+      const otpMessage = document.getElementById('otpSuccessMessage');
+      if (otpMessage && !response.emailSent) {
+        otpMessage.textContent = `Email not configured. Use OTP code shown below: ${response.otp}`;
+        otpMessage.classList.remove('hidden');
+        otpMessage.classList.remove('bg-green-50', 'dark:bg-green-900/20', 'text-green-700', 'dark:text-green-300');
+        otpMessage.classList.add('bg-yellow-50', 'dark:bg-yellow-900/20', 'text-yellow-700', 'dark:text-yellow-300', 'border-yellow-200', 'dark:border-yellow-800');
+      }
     } else {
       if (devOtpInfo) devOtpInfo.classList.add('hidden');
+      
+      // If no OTP in response and email not sent, show error
+      if (!response.emailSent) {
+        this.showOTPError('OTP code not received. Please check your email or try resending.');
+      }
     }
 
     // Setup OTP event listeners
@@ -673,7 +689,15 @@ class RegisterManager {
 
       const response = await this.api.resendRegistrationOTP(this.registeredEmail);
 
-      this.showOTPSuccess('Verification code has been resent. Please check your email.');
+      console.log('Resend OTP response:', response);
+      console.log('OTP from response:', response.otp);
+      console.log('Email sent:', response.emailSent);
+
+      if (response.emailSent) {
+        this.showOTPSuccess('Verification code has been resent. Please check your email (and spam folder).');
+      } else {
+        this.showOTPSuccess(`Email not configured. Use OTP code: ${response.otp || 'Not available'}`);
+      }
 
       // Clear OTP input
       if (otpCodeInput) {
@@ -681,10 +705,12 @@ class RegisterManager {
         otpCodeInput.focus();
       }
 
-      // Show OTP in development mode
+      // Always show OTP if available (development mode or email failed)
       if (response.otp) {
         if (devOtpInfo) devOtpInfo.classList.remove('hidden');
         if (devOtpCode) devOtpCode.textContent = response.otp;
+      } else {
+        if (devOtpInfo) devOtpInfo.classList.add('hidden');
       }
 
       // Restart timer
