@@ -44,7 +44,7 @@ export class AuthController {
       try {
         if (EmailService.isConfigured()) {
           const userName = `${firstName} ${lastName}`;
-          await EmailService.sendOTPEmail(email, otpRecord.code, userName);
+          await EmailService.sendOTPEmail(email, otpRecord.code, userName, 'registration');
           emailSent = true;
           console.log(`✅ Registration OTP email sent to ${email}`);
         } else {
