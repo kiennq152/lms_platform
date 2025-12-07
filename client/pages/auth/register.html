@@ -67,6 +67,8 @@
 
 <!-- Registration Form -->
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8">
+<!-- Registration Form Section -->
+<div id="registrationSection">
 <form id="registerForm" class="space-y-6">
 <div id="errorMessage" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300 text-sm"></div>
 <div id="successMessage" class="hidden bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-green-700 dark:text-green-300 text-sm"></div>
@@ -179,6 +181,52 @@ Already have an account?
 </p>
 </div>
 </div>
+
+<!-- OTP Verification Section -->
+<div id="otpVerificationSection" class="hidden">
+<div class="text-center mb-6">
+<h2 class="text-2xl font-bold mb-2">Verify Your Email</h2>
+<p class="text-gray-600 dark:text-gray-400">We've sent a verification code to</p>
+<p class="text-primary font-semibold" id="verificationEmail"></p>
+</div>
+
+<div id="otpErrorMessage" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300 text-sm mb-4"></div>
+<div id="otpSuccessMessage" class="hidden bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-green-700 dark:text-green-300 text-sm mb-4"></div>
+
+<div class="space-y-6">
+<div>
+<label for="otpCode" class="block text-sm font-semibold mb-2 text-center">Enter Verification Code</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">vpn_key</span>
+<input type="text" id="otpCode" name="otpCode" class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary text-center text-2xl font-mono tracking-widest" placeholder="000000" maxlength="6" autocomplete="one-time-code"/>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+Check your email for the 6-digit code. Valid for 15 minutes.
+</p>
+</div>
+
+<div id="otpInfo" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-blue-700 dark:text-blue-300 text-sm hidden">
+<p class="font-semibold mb-1">OTP Code (Development Mode):</p>
+<p class="text-2xl font-mono" id="devOtpCode"></p>
+<p class="text-xs mt-2">This code is shown only in development mode for testing.</p>
+</div>
+
+<div class="flex gap-3">
+<button type="button" id="verifyOTPBtn" class="flex-1 bg-primary hover:bg-blue-800 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">verified</span>
+<span>Verify Email</span>
+</button>
+<button type="button" id="resendOTPBtn" class="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+</div>
+
+<button type="button" id="backToRegisterBtn" class="w-full text-sm text-gray-600 dark:text-gray-400 hover:text-primary transition-colors">
+← Back to registration
+</button>
+</div>
+</div>
+</div>
 </div>
 </div>
 
@@ -188,6 +236,8 @@ class RegisterManager {
   constructor() {
     this.userType = 'student';
     this.api = null;
+    this.registeredEmail = null;
+    this.otpTimer = null;
     this.init();
   }
 
@@ -465,22 +515,13 @@ class RegisterManager {
         bio: data.bio || null
       });
 
-      if (data.role === 'instructor') {
-        this.showSuccess(`Đăng ký thành công! Vui lòng kiểm tra email (${data.email}) để xác thực tài khoản. Sau khi xác thực, tài khoản của bạn sẽ được quản trị viên xem xét.`);
-      } else {
-        this.showSuccess(`Đăng ký thành công! Vui lòng kiểm tra email (${data.email}) để xác thực tài khoản.`);
-      }
-
       console.log('Registration successful:', response);
 
-      setTimeout(() => {
-        e.target.reset();
-        if (response.verificationToken) {
-          window.location.href = `verify-email.html?email=${encodeURIComponent(data.email)}&token=${response.verificationToken}`;
-        } else {
-          window.location.href = 'login.html';
-        }
-      }, 3000);
+      // Store registered email
+      this.registeredEmail = data.email;
+
+      // Show OTP verification section
+      this.showOTPVerification(response);
     } catch (error) {
       console.error('Registration error:', error);
       this.showError(error.message || 'Đăng ký thất bại. Vui lòng thử lại.');
@@ -513,6 +554,223 @@ class RegisterManager {
   hideMessages() {
     const errorDiv = document.getElementById('errorMessage');
     const successDiv = document.getElementById('successMessage');
+    if (errorDiv) errorDiv.classList.add('hidden');
+    if (successDiv) successDiv.classList.add('hidden');
+  }
+
+  showOTPVerification(response) {
+    // Hide registration form
+    const registrationSection = document.getElementById('registrationSection');
+    const otpSection = document.getElementById('otpVerificationSection');
+    const verificationEmail = document.getElementById('verificationEmail');
+    const otpCodeInput = document.getElementById('otpCode');
+    const devOtpInfo = document.getElementById('otpInfo');
+    const devOtpCode = document.getElementById('devOtpCode');
+
+    if (registrationSection) registrationSection.classList.add('hidden');
+    if (otpSection) otpSection.classList.remove('hidden');
+    if (verificationEmail) verificationEmail.textContent = this.registeredEmail;
+    if (otpCodeInput) {
+      otpCodeInput.value = '';
+      otpCodeInput.focus();
+    }
+
+    // Show OTP in development mode
+    if (response.otp) {
+      if (devOtpInfo) devOtpInfo.classList.remove('hidden');
+      if (devOtpCode) devOtpCode.textContent = response.otp;
+    } else {
+      if (devOtpInfo) devOtpInfo.classList.add('hidden');
+    }
+
+    // Setup OTP event listeners
+    this.setupOTPListeners();
+
+    // Start countdown timer
+    this.startOTPTimer(response.expiresIn || 15);
+  }
+
+  setupOTPListeners() {
+    const verifyBtn = document.getElementById('verifyOTPBtn');
+    const resendBtn = document.getElementById('resendOTPBtn');
+    const backBtn = document.getElementById('backToRegisterBtn');
+    const otpCodeInput = document.getElementById('otpCode');
+
+    if (verifyBtn) {
+      verifyBtn.addEventListener('click', () => this.handleVerifyOTP());
+    }
+
+    if (resendBtn) {
+      resendBtn.addEventListener('click', () => this.handleResendOTP());
+    }
+
+    if (backBtn) {
+      backBtn.addEventListener('click', () => this.backToRegistration());
+    }
+
+    // Auto-submit on 6 digits
+    if (otpCodeInput) {
+      otpCodeInput.addEventListener('input', (e) => {
+        const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+        e.target.value = value;
+        if (value.length === 6) {
+          this.handleVerifyOTP();
+        }
+      });
+    }
+  }
+
+  async handleVerifyOTP() {
+    const otpCode = document.getElementById('otpCode')?.value.trim();
+    const verifyBtn = document.getElementById('verifyOTPBtn');
+    const verifyText = verifyBtn?.querySelector('span:last-child') || verifyBtn;
+
+    if (!otpCode || otpCode.length !== 6) {
+      this.showOTPError('Please enter a valid 6-digit code');
+      return;
+    }
+
+    this.hideOTPMessages();
+
+    try {
+      if (verifyBtn) verifyBtn.disabled = true;
+      if (verifyText) verifyText.textContent = 'Verifying...';
+
+      if (!this.api) {
+        throw new Error('API service is not available');
+      }
+
+      // Use verifyRegistration endpoint
+      const response = await this.api.verifyRegistration(this.registeredEmail, otpCode);
+
+      this.showOTPSuccess('Email verified successfully! Redirecting to login...');
+
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2000);
+    } catch (error) {
+      console.error('Verify OTP error:', error);
+      this.showOTPError(error.message || 'Invalid verification code. Please try again.');
+      if (verifyBtn) verifyBtn.disabled = false;
+      if (verifyText) verifyText.textContent = 'Verify Email';
+    }
+  }
+
+  async handleResendOTP() {
+    const resendBtn = document.getElementById('resendOTPBtn');
+    const otpCodeInput = document.getElementById('otpCode');
+    const devOtpInfo = document.getElementById('otpInfo');
+    const devOtpCode = document.getElementById('devOtpCode');
+
+    this.hideOTPMessages();
+
+    try {
+      if (resendBtn) resendBtn.disabled = true;
+
+      if (!this.api) {
+        throw new Error('API service is not available');
+      }
+
+      const response = await this.api.resendRegistrationOTP(this.registeredEmail);
+
+      this.showOTPSuccess('Verification code has been resent. Please check your email.');
+
+      // Clear OTP input
+      if (otpCodeInput) {
+        otpCodeInput.value = '';
+        otpCodeInput.focus();
+      }
+
+      // Show OTP in development mode
+      if (response.otp) {
+        if (devOtpInfo) devOtpInfo.classList.remove('hidden');
+        if (devOtpCode) devOtpCode.textContent = response.otp;
+      }
+
+      // Restart timer
+      this.startOTPTimer(response.expiresIn || 15);
+    } catch (error) {
+      console.error('Resend OTP error:', error);
+      this.showOTPError(error.message || 'Failed to resend verification code. Please try again.');
+    } finally {
+      if (resendBtn) resendBtn.disabled = false;
+    }
+  }
+
+  backToRegistration() {
+    const registrationSection = document.getElementById('registrationSection');
+    const otpSection = document.getElementById('otpVerificationSection');
+
+    if (registrationSection) registrationSection.classList.remove('hidden');
+    if (otpSection) otpSection.classList.add('hidden');
+
+    this.hideOTPMessages();
+    this.registeredEmail = null;
+
+    // Clear timer
+    if (this.otpTimer) {
+      clearInterval(this.otpTimer);
+      this.otpTimer = null;
+    }
+  }
+
+  startOTPTimer(minutes) {
+    const resendBtn = document.getElementById('resendOTPBtn');
+    if (!resendBtn) return;
+
+    // Clear existing timer
+    if (this.otpTimer) {
+      clearInterval(this.otpTimer);
+    }
+
+    let seconds = minutes * 60;
+    resendBtn.disabled = true;
+    const resendIcon = resendBtn.querySelector('.material-symbols-outlined');
+    const originalContent = resendIcon ? resendIcon.textContent : '';
+
+    const updateTimer = () => {
+      const minutesLeft = Math.floor(seconds / 60);
+      const secondsLeft = seconds % 60;
+      if (resendIcon) {
+        resendIcon.textContent = `${minutesLeft}:${String(secondsLeft).padStart(2, '0')}`;
+      }
+
+      if (seconds <= 0) {
+        clearInterval(this.otpTimer);
+        resendBtn.disabled = false;
+        if (resendIcon) resendIcon.textContent = originalContent;
+      } else {
+        seconds--;
+      }
+    };
+
+    updateTimer();
+    this.otpTimer = setInterval(updateTimer, 1000);
+  }
+
+  showOTPError(message) {
+    const errorDiv = document.getElementById('otpErrorMessage');
+    const successDiv = document.getElementById('otpSuccessMessage');
+    if (errorDiv) {
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+    }
+    if (successDiv) successDiv.classList.add('hidden');
+  }
+
+  showOTPSuccess(message) {
+    const successDiv = document.getElementById('otpSuccessMessage');
+    const errorDiv = document.getElementById('otpErrorMessage');
+    if (successDiv) {
+      successDiv.textContent = message;
+      successDiv.classList.remove('hidden');
+    }
+    if (errorDiv) errorDiv.classList.add('hidden');
+  }
+
+  hideOTPMessages() {
+    const errorDiv = document.getElementById('otpErrorMessage');
+    const successDiv = document.getElementById('otpSuccessMessage');
     if (errorDiv) errorDiv.classList.add('hidden');
     if (successDiv) successDiv.classList.add('hidden');
   }

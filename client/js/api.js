@@ -130,6 +130,20 @@ class API {
     return data;
   }
 
+  async verifyRegistration(email, otp) {
+    return this.request('/auth/verify-registration', {
+      method: 'POST',
+      body: JSON.stringify({ email, otp }),
+    });
+  }
+
+  async resendRegistrationOTP(email) {
+    return this.request('/auth/resend-registration-otp', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
   logout() {
     this.setToken(null);
     localStorage.removeItem('currentUser');
