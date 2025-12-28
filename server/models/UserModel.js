@@ -141,6 +141,34 @@ export class UserModel extends BaseModel {
     const result = await this.query(query, [userId]);
     return result.rows[0] || null;
   }
+
+  /**
+   * Search users by email, first_name, or last_name
+   */
+  async searchUsers(searchTerm, filters = {}) {
+    let query = `
+      SELECT * FROM ${this.tableName}
+      WHERE (email ILIKE $1 OR first_name ILIKE $1 OR last_name ILIKE $1)
+    `;
+    
+    const params = [`%${searchTerm}%`];
+    let paramCount = 2;
+
+    if (filters.role) {
+      query += ` AND role = $${paramCount++}`;
+      params.push(filters.role);
+    }
+
+    if (filters.status) {
+      query += ` AND status = $${paramCount++}`;
+      params.push(filters.status);
+    }
+
+    query += ` ORDER BY created_at DESC`;
+
+    const result = await this.query(query, params);
+    return result.rows;
+  }
 }
 
 export default new UserModel();
