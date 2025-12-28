@@ -121,11 +121,20 @@ try {
   console.error('❌ Failed to register /api/content routes:', error);
 }
 
+// Users routes (MVC pattern)
 try {
-  app.use('/api/users', usersRoutes);
-  console.log('✅ /api/users routes registered');
+  const usersMvcRoutes = (await import('./routes/users.mvc.js')).default;
+  app.use('/api/users', usersMvcRoutes);
+  console.log('✅ /api/users routes registered (MVC)');
 } catch (error) {
-  console.error('❌ Failed to register /api/users routes:', error);
+  console.error('❌ Failed to register /api/users routes (MVC):', error);
+  // Fallback to legacy routes
+  try {
+    app.use('/api/users', usersRoutes);
+    console.log('✅ /api/users routes registered (legacy)');
+  } catch (fallbackError) {
+    console.error('❌ Failed to register legacy /api/users routes:', fallbackError);
+  }
 }
 
 try {
