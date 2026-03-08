@@ -4,12 +4,10 @@
   "description": "VIAN Academy LMS Dashboard",
   "type": "module",
   "scripts": {
-    "dev": "cd server && npm run dev",
-    "start": "cd server && npm start",
+    "dev": "npx http-server client -p 3000 -c-1",
+    "start": "npx http-server client -p 3000 -c-1",
     "build": "node build-web.js",
-    "build:web": "node build-web.js",
-    "build:docker": "docker build -t stitch-lms:latest .",
-    "build:all": "npm run build:web && npm run build:docker"
+    "build:web": "node build-web.js"
   },
   "repository": {
     "type": "git",
@@ -21,4 +19,3 @@
     "installCommand": null
   }
 }
-
