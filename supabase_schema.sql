@@ -12,6 +12,7 @@ create extension if not exists "uuid-ossp";
 -- =====================================================
 create table public.users (
   id uuid references auth.users not null primary key,
+  email text unique not null,
   first_name text,
   last_name text,
   role text check (role in ('student', 'instructor', 'admin')),
@@ -43,9 +44,10 @@ create policy "Users can update own profile."
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.users (id, first_name, last_name, role, avatar_url)
+  insert into public.users (id, email, first_name, last_name, role, avatar_url)
   values (
     new.id,
+    new.email,
     new.raw_user_meta_data->>'first_name',
     new.raw_user_meta_data->>'last_name',
     coalesce(new.raw_user_meta_data->>'role', 'student'),
