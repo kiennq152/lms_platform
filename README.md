@@ -1,37 +1,50 @@
-# Stitch LMS Workspace
+# Welcome to your Expo app 👋
 
-This repository now separates the **client** (static LMS dashboard) and a minimal **server** runtime for local development or deployment.
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Repository Layout
+## Get started
 
+1. Install dependencies
+
+   ```bash
+   npm install
+   ```
+
+2. Start the app
+
+   ```bash
+   npx expo start
+   ```
+
+In the output, you'll find options to open the app in a
+
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+## Get a fresh project
+
+When you're ready, run:
+
+```bash
+npm run reset-project
 ```
-.
-├── client/              # All front-end HTML/CSS/JS assets
-│   ├── index.html       # Landing page entry point
-│   └── pages/           # Per-page layouts (instructor, student, admin, etc.)
-├── server/              # Express server for serving static assets + healthcheck
-│   ├── package.json
-│   └── server.js
-├── docs/                # Documentation (Quick Start, Project Summary, etc.)
-└── README.md
-```
 
-## Getting Started
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-### Client
-- Open `client/index.html` directly in a browser, **or**
-- Serve the folder with any static server (`npx serve client`).
+## Learn more
 
-### Server
-```
-cd server
-npm install
-npm run dev
-```
-The server exposes the static client at `http://localhost:5173/` and provides a `/health` endpoint for uptime checks.
+To learn more about developing your project with Expo, look at the following resources:
 
-## Next Steps
-- Replace the Express placeholder with your preferred backend (Nest, Fastify, etc.).
-- Move shared assets (images/fonts) into `client/assets/`.
-- Update the docs in `docs/` if the deployment workflow changes.
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
+## Join the community
+
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
