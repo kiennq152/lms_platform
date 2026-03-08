@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Root Dependencies
+        run: npm install
+
+      - name: Build Web App
+        run: npm run build
+
+      - name: Install Mobile Dependencies
+        working-directory: ./mobile-app
+        run: npm install
+
+      - name: Lint Mobile App
+        working-directory: ./mobile-app
+        run: npm run lint
+
+  # NOTE: Since you are using Supabase and Vercel, Vercel will likely handle 
+  # the web app deployment automatically when you push to the main branch.
+  # 
+  # If you need to trigger a Vercel deployment explicitly from GitHub Actions, 
+  # you can use the `amondnet/vercel-action` action here.
+  #
+  # For the mobile app, you can add Expo Application Services (EAS) steps here
+  # later if you want to automate building APKs/IPAs.
