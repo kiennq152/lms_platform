@@ -28,11 +28,15 @@ export default function LoginScreen() {
 
         // Role-based navigation
         if (data.user) {
-            const { data: profile } = await supabase
-                .from('profiles')
+            const { data: profile, error: profileError } = await supabase
+                .from('users')
                 .select('role')
                 .eq('id', data.user.id)
                 .single();
+
+            if (profileError) {
+                console.error('Error fetching user role:', profileError);
+            }
 
             const role = profile?.role || 'student';
 

@@ -12,12 +12,18 @@ export default function RegisterScreen() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [role, setRole] = useState<'student' | 'instructor'>('student');
+    const [degree, setDegree] = useState('');
+    const [experience, setExperience] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     async function signUpWithEmail() {
         if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match');
+            if (Platform.OS === 'web') {
+                window.alert('Passwords do not match');
+            } else {
+                Alert.alert('Error', 'Passwords do not match');
+            }
             return;
         }
 
@@ -30,18 +36,30 @@ export default function RegisterScreen() {
                     first_name: firstName,
                     last_name: lastName,
                     role: role,
+                    ...(role === 'instructor' && {
+                        degree: degree,
+                        experience_years: parseInt(experience) || 0,
+                    }),
                 },
             },
         });
 
         if (error) {
-            Alert.alert('Registration Error', error.message);
+            if (Platform.OS === 'web') {
+                window.alert(error.message);
+            } else {
+                Alert.alert('Registration Error', error.message);
+            }
             setLoading(false);
             return;
         }
 
         if (data.user) {
-            Alert.alert('Success', 'Please check your email for verification.');
+            if (Platform.OS === 'web') {
+                window.alert('Account created successfully! You can now log in.');
+            } else {
+                Alert.alert('Success', 'Account created successfully! You can now log in.');
+            }
             router.replace('/(auth)/login');
         }
         setLoading(false);
@@ -113,6 +131,25 @@ export default function RegisterScreen() {
                         onChangeText={setConfirmPassword}
                         secureTextEntry
                     />
+
+                    {role === 'instructor' && (
+                        <View style={styles.instructorFields}>
+                            <Text style={styles.sectionTitle}>Instructor Credentials</Text>
+                            <Input
+                                label="Degree / Certifications"
+                                placeholder="e.g. Master of Computer Science"
+                                value={degree}
+                                onChangeText={setDegree}
+                            />
+                            <Input
+                                label="Years of Experience"
+                                placeholder="e.g. 5"
+                                value={experience}
+                                onChangeText={setExperience}
+                                keyboardType="numeric"
+                            />
+                        </View>
+                    )}
 
                     <Button
                         title="Create Account"
@@ -225,5 +262,17 @@ const styles = StyleSheet.create({
         color: '#1B47A4',
         fontSize: 14,
         fontWeight: 'bold',
+    },
+    instructorFields: {
+        marginTop: 8,
+        paddingTop: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#EEE',
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 12,
     },
 });

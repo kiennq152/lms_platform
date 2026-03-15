@@ -21,6 +21,8 @@ create table public.users (
   phone text,
   bio text,
   social_link text,
+  degree text,
+  experience_years integer,
   admin_approved boolean default false,
   admin_approved_at timestamp with time zone,
   approved_by uuid references public.users(id),
@@ -44,14 +46,16 @@ create policy "Users can update own profile."
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.users (id, email, first_name, last_name, role, avatar_url)
+  insert into public.users (id, email, first_name, last_name, role, avatar_url, degree, experience_years)
   values (
     new.id,
     new.email,
     new.raw_user_meta_data->>'first_name',
     new.raw_user_meta_data->>'last_name',
     coalesce(new.raw_user_meta_data->>'role', 'student'),
-    new.raw_user_meta_data->>'avatar_url'
+    new.raw_user_meta_data->>'avatar_url',
+    new.raw_user_meta_data->>'degree',
+    (new.raw_user_meta_data->>'experience_years')::integer
   );
   return new;
 end;
