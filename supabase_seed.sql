@@ -219,3 +219,20 @@ BEGIN
 
   END IF;
 END $$;
+
+-- =====================================================
+-- SRS v2.0 additions (run after supabase/migrations/20261122000000_srs_mvp.sql)
+-- =====================================================
+-- Seed instructors are pre-approved so they can create courses.
+UPDATE public.users SET admin_approved = true, admin_approved_at = now()
+WHERE email IN ('instructor1@vian.edu', 'instructor2@vian.edu');
+
+-- Demo coupons for the checkout flow.
+INSERT INTO public.coupons (code, description, discount_type, discount_value, max_uses)
+VALUES
+  ('WELCOME10', 'Giảm 10% cho học viên mới', 'percent', 10, NULL),
+  ('VIAN200K', 'Giảm 200.000₫ cho đơn hàng', 'fixed', 200000, 100)
+ON CONFLICT (code) DO NOTHING;
+
+-- Make your own account admin (replace the email, then run):
+-- UPDATE public.users SET role = 'admin', admin_approved = true WHERE email = 'you@example.com';

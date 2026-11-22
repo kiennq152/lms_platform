@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { notify, errorMessage } from '@/lib/notify';
+import { homeForRole } from '@/lib/auth';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -13,68 +14,62 @@ export default function LoginScreen() {
     const router = useRouter();
 
     async function signInWithEmail() {
+        if (!email || !password) {
+            notify('Thiếu thông tin', 'Vui lòng nhập email và mật khẩu.');
+            return;
+        }
         setLoading(true);
         const { error, data } = await supabase.auth.signInWithPassword({
-            email: email,
+            email: email.trim(),
             password: password,
         });
 
         if (error) {
-            console.error('Login Error Object:', JSON.stringify(error, null, 2));
-            Alert.alert('Login Error', error.message);
+            notify('Đăng nhập thất bại', errorMessage(error));
             setLoading(false);
             return;
         }
 
-        // Role-based navigation
         if (data.user) {
-            const { data: profile, error: profileError } = await supabase
+            const { data: profile } = await supabase
                 .from('users')
-                .select('role')
+                .select('role, status')
                 .eq('id', data.user.id)
-                .single();
+                .maybeSingle();
 
-            if (profileError) {
-                console.error('Error fetching user role:', profileError);
+            if (profile?.status === 'suspended') {
+                await supabase.auth.signOut();
+                notify('Tài khoản bị khoá', 'Tài khoản của bạn đã bị tạm khoá. Vui lòng liên hệ bộ phận hỗ trợ.');
+                setLoading(false);
+                return;
             }
-
-            const role = profile?.role || 'student';
-
-            // Redirect based on role
-            if (role === 'admin') {
-                router.replace('/(admin)/dashboard' as any);
-            } else if (role === 'instructor') {
-                router.replace('/(instructor)/dashboard' as any);
-            } else {
-                router.replace('/(tabs)');
-            }
+            router.replace(homeForRole(profile?.role) as any);
         }
         setLoading(false);
     }
 
-    async function signInWithOtp() {
+    async function sendOtp(next?: 'change-password') {
         if (!email) {
-            Alert.alert('Error', 'Please enter your email address');
+            notify('Thiếu email', 'Vui lòng nhập địa chỉ email trước.');
             return;
         }
         setLoading(true);
         const { error } = await supabase.auth.signInWithOtp({
-            email: email,
+            email: email.trim(),
+            options: { shouldCreateUser: false },
         });
+        setLoading(false);
 
         if (error) {
-            console.error('OTP Request Error Object:', JSON.stringify(error, null, 2));
-            Alert.alert('Error', error.message);
-            setLoading(false);
+            notify('Không gửi được mã', errorMessage(error));
             return;
         }
 
-        Alert.alert('Success', 'Check your email for the verification code.');
+        notify('Đã gửi mã', 'Vui lòng kiểm tra email để lấy mã xác thực.');
         router.push({
             pathname: '/(auth)/verify-otp' as any,
-            params: { email: email }
+            params: next ? { email: email.trim(), next } : { email: email.trim() },
         });
-        setLoading(false);
     }
 
     return (
@@ -85,33 +80,34 @@ export default function LoginScreen() {
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.header}>
                     <Text style={styles.title}>VIAN Academy</Text>
-                    <Text style={styles.subtitle}>Welcome Back</Text>
-                    <Text style={styles.description}>Sign in to your account to continue</Text>
+                    <Text style={styles.subtitle}>Chào mừng trở lại</Text>
+                    <Text style={styles.description}>Đăng nhập để tiếp tục học tập</Text>
                 </View>
 
                 <View style={styles.form}>
                     <Input
-                        label="Email Address"
-                        placeholder="your.email@example.com"
+                        label="Email"
+                        placeholder="email@example.com"
                         value={email}
                         onChangeText={setEmail}
                         autoCapitalize="none"
                         keyboardType="email-address"
                     />
                     <Input
-                        label="Password"
-                        placeholder="Enter your password"
+                        label="Mật khẩu"
+                        placeholder="Nhập mật khẩu"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry
+                        onSubmitEditing={signInWithEmail}
                     />
 
-                    <TouchableOpacity style={styles.forgotPassword}>
-                        <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+                    <TouchableOpacity style={styles.forgotPassword} onPress={() => sendOtp('change-password')}>
+                        <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
                     </TouchableOpacity>
 
                     <Button
-                        title="Sign In with Password"
+                        title="Đăng nhập"
                         onPress={signInWithEmail}
                         loading={loading}
                         style={styles.signInButton}
@@ -119,26 +115,29 @@ export default function LoginScreen() {
 
                     <View style={styles.divider}>
                         <View style={styles.dividerLine} />
-                        <Text style={styles.dividerText}>OR</Text>
+                        <Text style={styles.dividerText}>HOẶC</Text>
                         <View style={styles.dividerLine} />
                     </View>
 
                     <Button
-                        title="Sign In with OTP"
-                        onPress={signInWithOtp}
+                        title="Đăng nhập bằng mã OTP qua email"
+                        onPress={() => sendOtp()}
                         loading={loading}
                         variant="outline"
                         style={styles.otpButton}
                     />
 
                     <View style={styles.footer}>
-                        <Text style={styles.footerText}>Don&apos;t have an account? </Text>
+                        <Text style={styles.footerText}>Chưa có tài khoản? </Text>
                         <Link href="/(auth)/register" asChild>
                             <TouchableOpacity>
-                                <Text style={styles.signUpLink}>Sign up here</Text>
+                                <Text style={styles.signUpLink}>Đăng ký ngay</Text>
                             </TouchableOpacity>
                         </Link>
                     </View>
+                    <TouchableOpacity onPress={() => router.replace('/(tabs)')} style={{ alignSelf: 'center', marginTop: 16 }}>
+                        <Text style={styles.footerText}>← Tiếp tục xem khoá học không cần đăng nhập</Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>

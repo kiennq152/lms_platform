@@ -1,43 +1,61 @@
-import React from 'react';
-import { StyleSheet, ScrollView, View, Text, Image, TouchableOpacity, FlatList } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet, ScrollView, View, Text, Image, TouchableOpacity } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import YoutubePlayer from 'react-native-youtube-iframe';
+import { Ionicons } from '@expo/vector-icons';
 import { CourseCard } from '@/components/course-card';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { WebLayout } from '@/components/ui/web-layout';
 import { Footer } from '@/components/ui/footer';
-
-const FEATURED_COURSES = [
-  {
-    id: '1',
-    title: 'Lập trình Web Full-stack (Java/Spring)',
-    instructor: 'Park Ji-eun',
-    price: '$99.99',
-    rating: 4.8,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA-3uw2Kla8uuKV6zMiW1uIN3mACpXzj-frdESLKaer8Nb_eZOjxHmUYU_QN4wph7VvQm-Kd-eeWOJ-xYmqPnGclwpzk46uZirIvBIXFvGu8QRMnC12wa_qNv3B9_l3UdAZyNDA7O_lcRItz2vyiUjCqacs2p0bcoLlG1AkcFTklF32o8dWFeyYNVt8OXXOKI-cydyseL3Mxu2NLbdSbjqKuchzyY_NBpXC5BT7BFZKJ8AdgjbAQ-qlysTU1oP28gbLuuhv8Dfa2HQ',
-  },
-  {
-    id: '2',
-    title: 'Khoa học Dữ liệu & AI ứng dụng',
-    instructor: 'Dr. Ahn Sang-chul',
-    price: '$119.99',
-    rating: 4.9,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCZaPOfqYfFNyCT_Et0lHf4pFhucE5BK8Z_cwXWFHHBxpGUy6uVYln1zVoA8P7VlwDduB4vEpRNrS_AoclwZnoIkTPDfbMEOvTtyp7duJx5K4T3q7GEd4Fh9kQ9D2cE3PhbaBvXiDKr1hk7IQ5wFcHlozEtSmiPUV-VDq-wybPdLWR9NF7wFD0ZAlBOH4FeYbGp07CecE9Un171aqRfbMfCpVXTz71KJWqPPxrfsQAaiTKMvSCfQcehmTcwPFI644-y0uvlFl8XRcg',
-  },
-  {
-    id: '3',
-    title: 'An ninh mạng cho Doanh nghiệp',
-    instructor: 'Kim Min-jun',
-    price: '$89.99',
-    rating: 4.7,
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBMwT9RsakcoOhUTPWMbfnqlQuPFnTJMXcd3xyFBEgOJWncPa65T8E_xd8cdiFYHg0kX2KybSx5nkjRMr6IRngQ9CgritV7bXpiWCTq4QW3iDS9jFHPolujdFu5urAtDh1VLNFQiSJe8EVYcsLtKlQShElG6Y-t7q0Uuqh0m5gyBCWcGL4wKayAZl0GRGfSBE9nPUFO25zjobAXiV2eMhvV3X4YePSW2uNXbQ0E90C5qesWt2Y7_tP7_26MELGvHqBIwA3reECS5k4',
-  },
-];
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth';
+import { COURSE_CARD_SELECT } from '@/lib/api';
+import { formatVND, fullName } from '@/lib/format';
+import { ProgressBar } from '@/components/ui/kit';
+import type { Course, Enrollment } from '@/lib/types';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const themeColors = Colors[colorScheme ?? 'light'];
   const router = useRouter();
+  const { session, profile } = useAuth();
+  const [featured, setFeatured] = useState<Course[]>([]);
+  const [newest, setNewest] = useState<Course[]>([]);
+  const [continueList, setContinueList] = useState<Enrollment[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      supabase.from('courses').select(COURSE_CARD_SELECT).eq('status', 'published')
+        .order('total_enrollments', { ascending: false }).order('rating', { ascending: false }).limit(4)
+        .then(({ data }) => setFeatured((data as unknown as Course[]) ?? []));
+      supabase.from('courses').select(COURSE_CARD_SELECT).eq('status', 'published')
+        .order('published_at', { ascending: false, nullsFirst: false }).limit(4)
+        .then(({ data }) => setNewest((data as unknown as Course[]) ?? []));
+      if (session?.user) {
+        supabase.from('enrollments')
+          .select('*, course:courses(course_id, title, thumbnail_url)')
+          .eq('student_id', session.user.id).eq('status', 'active')
+          .order('last_accessed_at', { ascending: false, nullsFirst: false }).limit(3)
+          .then(({ data }) => setContinueList((data as unknown as Enrollment[]) ?? []));
+      } else {
+        setContinueList([]);
+      }
+    }, [session?.user])
+  );
+
+  const renderCourse = (course: Course) => (
+    <CourseCard
+      key={course.course_id}
+      title={course.title}
+      instructor={fullName(course.instructor, 'VIAN Academy')}
+      price={formatVND(course.price)}
+      rating={Number(course.rating)}
+      students={course.total_enrollments}
+      image={course.thumbnail_url}
+      onPress={() => router.push({ pathname: '/(details)/course-detail', params: { id: String(course.course_id) } })}
+    />
+  );
 
   return (
     <WebLayout>
@@ -60,6 +78,70 @@ export default function HomeScreen() {
         </View>
       </View>
 
+      {continueList.length > 0 && (
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: themeColors.text }]}>
+              Tiếp tục học{profile?.first_name ? `, ${profile.first_name}` : ''}
+            </Text>
+            <TouchableOpacity onPress={() => router.push('/student/dashboard')}>
+              <Text style={[styles.seeAll, { color: themeColors.primary }]}>Học tập của tôi</Text>
+            </TouchableOpacity>
+          </View>
+          {continueList.map((e) => (
+            <TouchableOpacity
+              key={e.enrollment_id}
+              style={styles.continueCard}
+              onPress={() => router.push({ pathname: '/(details)/course-player', params: { id: String(e.course_id) } })}
+            >
+              <Image source={{ uri: e.course?.thumbnail_url ?? undefined }} style={styles.continueThumb} />
+              <View style={{ flex: 1, gap: 6 }}>
+                <Text style={{ fontWeight: '700', color: '#1A2233' }} numberOfLines={2}>{e.course?.title}</Text>
+                <ProgressBar value={Number(e.progress_percentage)} />
+                <Text style={{ color: '#666', fontSize: 12 }}>Hoàn thành {Math.round(Number(e.progress_percentage))}%</Text>
+              </View>
+              <Ionicons name="play-circle" size={32} color={themeColors.primary} />
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+      {/* Latest Lecture Section */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Bài Giảng Mới Nhất</Text>
+        </View>
+
+        <View style={[styles.latestLectureContainer, { backgroundColor: colorScheme === 'dark' ? '#1A1A1A' : '#F9F9F9' }]}>
+          <View style={styles.videoWrapper}>
+            <YoutubePlayer
+              height={220}
+              play={false}
+              videoId={"jBzwzrDvZ18"}
+            />
+          </View>
+          
+          <View style={styles.instructorInfo}>
+            <View style={styles.instructorHeader}>
+              <Image 
+                source={{ uri: 'https://i.pravatar.cc/150?u=a042581f4e29026704d' }} 
+                style={styles.instructorAvatar} 
+              />
+              <View>
+                <Text style={[styles.instructorName, { color: themeColors.text }]}>Trần Văn Lập Trình</Text>
+                <View style={styles.ratingContainer}>
+                  <Ionicons name="star" size={16} color="#FFD700" />
+                  <Text style={[styles.ratingText, { color: themeColors.text }]}>4.9 (120 đánh giá)</Text>
+                </View>
+              </View>
+            </View>
+            <Text style={[styles.instructorSummary, { color: colorScheme === 'dark' ? '#AAAAAA' : '#666666' }]}>
+              Giảng viên có hơn 10 năm kinh nghiệm trong lĩnh vực phát triển phần mềm và đào tạo lập trình viên chuyên nghiệp. Từng dẫn dắt nhiều dự án thực tế lớn.
+            </Text>
+          </View>
+        </View>
+      </View>
+
       {/* Featured Courses Section */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
@@ -70,19 +152,20 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.courseList}>
-          {FEATURED_COURSES.map((course) => (
-            <CourseCard
-              key={course.id}
-              title={course.id === '1' ? 'Web Full-stack (Java/Spring)' : course.title}
-              instructor={course.instructor}
-              price={course.price}
-              rating={course.rating}
-              image={course.image}
-              onPress={() => { }} // Navigate to detail
-            />
-          ))}
+          {featured.length ? featured.map(renderCourse) : (
+            <Text style={{ color: '#888' }}>Chưa có khoá học nào được xuất bản.</Text>
+          )}
         </View>
       </View>
+
+      {newest.length > 0 && (
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Khóa Học Mới</Text>
+          </View>
+          <View style={styles.courseList}>{newest.map(renderCourse)}</View>
+        </View>
+      )}
 
       {/* Why Choose Us */}
       <View style={[styles.section, styles.whySection]}>
@@ -105,6 +188,7 @@ export default function HomeScreen() {
 
       <View style={{ height: 40 }} />
       <Footer />
+      <View style={{ height: 90 }} />
     </ScrollView>
     </WebLayout>
   );
@@ -175,6 +259,68 @@ const styles = StyleSheet.create({
   },
   courseList: {
     width: '100%',
+  },
+  continueCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#EEE',
+    marginBottom: 10,
+    backgroundColor: '#FFF',
+  },
+  continueThumb: {
+    width: 72,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: '#EEE',
+  },
+  latestLectureContainer: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginTop: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  videoWrapper: {
+    width: '100%',
+    backgroundColor: '#000',
+  },
+  instructorInfo: {
+    padding: 16,
+  },
+  instructorHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  instructorAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
+  },
+  instructorName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ratingText: {
+    fontSize: 14,
+    marginLeft: 4,
+  },
+  instructorSummary: {
+    fontSize: 14,
+    lineHeight: 20,
   },
   whySection: {
     backgroundColor: 'rgba(27, 71, 164, 0.05)',

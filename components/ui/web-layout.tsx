@@ -5,12 +5,14 @@ interface WebLayoutProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   containerStyle?: StyleProp<ViewStyle>;
+  /** Max content width on large screens. Dashboards use a wider frame. */
+  maxWidth?: number;
 }
 
-export function WebLayout({ children, style, containerStyle }: WebLayoutProps) {
+export function WebLayout({ children, style, containerStyle, maxWidth = 768 }: WebLayoutProps) {
   return (
     <View style={[styles.root, containerStyle]}>
-      <View style={[styles.container, style]}>
+      <View style={[styles.container, { maxWidth }, style]}>
         {children}
       </View>
     </View>
@@ -27,19 +29,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    // Limit width on large screens to make it feel like an optimized app, not a stretched webpage
-    maxWidth: 768, 
     alignSelf: 'center',
-    // Apply background color inside the limited frame
     backgroundColor: '#ffffff',
-    // On web, it's nice to add subtle shadow or borders to frame the app content
     ...Platform.select({
       web: {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 12,
-        // Remove border radius if you prefer a flat edge-to-edge look even in the center
       },
     }),
   },

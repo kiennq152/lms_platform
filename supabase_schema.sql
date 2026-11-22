@@ -270,3 +270,20 @@ create table public.forum_replies (
 alter table public.forum_replies enable row level security;
 create policy "Replies are public." on forum_replies for select using ( true );
 
+-- =====================================================
+-- 12. INSTRUCTOR RLS POLICIES FOR MODULES AND LESSONS
+-- =====================================================
+create policy "Instructors can insert modules."
+  on modules for insert with check ( 
+    exists (select 1 from courses where courses.course_id = course_id and courses.instructor_id = auth.uid()) 
+  );
+
+create policy "Instructors can insert lessons."
+  on lessons for insert with check ( 
+    exists (
+      select 1 from modules 
+      join courses on courses.course_id = modules.course_id 
+      where modules.module_id = module_id and courses.instructor_id = auth.uid()
+    ) 
+  );
+

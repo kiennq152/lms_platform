@@ -1,291 +1,121 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, TextInput } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import React, { useCallback, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
-
-const INITIAL_CART = [
-    {
-        id: '1',
-        name: 'Lập trình viên Full-stack chuyên nghiệp - Xuất khẩu lao động Hàn Quốc',
-        instructor: 'VIAN Academy',
-        price: 4500000,
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCJ-T57G7JjeuAeMNcRJUAnbAg2wrr-flAR1mmZvHD81pMM6jXSEijB3UB7MZ_hFNHpAE8Ydc7MZ9iD-wQ7Ln6-Wlvv2qky1mPxajy1MftbmmOzosrFoT41PsQosprW5P0xdCB1hZXoQrcJPNwWDx8zwbeQ-COyTQP5pL8-rNJODaSwIPNjhWabiTG1Fc_LLrF8Kr9v4A6OqnKgOtHNSlT0L5-r4k3clNZjA2_Ouf0gsP0HVNw9_9nNRnPaj-zAglhIxs0D1Io5ens',
-    },
-    {
-        id: '2',
-        name: 'Advanced Python for Data Science',
-        instructor: 'Dr. Angela Yu',
-        price: 2500000,
-        image: 'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?auto=format&fit=crop&w=900&q=80',
-    }
-];
+import { BRAND, Card, EmptyState, H1, Loading, Muted, Notice, Row, Screen } from '@/components/ui/kit';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth';
+import { useCart } from '@/lib/cart';
+import { DEFAULT_THUMBNAIL } from '@/lib/api';
+import { formatMoney, formatVND, fullName } from '@/lib/format';
+import type { Course } from '@/lib/types';
 
 export default function CartScreen() {
-    const [cart, setCart] = useState(INITIAL_CART);
-    const [coupon, setCoupon] = useState('');
-    const colorScheme = useColorScheme();
-    const themeColors = Colors[colorScheme ?? 'light'];
-    const router = useRouter();
+  const router = useRouter();
+  const { session } = useAuth();
+  const cart = useCart();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [owned, setOwned] = useState<Set<number>>(new Set());
+  const [loading, setLoading] = useState(true);
 
-    const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-    const discount = 0; // Simple for now
-    const total = subtotal - discount;
-
-    const removeItem = (id: string) => {
-        setCart(cart.filter(item => item.id !== id));
-    };
-
-    const formatCurrency = (amount: number) => {
-        return amount.toLocaleString('vi-VN') + '₫';
-    };
-
-    if (cart.length === 0) {
-        return (
-            <View style={[styles.container, styles.emptyContainer, { backgroundColor: themeColors.background }]}>
-                <Ionicons name="cart-outline" size={80} color="#CCC" />
-                <Text style={styles.emptyTitle}>Giỏ hàng trống</Text>
-                <Text style={styles.emptySubtitle}>Hãy khám phá các khóa học thú vị và bắt đầu học ngay hôm nay!</Text>
-                <Button
-                    title="Khám phá khóa học"
-                    onPress={() => router.push('/courses')}
-                    style={styles.browseBtn}
-                />
-            </View>
-        );
+  const load = useCallback(async () => {
+    if (!cart.ids.length) {
+      setCourses([]);
+      setLoading(false);
+      return;
     }
+    const { data } = await supabase.from('courses')
+      .select('course_id, title, price, thumbnail_url, instructor_id, status, instructor:users!courses_instructor_id_fkey(first_name, last_name)')
+      .in('course_id', cart.ids);
+    const list = ((data as unknown as Course[]) ?? []).filter((c) => c.status === 'published');
+    // Drop ids that no longer exist / are unpublished.
+    const valid = new Set(list.map((c) => c.course_id));
+    const stale = cart.ids.filter((x) => !valid.has(x));
+    if (stale.length) cart.removeMany(stale);
 
-    return (
-        <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-            <View style={styles.header}>
-                <Text style={[styles.title, { color: themeColors.text }]}>Giỏ hàng ({cart.length})</Text>
-            </View>
+    let ownedSet = new Set<number>();
+    if (session?.user && list.length) {
+      const { data: e } = await supabase.from('enrollments').select('course_id, status')
+        .eq('student_id', session.user.id).in('course_id', list.map((c) => c.course_id));
+      ownedSet = new Set((e ?? []).filter((x) => x.status !== 'dropped').map((x) => x.course_id));
+      list.forEach((c) => { if (c.instructor_id === session.user.id) ownedSet.add(c.course_id); });
+    }
+    setOwned(ownedSet);
+    setCourses(list);
+    setLoading(false);
+  }, [cart.ids.join(','), session?.user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <View style={styles.itemsList}>
-                    {cart.map(item => (
-                        <View key={item.id} style={styles.itemCard}>
-                            <Image source={{ uri: item.image }} style={styles.itemImage} />
-                            <View style={styles.itemInfo}>
-                                <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
-                                <Text style={styles.itemInstructor}>{item.instructor}</Text>
-                                <View style={styles.itemFooter}>
-                                    <Text style={[styles.itemPrice, { color: themeColors.primary }]}>{formatCurrency(item.price)}</Text>
-                                    <TouchableOpacity onPress={() => removeItem(item.id)}>
-                                        <Ionicons name="trash-outline" size={20} color="#999" />
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    ))}
+  useFocusEffect(useCallback(() => { load(); }, [load]));
+
+  const payable = courses.filter((c) => !owned.has(c.course_id));
+  const total = payable.reduce((s, c) => s + Number(c.price), 0);
+
+  if (loading) return <Loading />;
+
+  return (
+    <Screen tabBarInset>
+      <View style={{ paddingTop: 28 }}>
+        <H1>Giỏ hàng</H1>
+        <Muted style={{ marginBottom: 16 }}>{courses.length} khoá học</Muted>
+      </View>
+
+      {courses.length === 0 ? (
+        <EmptyState
+          icon="cart-outline"
+          title="Giỏ hàng trống"
+          message="Hãy khám phá các khoá học và thêm vào giỏ hàng."
+          action={<Button title="Khám phá khoá học" onPress={() => router.push('/(tabs)/courses')} />}
+        />
+      ) : (
+        <>
+          {courses.map((c) => (
+            <Card key={c.course_id} style={{ padding: 12 }}>
+              <Row gap={12} style={{ alignItems: 'flex-start' }}>
+                <TouchableOpacity onPress={() => router.push({ pathname: '/(details)/course-detail', params: { id: String(c.course_id) } })}>
+                  <Image source={{ uri: c.thumbnail_url || DEFAULT_THUMBNAIL }} style={styles.thumb} />
+                </TouchableOpacity>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.title} numberOfLines={2}>{c.title}</Text>
+                  <Muted style={{ fontSize: 13 }}>{fullName(c.instructor, 'VIAN Academy')}</Muted>
+                  {owned.has(c.course_id) ? (
+                    <Text style={{ color: BRAND.green, fontWeight: '700', marginTop: 4 }}>Bạn đã sở hữu khoá học này</Text>
+                  ) : (
+                    <Text style={styles.price}>{formatVND(c.price)}</Text>
+                  )}
                 </View>
+                <TouchableOpacity onPress={() => cart.remove(c.course_id)} accessibilityLabel="Xoá khỏi giỏ hàng" style={{ padding: 4 }}>
+                  <Ionicons name="trash-outline" size={20} color={BRAND.red} />
+                </TouchableOpacity>
+              </Row>
+            </Card>
+          ))}
 
-                <View style={styles.couponSection}>
-                    <TextInput
-                        style={styles.couponInput}
-                        placeholder="Mã giảm giá"
-                        value={coupon}
-                        onChangeText={setCoupon}
-                        placeholderTextColor="#999"
-                    />
-                    <TouchableOpacity style={[styles.couponBtn, { backgroundColor: '#EEE' }]}>
-                        <Text style={styles.couponBtnText}>Áp dụng</Text>
-                    </TouchableOpacity>
-                </View>
+          <Card style={{ backgroundColor: '#FAFBFF' }}>
+            <Row style={{ justifyContent: 'space-between' }}>
+              <Text style={{ fontSize: 16, color: BRAND.text }}>Tạm tính ({payable.length} khoá)</Text>
+              <Text style={{ fontSize: 22, fontWeight: '900', color: BRAND.red }}>{formatMoney(total)}</Text>
+            </Row>
+            <Muted style={{ fontSize: 12, marginTop: 4 }}>Mã giảm giá có thể áp dụng ở bước thanh toán.</Muted>
+          </Card>
 
-                <View style={styles.summaryContainer}>
-                    <Text style={styles.summaryTitle}>Tóm tắt đơn hàng</Text>
-                    <View style={styles.summaryRow}>
-                        <Text style={styles.summaryLabel}>Tạm tính</Text>
-                        <Text style={styles.summaryValue}>{formatCurrency(subtotal)}</Text>
-                    </View>
-                    <View style={styles.summaryRow}>
-                        <Text style={styles.summaryLabel}>Giảm giá</Text>
-                        <Text style={[styles.summaryValue, { color: '#4CAF50' }]}>-{formatCurrency(discount)}</Text>
-                    </View>
-                    <View style={[styles.summaryRow, styles.totalRow]}>
-                        <Text style={styles.totalLabel}>TỔNG CỘNG</Text>
-                        <Text style={[styles.totalValue, { color: themeColors.primary }]}>{formatCurrency(total)}</Text>
-                    </View>
-                </View>
-            </ScrollView>
+          {!session && <Notice>Bạn cần đăng nhập để thanh toán. Giỏ hàng sẽ được giữ lại trên thiết bị này.</Notice>}
 
-            <View style={styles.footer}>
-                <Button
-                    title="Thanh toán"
-                    onPress={() => router.push('/(details)/checkout')}
-                    style={styles.checkoutBtn}
-                />
-            </View>
-        </View>
-    );
+          <Button
+            title={session ? 'Tiến hành thanh toán' : 'Đăng nhập để thanh toán'}
+            icon={session ? 'card-outline' : 'log-in-outline'}
+            disabled={session ? payable.length === 0 : false}
+            onPress={() => (session ? router.push('/(details)/checkout') : router.push('/(auth)/login'))}
+          />
+          <Button title="Tiếp tục mua sắm" variant="ghost" onPress={() => router.push('/(tabs)/courses')} style={{ marginTop: 10 }} />
+        </>
+      )}
+    </Screen>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    header: {
-        paddingTop: 60,
-        paddingHorizontal: 20,
-        paddingBottom: 16,
-        backgroundColor: '#FFF',
-        borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-    },
-    emptyContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 40,
-    },
-    emptyTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginTop: 20,
-        color: '#333',
-    },
-    emptySubtitle: {
-        fontSize: 14,
-        color: '#666',
-        textAlign: 'center',
-        marginTop: 8,
-        lineHeight: 20,
-    },
-    browseBtn: {
-        marginTop: 24,
-        width: '100%',
-    },
-    scrollContent: {
-        padding: 20,
-        paddingBottom: 100,
-    },
-    itemsList: {
-        gap: 16,
-        marginBottom: 24,
-    },
-    itemCard: {
-        flexDirection: 'row',
-        backgroundColor: '#FFF',
-        borderRadius: 12,
-        padding: 12,
-        borderWidth: 1,
-        borderColor: '#EEE',
-    },
-    itemImage: {
-        width: 100,
-        height: 70,
-        borderRadius: 8,
-    },
-    itemInfo: {
-        flex: 1,
-        marginLeft: 12,
-    },
-    itemName: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#333',
-        lineHeight: 18,
-    },
-    itemInstructor: {
-        fontSize: 12,
-        color: '#666',
-        marginTop: 2,
-    },
-    itemFooter: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 8,
-    },
-    itemPrice: {
-        fontSize: 15,
-        fontWeight: 'bold',
-    },
-    couponSection: {
-        flexDirection: 'row',
-        gap: 10,
-        marginBottom: 24,
-    },
-    couponInput: {
-        flex: 1,
-        backgroundColor: '#F5F5F5',
-        borderRadius: 8,
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        fontSize: 14,
-    },
-    couponBtn: {
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        borderRadius: 8,
-        justifyContent: 'center',
-    },
-    couponBtnText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    summaryContainer: {
-        backgroundColor: '#FFF',
-        borderRadius: 12,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: '#EEE',
-    },
-    summaryTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 16,
-        color: '#333',
-    },
-    summaryRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 12,
-    },
-    summaryLabel: {
-        fontSize: 14,
-        color: '#666',
-    },
-    summaryValue: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    totalRow: {
-        marginTop: 12,
-        paddingTop: 12,
-        borderTopWidth: 1,
-        borderTopColor: '#EEE',
-    },
-    totalLabel: {
-        fontSize: 16,
-        fontWeight: '900',
-        color: '#333',
-    },
-    totalValue: {
-        fontSize: 18,
-        fontWeight: '900',
-    },
-    footer: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: '#FFF',
-        padding: 20,
-        paddingBottom: 30, // Extra for safe area
-        borderTopWidth: 1,
-        borderTopColor: '#EEE',
-    },
-    checkoutBtn: {
-        width: '100%',
-        backgroundColor: '#D84A4A',
-    },
+  thumb: { width: 96, height: 64, borderRadius: 8, backgroundColor: '#EEE' },
+  title: { fontWeight: '700', color: BRAND.text, fontSize: 15, marginBottom: 2 },
+  price: { color: BRAND.red, fontWeight: '800', fontSize: 16, marginTop: 4 },
 });
