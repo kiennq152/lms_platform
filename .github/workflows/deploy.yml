@@ -24,4 +24,13 @@ jobs:
       - name: Lint App
         run: npm run lint
 
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Database tests
+        run: npm run test:db
+
+      - name: Unit tests
+        run: npm run test:unit -- --ci
+
   # NOTE: Connect this repository with your Vercel project or EAS for deployments.

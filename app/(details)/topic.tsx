@@ -3,15 +3,15 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
-import { Avatar, Badge, BRAND, Card, EmptyState, Field, Loading, Muted, Notice, Row, Screen } from '@/components/ui/kit';
+import { Avatar, Badge, BRAND, Card, EmptyState, ErrorState, Field, Loading, Muted, Notice, Row, Screen } from '@/components/ui/kit';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { fullName, ROLE_LABEL, timeAgo } from '@/lib/format';
 import { confirmAsync, errorMessage, notify } from '@/lib/notify';
 import type { ForumReply, ForumTopic } from '@/lib/types';
 
-const AUTHOR = 'author:users!forum_topics_author_id_fkey(first_name, last_name, avatar_url, role)';
-const REPLY_AUTHOR = 'author:users!forum_replies_author_id_fkey(first_name, last_name, avatar_url, role)';
+const AUTHOR = 'author:public_profiles!forum_topics_author_id_fkey(first_name, last_name, avatar_url, role)';
+const REPLY_AUTHOR = 'author:public_profiles!forum_replies_author_id_fkey(first_name, last_name, avatar_url, role)';
 
 export default function TopicScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -21,14 +21,21 @@ export default function TopicScreen() {
   const [topic, setTopic] = useState<ForumTopic | null>(null);
   const [replies, setReplies] = useState<ForumReply[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [reply, setReply] = useState('');
   const [posting, setPosting] = useState(false);
 
   const load = useCallback(async () => {
+    if (!topicId) {
+      setLoading(false);
+      return;
+    }
     const [t, r] = await Promise.all([
       supabase.from('forum_topics').select(`*, ${AUTHOR}, course:courses(title, instructor_id)`).eq('topic_id', topicId).maybeSingle(),
       supabase.from('forum_replies').select(`*, ${REPLY_AUTHOR}`).eq('topic_id', topicId).order('is_solution', { ascending: false }).order('created_at'),
     ]);
+    const failed = t.error ?? r.error;
+    setLoadError(failed ? errorMessage(failed) : null);
     setTopic((t.data as unknown as ForumTopic) ?? null);
     setReplies((r.data as unknown as ForumReply[]) ?? []);
     setLoading(false);
@@ -36,10 +43,11 @@ export default function TopicScreen() {
 
   useEffect(() => {
     load();
-    supabase.rpc('increment_topic_view', { p_topic_id: topicId }).then(() => {});
+    if (topicId) supabase.rpc('increment_topic_view', { p_topic_id: topicId }).then(() => {});
   }, [load, topicId]);
 
   if (loading) return <Loading />;
+  if (loadError) return <ErrorState message={loadError} onRetry={load} />;
   if (!topic) return <EmptyState icon="alert-circle-outline" title="Bài viết không tồn tại hoặc đã bị xoá" />;
 
   const uid = session?.user?.id;

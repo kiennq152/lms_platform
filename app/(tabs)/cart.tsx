@@ -3,12 +3,13 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
-import { BRAND, Card, EmptyState, H1, Loading, Muted, Notice, Row, Screen } from '@/components/ui/kit';
+import { BRAND, Card, EmptyState, ErrorState, H1, Loading, Muted, Notice, Row, Screen } from '@/components/ui/kit';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { useCart } from '@/lib/cart';
 import { DEFAULT_THUMBNAIL } from '@/lib/api';
 import { formatMoney, formatVND, fullName } from '@/lib/format';
+import { errorMessage } from '@/lib/notify';
 import type { Course } from '@/lib/types';
 
 export default function CartScreen() {
@@ -18,16 +19,24 @@ export default function CartScreen() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [owned, setOwned] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!cart.ids.length) {
       setCourses([]);
+      setError(null);
       setLoading(false);
       return;
     }
-    const { data } = await supabase.from('courses')
-      .select('course_id, title, price, thumbnail_url, instructor_id, status, instructor:users!courses_instructor_id_fkey(first_name, last_name)')
+    const { data, error: e1 } = await supabase.from('courses')
+      .select('course_id, title, price, thumbnail_url, instructor_id, status, instructor:public_profiles!courses_instructor_id_fkey(first_name, last_name)')
       .in('course_id', cart.ids);
+    // A failed request must not be mistaken for "these courses no longer exist".
+    setError(e1 ? errorMessage(e1) : null);
+    if (e1) {
+      setLoading(false);
+      return;
+    }
     const list = ((data as unknown as Course[]) ?? []).filter((c) => c.status === 'published');
     // Drop ids that no longer exist / are unpublished.
     const valid = new Set(list.map((c) => c.course_id));
@@ -60,7 +69,7 @@ export default function CartScreen() {
         <Muted style={{ marginBottom: 16 }}>{courses.length} khoá học</Muted>
       </View>
 
-      {courses.length === 0 ? (
+      {error ? <ErrorState message={error} onRetry={load} /> : courses.length === 0 ? (
         <EmptyState
           icon="cart-outline"
           title="Giỏ hàng trống"

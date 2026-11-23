@@ -1,38 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Platform, Share } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
-import { BRAND, EmptyState, Field, Loading, Muted, Row, Screen } from '@/components/ui/kit';
+import { BRAND, EmptyState, ErrorState, Field, Loading, Muted, Row, Screen } from '@/components/ui/kit';
 import { supabase } from '@/lib/supabase';
 import { formatDate, fullName } from '@/lib/format';
-import { notify } from '@/lib/notify';
+import { errorMessage, notify } from '@/lib/notify';
 import type { Certificate } from '@/lib/types';
 
 const SELECT =
-  '*, student:users!certificates_student_id_fkey(first_name, last_name), ' +
-  'course:courses(title, duration_hours, total_lessons, instructor_id, instructor:users!courses_instructor_id_fkey(first_name, last_name))';
+  '*, student:public_profiles!certificates_student_id_fkey(first_name, last_name), ' +
+  'course:courses(title, duration_hours, total_lessons, instructor_id, instructor:public_profiles!courses_instructor_id_fkey(first_name, last_name))';
 
 /** Certificate view & public verification by code (FR-052..055). */
 export default function CertificateScreen() {
   const params = useLocalSearchParams<{ enrollment?: string; code?: string }>();
   const [cert, setCert] = useState<Certificate | null>(null);
   const [loading, setLoading] = useState(!!(params.enrollment || params.code));
+  const [error, setError] = useState<{ message: string; retry: () => void } | null>(null);
   const [lookup, setLookup] = useState(params.code ?? '');
 
-  const find = async (by: { enrollment?: number; code?: string }) => {
+  const find = useCallback(async function run(by: { enrollment?: number; code?: string }) {
     setLoading(true);
     let q = supabase.from('certificates').select(SELECT);
     q = by.enrollment ? q.eq('enrollment_id', by.enrollment) : q.eq('certificate_code', (by.code ?? '').trim().toUpperCase());
-    const { data } = await q.maybeSingle();
+    const { data, error: e } = await q.maybeSingle();
+    setError(e ? { message: errorMessage(e), retry: () => run(by) } : null);
     setCert((data as unknown as Certificate) ?? null);
     setLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (params.enrollment) find({ enrollment: Number(params.enrollment) });
     else if (params.code) find({ code: params.code });
-  }, [params.enrollment, params.code]);
+  }, [find, params.enrollment, params.code]);
 
   const share = async () => {
     if (!cert) return;
@@ -50,6 +52,7 @@ export default function CertificateScreen() {
   };
 
   if (loading) return <Loading />;
+  if (error) return <Screen><ErrorState message={error.message} onRetry={error.retry} /></Screen>;
 
   return (
     <Screen>

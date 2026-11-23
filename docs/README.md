@@ -14,13 +14,14 @@ Mở **Supabase Dashboard → SQL Editor** và chạy lần lượt:
 
 1. [`supabase_schema.sql`](../supabase_schema.sql): bảng gốc (bỏ qua nếu database đã có).
 2. [`supabase/migrations/20261122000000_srs_mvp.sql`](../supabase/migrations/20261122000000_srs_mvp.sql): sửa lỗi bảo mật, thêm bảng, trigger, RPC, storage. **Chạy lại nhiều lần vẫn an toàn.**
-3. [`supabase_seed.sql`](../supabase_seed.sql) (tuỳ chọn): danh mục, giảng viên/học viên mẫu (mật khẩu `123456`), khoá học, mã giảm giá `WELCOME10`, `VIAN200K`.
+   Sau đó chạy [`20261123000000_grants_privacy.sql`](../supabase/migrations/20261123000000_grants_privacy.sql): cấp quyền API và ẩn email/điện thoại. **Phải chạy trước khi deploy bản app tương ứng.**
+3. [`supabase_seed.sql`](../supabase_seed.sql) (tuỳ chọn): danh mục, giảng viên/học viên mẫu (mật khẩu `123456`, **không chạy trên database thật**), khoá học, mã giảm giá `WELCOME10`, `VIAN200K`.
 4. Tạo admin: đăng ký một tài khoản trong app, rồi chạy:
    ```sql
    update public.users set role = 'admin', admin_approved = true where email = 'you@example.com';
    ```
 
-> Migration duyệt sẵn mọi tài khoản giảng viên **đã tồn tại** để họ không bị chặn. Giảng viên đăng ký sau đó cần admin duyệt tại *Quản trị → Người dùng → Chờ duyệt GV*.
+> Lần chạy đầu, migration duyệt sẵn mọi tài khoản giảng viên **đã tồn tại** để họ không bị chặn. Giảng viên đăng ký sau đó cần admin duyệt tại *Quản trị → Người dùng → Chờ duyệt GV*.
 
 ### Cấu hình Supabase Auth nên kiểm tra
 - **Authentication → Providers → Email**: bật *Confirm email* nếu muốn bắt buộc xác thực email.
@@ -71,3 +72,14 @@ supabase/migrations/ SQL migration
 2. **Admin** duyệt → khoá chuyển *Đã xuất bản* (hoặc *Bị từ chối* kèm lý do → GV sửa và gửi lại).
 3. **Học viên** đăng ký miễn phí, hoặc thêm vào giỏ → thanh toán (mô phỏng, có mã giảm giá) → học → đánh dấu hoàn thành → đạt 100% thì tự nhận chứng chỉ.
 4. **Hoàn tiền**: admin → *Giao dịch* → *Hoàn tiền* → học viên mất quyền truy cập.
+
+## 6. Kiểm thử
+
+| Lệnh | Nội dung |
+|---|---|
+| `npm run test:db` | Chạy schema + toàn bộ migration trên PGlite (Postgres thật, không cần Docker): quyền API, RLS, thanh toán, hoàn tiền, chứng chỉ, seed |
+| `npm run test:unit` | Jest: hàm trong `lib/`, giỏ hàng, chặn theo vai trò, trạng thái lỗi |
+| `npm test` | Cả hai |
+| `npm run typecheck`, `npm run lint` | Kiểm tra kiểu và quy tắc code |
+
+CI chạy tất cả ở mỗi lần push/PR vào `stg` và `main`. Test database không cấp sẵn quyền nào: thêm bảng mới thì migration phải tự `grant`.

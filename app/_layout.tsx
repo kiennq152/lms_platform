@@ -3,7 +3,8 @@ import { Stack, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
+import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -33,6 +34,8 @@ function MaintenanceGate({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  // Registers icon fonts during static rendering too, so server and client markup match.
+  useFonts({ ...Ionicons.font, ...MaterialIcons.font, ...FontAwesome.font });
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

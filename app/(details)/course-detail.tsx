@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
 import { WebLayout } from '@/components/ui/web-layout';
 import { Footer } from '@/components/ui/footer';
-import { Avatar, Badge, BRAND, Card, EmptyState, Field, Loading, Muted, Notice, Row, Stars, statusTone } from '@/components/ui/kit';
+import { Avatar, Badge, BRAND, Card, EmptyState, ErrorState, Field, Loading, Muted, Notice, Row, Stars, statusTone } from '@/components/ui/kit';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { useCart } from '@/lib/cart';
@@ -28,6 +28,7 @@ export default function CourseDetailScreen() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [expanded, setExpanded] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const [myRating, setMyRating] = useState(5);
@@ -35,14 +36,19 @@ export default function CourseDetailScreen() {
   const [savingReview, setSavingReview] = useState(false);
 
   const load = useCallback(async () => {
-    if (!courseId) return;
+    if (!courseId) {
+      setLoading(false);
+      return;
+    }
     const [c, m, o, r] = await Promise.all([
       supabase.from('courses').select(COURSE_DETAIL_SELECT).eq('course_id', courseId).maybeSingle(),
       supabase.from('modules').select('*').eq('course_id', courseId).order('order_index'),
       supabase.from('course_outline').select('*').eq('course_id', courseId).order('order_index'),
-      supabase.from('reviews').select('*, student:users!reviews_student_id_fkey(first_name, last_name, avatar_url)')
+      supabase.from('reviews').select('*, student:public_profiles!reviews_student_id_fkey(first_name, last_name, avatar_url)')
         .eq('course_id', courseId).order('created_at', { ascending: false }),
     ]);
+    const failed = c.error ?? m.error ?? o.error ?? r.error;
+    setError(failed ? errorMessage(failed) : null);
     setCourse((c.data as unknown as Course) ?? null);
     setModules((m.data as Module[]) ?? []);
     setOutline((o.data as OutlineLesson[]) ?? []);
@@ -120,6 +126,7 @@ export default function CourseDetailScreen() {
   };
 
   if (loading) return <Loading />;
+  if (error) return <WebLayout><ErrorState message={error} onRetry={load} /></WebLayout>;
   if (!course) {
     return (
       <WebLayout>

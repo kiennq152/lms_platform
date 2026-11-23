@@ -4,12 +4,13 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
 import {
-  Badge, BRAND, Card, EmptyState, Loading, Muted, ProgressBar, Row, Screen, StatCard, StatGrid, Tabs, statusTone,
+  Badge, BRAND, Card, EmptyState, ErrorState, Loading, Muted, ProgressBar, Row, Screen, StatCard, StatGrid, Tabs, statusTone,
 } from '@/components/ui/kit';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { DEFAULT_THUMBNAIL } from '@/lib/api';
 import { formatDate, formatDateTime, formatMoney, fullName, PAYMENT_METHOD_LABEL, PAYMENT_STATUS_LABEL, timeAgo } from '@/lib/format';
+import { errorMessage } from '@/lib/notify';
 import type { Certificate, Enrollment, Transaction } from '@/lib/types';
 
 type Tab = 'courses' | 'certificates' | 'payments';
@@ -20,6 +21,7 @@ export default function StudentDashboard() {
   const { session, profile } = useAuth();
   const [tab, setTab] = useState<Tab>('courses');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [certs, setCerts] = useState<Certificate[]>([]);
   const [txs, setTxs] = useState<Transaction[]>([]);
@@ -29,12 +31,14 @@ export default function StudentDashboard() {
     const uid = session.user.id;
     const [e, c, t] = await Promise.all([
       supabase.from('enrollments')
-        .select('*, course:courses(course_id, title, thumbnail_url, total_lessons, instructor:users!courses_instructor_id_fkey(first_name, last_name))')
+        .select('*, course:courses(course_id, title, thumbnail_url, total_lessons, instructor:public_profiles!courses_instructor_id_fkey(first_name, last_name))')
         .eq('student_id', uid).neq('status', 'dropped')
         .order('last_accessed_at', { ascending: false, nullsFirst: false }),
       supabase.from('certificates').select('*, course:courses(title)').eq('student_id', uid).order('issued_at', { ascending: false }),
       supabase.from('transactions').select('*, course:courses(title)').eq('student_id', uid).order('transaction_date', { ascending: false }),
     ]);
+    const failed = e.error ?? c.error ?? t.error;
+    setError(failed ? errorMessage(failed) : null);
     setEnrollments((e.data as unknown as Enrollment[]) ?? []);
     setCerts((c.data as unknown as Certificate[]) ?? []);
     setTxs((t.data as unknown as Transaction[]) ?? []);
@@ -44,6 +48,7 @@ export default function StudentDashboard() {
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
   if (loading) return <Loading />;
+  if (error) return <Screen wide><ErrorState message={error} onRetry={load} /></Screen>;
 
   const active = enrollments.filter((e) => e.status === 'active');
   const completed = enrollments.filter((e) => e.status === 'completed');

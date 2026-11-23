@@ -94,6 +94,8 @@ erDiagram
 | Tên | Loại | Ai gọi | Mô tả |
 |---|---|---|---|
 | `course_outline` | view | mọi người | Curriculum của khoá đã xuất bản, **không có URL video** |
+| `public_profiles` | view | mọi người | Tên, vai trò, ảnh, tiểu sử; **không có email/điện thoại**. Bảng `users` chỉ chủ tài khoản và admin đọc được |
+| `course_student_emails(course)` | RPC | GV của khoá / admin | Email học viên của khoá |
 | `quote_checkout(ids, coupon)` | RPC | mọi người | Tính giá, loại khoá đã sở hữu, kiểm tra mã giảm giá |
 | `checkout(ids, coupon, method)` | RPC | đã đăng nhập | Tạo `transactions` + `enrollments`, cộng lượt dùng mã giảm giá |
 | `refund_transaction(id)` | RPC | admin | Hoàn tiền và thu hồi quyền truy cập |

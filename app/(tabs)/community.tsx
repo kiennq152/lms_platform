@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
-import { Avatar, Badge, BRAND, Card, Chips, EmptyState, Field, H1, Loading, Muted, Row, Screen } from '@/components/ui/kit';
+import { Avatar, Badge, BRAND, Card, Chips, EmptyState, ErrorState, Field, H1, Loading, Muted, Row, Screen } from '@/components/ui/kit';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { fullName, timeAgo } from '@/lib/format';
@@ -17,6 +17,7 @@ export default function CommunityScreen() {
   const { session } = useAuth();
   const [topics, setTopics] = useState<ForumTopic[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
@@ -28,12 +29,13 @@ export default function CommunityScreen() {
   const [posting, setPosting] = useState(false);
 
   const load = useCallback(async () => {
-    const { data } = await supabase.from('forum_topics')
-      .select('*, author:users!forum_topics_author_id_fkey(first_name, last_name, avatar_url, role), course:courses(title)')
+    const { data, error } = await supabase.from('forum_topics')
+      .select('*, author:public_profiles!forum_topics_author_id_fkey(first_name, last_name, avatar_url, role), course:courses(title)')
       .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })
       .limit(200);
-    setTopics((data as unknown as ForumTopic[]) ?? []);
+    setLoadError(error ? errorMessage(error) : null);
+    if (data) setTopics(data as unknown as ForumTopic[]);
     setLoading(false);
   }, []);
 
@@ -106,7 +108,7 @@ export default function CommunityScreen() {
         )}
       </View>
 
-      {loading ? <Loading /> : visible.length === 0 ? (
+      {loading ? <Loading /> : loadError ? <ErrorState message={loadError} onRetry={load} /> : visible.length === 0 ? (
         <EmptyState icon="chatbubbles-outline" title="Chưa có bài viết" message="Hãy là người đầu tiên bắt đầu cuộc thảo luận!" />
       ) : visible.map((t) => (
         <TouchableOpacity key={t.topic_id} style={styles.topic} onPress={() => router.push({ pathname: '/(details)/topic', params: { id: String(t.topic_id) } })}>

@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, ScrollView, View, Text, Image, TouchableOpacity } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import YoutubePlayer from 'react-native-youtube-iframe';
 import { Ionicons } from '@expo/vector-icons';
 import { CourseCard } from '@/components/course-card';
 import { Colors } from '@/constants/theme';
@@ -12,7 +11,9 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { COURSE_CARD_SELECT } from '@/lib/api';
 import { formatVND, fullName } from '@/lib/format';
-import { ProgressBar } from '@/components/ui/kit';
+import { errorMessage } from '@/lib/notify';
+import { ErrorState, ProgressBar } from '@/components/ui/kit';
+import { YoutubeVideo } from '@/components/ui/youtube-video';
 import type { Course, Enrollment } from '@/lib/types';
 
 export default function HomeScreen() {
@@ -22,13 +23,18 @@ export default function HomeScreen() {
   const { session, profile } = useAuth();
   const [featured, setFeatured] = useState<Course[]>([]);
   const [newest, setNewest] = useState<Course[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const [continueList, setContinueList] = useState<Enrollment[]>([]);
 
   useFocusEffect(
     useCallback(() => {
       supabase.from('courses').select(COURSE_CARD_SELECT).eq('status', 'published')
         .order('total_enrollments', { ascending: false }).order('rating', { ascending: false }).limit(4)
-        .then(({ data }) => setFeatured((data as unknown as Course[]) ?? []));
+        .then(({ data, error: e }) => {
+          setError(e ? errorMessage(e) : null);
+          if (data) setFeatured(data as unknown as Course[]);
+        });
       supabase.from('courses').select(COURSE_CARD_SELECT).eq('status', 'published')
         .order('published_at', { ascending: false, nullsFirst: false }).limit(4)
         .then(({ data }) => setNewest((data as unknown as Course[]) ?? []));
@@ -41,7 +47,7 @@ export default function HomeScreen() {
       } else {
         setContinueList([]);
       }
-    }, [session?.user])
+    }, [session?.user, reloadKey]) // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const renderCourse = (course: Course) => (
@@ -114,11 +120,7 @@ export default function HomeScreen() {
 
         <View style={[styles.latestLectureContainer, { backgroundColor: colorScheme === 'dark' ? '#1A1A1A' : '#F9F9F9' }]}>
           <View style={styles.videoWrapper}>
-            <YoutubePlayer
-              height={220}
-              play={false}
-              videoId={"jBzwzrDvZ18"}
-            />
+            <YoutubeVideo videoId="jBzwzrDvZ18" />
           </View>
           
           <View style={styles.instructorInfo}>
@@ -152,7 +154,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.courseList}>
-          {featured.length ? featured.map(renderCourse) : (
+          {error ? <ErrorState message={error} onRetry={() => setReloadKey((k) => k + 1)} /> : featured.length ? featured.map(renderCourse) : (
             <Text style={{ color: '#888' }}>Chưa có khoá học nào được xuất bản.</Text>
           )}
         </View>

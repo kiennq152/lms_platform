@@ -15,4 +15,6 @@ npm install
 npx expo start --web
 ```
 
+Kiểm thử: `npm test` (database + unit), chi tiết ở [docs/README.md](docs/README.md#6-kiểm-thử).
+
 Build web cho Vercel: `npx expo export --platform web` (thư mục `dist/`).

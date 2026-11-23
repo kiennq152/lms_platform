@@ -50,7 +50,7 @@ export default function TabLayout() {
         name="courses"
         options={{
           title: 'Khoá học',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.fill" color={color} />,
         }}
       />
       <Tabs.Screen

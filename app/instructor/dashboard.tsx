@@ -46,6 +46,7 @@ export default function InstructorDashboard() {
       supabase.from('courses').select(COURSE_CARD_SELECT).eq('instructor_id', session.user.id).order('updated_at', { ascending: false }),
     ]);
     if (s.error) notify('Không tải được thống kê', errorMessage(s.error));
+    if (c.error) notify('Không tải được khoá học', errorMessage(c.error));
     setStats((s.data as InstructorStats) ?? null);
     setCourses((c.data as unknown as Course[]) ?? []);
     setLoading(false);

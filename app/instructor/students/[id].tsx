@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/kit';
 import { supabase } from '@/lib/supabase';
 import { formatDate, formatMoney, fullName, timeAgo } from '@/lib/format';
+import { errorMessage, notify } from '@/lib/notify';
 import type { Course, Enrollment, ForumTopic, Profile } from '@/lib/types';
 
 type Tab = 'students' | 'qa';
@@ -26,16 +27,23 @@ export default function CourseStudentsScreen() {
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    const [c, e, q, t] = await Promise.all([
+    const [c, e, q, t, em] = await Promise.all([
       supabase.from('courses').select('course_id, title, total_lessons').eq('course_id', courseId).maybeSingle(),
-      supabase.from('enrollments').select('*, student:users!enrollments_student_id_fkey(first_name, last_name, email, avatar_url)')
+      supabase.from('enrollments').select('*, student:public_profiles!enrollments_student_id_fkey(first_name, last_name, avatar_url)')
         .eq('course_id', courseId).order('created_at', { ascending: false }),
-      supabase.from('forum_topics').select('*, author:users!forum_topics_author_id_fkey(first_name, last_name, avatar_url, role), forum_replies(is_solution)')
+      supabase.from('forum_topics').select('*, author:public_profiles!forum_topics_author_id_fkey(first_name, last_name, avatar_url, role), forum_replies(is_solution)')
         .eq('course_id', courseId).order('created_at', { ascending: false }),
       supabase.from('transactions').select('amount').eq('course_id', courseId).eq('payment_status', 'completed'),
+      supabase.rpc('course_student_emails', { p_course: courseId }),
     ]);
+    const failed = c.error ?? e.error ?? q.error ?? t.error ?? em.error;
+    if (failed) notify('Không tải được dữ liệu', errorMessage(failed));
+    const emails = new Map(((em.data ?? []) as { student_id: string; email: string }[]).map((x) => [x.student_id, x.email]));
     setCourse((c.data as Course) ?? null);
-    setRows((e.data as unknown as Row_[]) ?? []);
+    setRows(((e.data as unknown as Row_[]) ?? []).map((r) => ({
+      ...r,
+      student: r.student && { ...r.student, email: emails.get(r.student_id) ?? '' },
+    })));
     setQuestions((q.data as any) ?? []);
     setRevenue((t.data ?? []).reduce((s, x) => s + Number(x.amount), 0));
     setLoading(false);
