@@ -1,240 +1,123 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, LayoutAnimation } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Badge, BRAND, Card, Field, H2, Muted, Row, Screen, statusTone } from '@/components/ui/kit';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth';
+import { formatDateTime, fullName, TICKET_STATUS_LABEL } from '@/lib/format';
+import { errorMessage, notify } from '@/lib/notify';
+import type { SupportTicket } from '@/lib/types';
 
 const FAQ = [
-    {
-        question: 'Làm sao để đăng ký khóa học?',
-        answer: 'Để đăng ký khóa học, bạn chỉ cần tìm khóa học muốn học, thêm vào giỏ hàng và hoàn thành thanh toán. Sau đó khóa học sẽ xuất hiện trong mục "Khóa học của tôi".'
-    },
-    {
-        question: 'Có thể hoàn lại tiền không?',
-        answer: 'Có, chúng tôi hỗ trợ hoàn tiền trong vòng 30 ngày nếu bạn không hài lòng với nội dung khóa học. Vui lòng liên hệ hỗ trợ để được hướng dẫn.'
-    },
-    {
-        question: 'Làm sao để lấy chứng chỉ?',
-        answer: 'Bạn sẽ nhận được chứng chỉ tự động sau khi hoàn thành 100% các bài học và bài kiểm tra của khóa học.'
-    }
+  { q: 'Làm sao để đăng ký khoá học?', a: 'Mở trang chi tiết khoá học, chọn "Đăng ký học miễn phí" (khoá miễn phí) hoặc "Mua ngay" / "Thêm vào giỏ hàng" (khoá trả phí), sau đó hoàn tất thanh toán.' },
+  { q: 'Tôi có được truy cập khoá học trọn đời không?', a: 'Có. Sau khi đăng ký, bạn có thể học lại bất cứ lúc nào trong mục "Học tập của tôi".' },
+  { q: 'Khi nào tôi nhận được chứng chỉ?', a: 'Chứng chỉ được cấp tự động ngay khi bạn hoàn thành 100% bài học của khoá. Bạn có thể xem và chia sẻ mã chứng chỉ trong "Học tập của tôi".' },
+  { q: 'Tôi có thể sử dụng mã giảm giá thế nào?', a: 'Nhập mã ở bước thanh toán và bấm "Áp dụng". Mỗi mã có thể có giới hạn số lượt dùng và hạn sử dụng.' },
+  { q: 'Chính sách hoàn tiền ra sao?', a: 'Gửi yêu cầu hỗ trợ kèm mã giao dịch. Sau khi hoàn tiền, quyền truy cập khoá học tương ứng sẽ bị thu hồi.' },
+  { q: 'Làm sao để trở thành giảng viên?', a: 'Đăng ký tài khoản với vai trò "Giảng viên". Quản trị viên sẽ xét duyệt hồ sơ trước khi bạn có thể tạo khoá học. Mỗi khoá học cũng được kiểm duyệt trước khi xuất bản.' },
+  { q: 'Tôi quên mật khẩu?', a: 'Ở màn hình đăng nhập, nhập email rồi chọn "Quên mật khẩu?". Bạn sẽ nhận mã xác thực qua email để đặt mật khẩu mới.' },
 ];
 
 export default function SupportScreen() {
-    const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-    const colorScheme = useColorScheme();
-    const themeColors = Colors[colorScheme ?? 'light'];
-    const router = useRouter();
+  const { session, profile, settings } = useAuth();
+  const [open, setOpen] = useState<number | null>(0);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const [mine, setMine] = useState<SupportTicket[]>([]);
 
-    const toggleExpand = (index: number) => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        setExpandedIndex(expandedIndex === index ? null : index);
-    };
+  useEffect(() => {
+    if (profile) {
+      setName(fullName(profile, ''));
+      setEmail(profile.email);
+    }
+  }, [profile]);
 
-    return (
-        <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={24} color={themeColors.text} />
-                </TouchableOpacity>
-                <Text style={[styles.title, { color: themeColors.text }]}>Trung tâm hỗ trợ</Text>
-                <View style={{ width: 24 }} />
-            </View>
+  const loadMine = useCallback(async () => {
+    if (!session?.user) return setMine([]);
+    const { data } = await supabase.from('support_tickets').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false });
+    setMine((data as SupportTicket[]) ?? []);
+  }, [session?.user]);
 
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <View style={styles.searchSection}>
-                    <Text style={styles.searchLabel}>Chúng tôi có thể giúp gì cho bạn?</Text>
-                    <View style={styles.searchBar}>
-                        <Ionicons name="search" size={20} color="#999" />
-                        <TextInput
-                            placeholder="Tìm kiếm vấn đề..."
-                            style={styles.searchInput}
-                            placeholderTextColor="#999"
-                        />
-                    </View>
+  useEffect(() => { loadMine(); }, [loadMine]);
+
+  const submit = async () => {
+    if (!email.trim() || !subject.trim() || !message.trim()) return notify('Thiếu thông tin', 'Vui lòng nhập email, tiêu đề và nội dung.');
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) return notify('Email không hợp lệ', 'Vui lòng kiểm tra lại địa chỉ email.');
+    setSending(true);
+    const { error } = await supabase.from('support_tickets').insert({
+      user_id: session?.user?.id ?? null,
+      name: name.trim() || null,
+      email: email.trim(),
+      subject: subject.trim(),
+      message: message.trim(),
+    });
+    setSending(false);
+    if (error) return notify('Không gửi được yêu cầu', errorMessage(error));
+    setSubject('');
+    setMessage('');
+    notify('Đã gửi yêu cầu', 'Chúng tôi sẽ phản hồi qua email trong thời gian sớm nhất.');
+    loadMine();
+  };
+
+  return (
+    <Screen>
+      <H2>Câu hỏi thường gặp</H2>
+      {FAQ.map((f, i) => (
+        <TouchableOpacity key={i} onPress={() => setOpen(open === i ? null : i)} style={{ borderBottomWidth: 1, borderBottomColor: '#EEE', paddingVertical: 12 }}>
+          <Row style={{ justifyContent: 'space-between' }}>
+            <Text style={{ fontWeight: '700', color: BRAND.text, flex: 1 }}>{f.q}</Text>
+            <Ionicons name={open === i ? 'remove' : 'add'} size={18} color={BRAND.blue} />
+          </Row>
+          {open === i && <Text style={{ color: '#555', marginTop: 8, lineHeight: 21 }}>{f.a}</Text>}
+        </TouchableOpacity>
+      ))}
+
+      <H2 style={{ marginTop: 24 }}>Liên hệ trực tiếp</H2>
+      <Card>
+        {settings?.support_email ? (
+          <TouchableOpacity onPress={() => Linking.openURL(`mailto:${settings.support_email}`)}>
+            <Row><Ionicons name="mail-outline" size={18} color={BRAND.blue} /><Text style={{ color: BRAND.blue }}>{settings.support_email}</Text></Row>
+          </TouchableOpacity>
+        ) : null}
+        {settings?.support_phone ? (
+          <Row style={{ marginTop: 8 }}><Ionicons name="call-outline" size={18} color={BRAND.blue} /><Text>{settings.support_phone}</Text></Row>
+        ) : null}
+        <Row style={{ marginTop: 8 }}><Ionicons name="time-outline" size={18} color={BRAND.blue} /><Muted>Thứ 2 – Thứ 6, 8:00 – 17:30</Muted></Row>
+      </Card>
+
+      <H2 style={{ marginTop: 12 }}>Gửi yêu cầu hỗ trợ</H2>
+      <Card>
+        <Field label="Họ tên" value={name} onChangeText={setName} />
+        <Field label="Email *" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+        <Field label="Tiêu đề *" value={subject} onChangeText={setSubject} placeholder="VD: Không xem được video bài 3" />
+        <Field label="Nội dung *" value={message} onChangeText={setMessage} multiline placeholder="Mô tả chi tiết vấn đề, kèm mã giao dịch nếu có" />
+        <Button title="Gửi yêu cầu" icon="send-outline" onPress={submit} loading={sending} />
+      </Card>
+
+      {mine.length > 0 && (
+        <>
+          <H2 style={{ marginTop: 12 }}>Yêu cầu của tôi</H2>
+          {mine.map((t) => (
+            <Card key={t.ticket_id}>
+              <Row style={{ justifyContent: 'space-between' }}>
+                <Text style={{ fontWeight: '700', color: BRAND.text, flex: 1 }}>#{t.ticket_id} · {t.subject}</Text>
+                <Badge label={TICKET_STATUS_LABEL[t.status]} tone={statusTone(t.status)} />
+              </Row>
+              <Muted style={{ fontSize: 12, marginTop: 4 }}>{formatDateTime(t.created_at)}</Muted>
+              {t.admin_note ? (
+                <View style={{ marginTop: 8, padding: 10, backgroundColor: '#F5F8FF', borderRadius: 8 }}>
+                  <Text style={{ fontWeight: '700', color: BRAND.blue, marginBottom: 2 }}>Phản hồi từ VIAN</Text>
+                  <Text style={{ color: '#333' }}>{t.admin_note}</Text>
                 </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Câu hỏi thường gặp</Text>
-                    {FAQ.map((item, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={styles.faqCard}
-                            onPress={() => toggleExpand(index)}
-                        >
-                            <View style={styles.faqHeader}>
-                                <Text style={styles.question}>{item.question}</Text>
-                                <Ionicons
-                                    name={expandedIndex === index ? "chevron-up" : "chevron-down"}
-                                    size={18}
-                                    color="#666"
-                                />
-                            </View>
-                            {expandedIndex === index && (
-                                <Text style={styles.answer}>{item.answer}</Text>
-                            )}
-                        </TouchableOpacity>
-                    ))}
-                </View>
-
-                <View style={styles.contactCard}>
-                    <Text style={styles.contactTitle}>Bạn vẫn cần hỗ trợ?</Text>
-                    <Text style={styles.contactSubtitle}>Gửi lời nhắn cho chúng tôi, chúng tôi sẽ phản hồi trong vòng 24 giờ.</Text>
-
-                    <Input placeholder="Tiêu đề vấn đề" style={styles.contactInput} />
-                    <TextInput
-                        placeholder="Mô tả chi tiết..."
-                        style={[styles.contactInput, styles.textArea]}
-                        multiline
-                        numberOfLines={4}
-                        placeholderTextColor="#999"
-                    />
-                    <Button title="Gửi yêu cầu" onPress={() => alert('Đã gửi yêu cầu hỗ trợ!')} />
-                </View>
-
-                <View style={styles.contactLinks}>
-                    <TouchableOpacity style={styles.linkItem}>
-                        <Ionicons name="mail-outline" size={24} color={themeColors.primary} />
-                        <Text style={styles.linkText}>support@vian.edu.vn</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.linkItem}>
-                        <Ionicons name="call-outline" size={24} color={themeColors.primary} />
-                        <Text style={styles.linkText}>1900 123 456</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-        </View>
-    );
+              ) : null}
+            </Card>
+          ))}
+        </>
+      )}
+    </Screen>
+  );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    header: {
-        paddingTop: 60,
-        paddingHorizontal: 20,
-        paddingBottom: 16,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#FFF',
-        borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    scrollContent: {
-        padding: 20,
-    },
-    searchSection: {
-        marginBottom: 30,
-    },
-    searchLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 12,
-    },
-    searchBar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#F5F5F5',
-        paddingHorizontal: 15,
-        borderRadius: 12,
-    },
-    searchInput: {
-        flex: 1,
-        paddingVertical: 12,
-        marginLeft: 10,
-        fontSize: 15,
-    },
-    section: {
-        marginBottom: 30,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 16,
-    },
-    faqCard: {
-        backgroundColor: '#FFF',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#EEE',
-    },
-    faqHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    question: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        color: '#444',
-        flex: 1,
-    },
-    answer: {
-        fontSize: 14,
-        color: '#666',
-        lineHeight: 20,
-        marginTop: 12,
-        paddingTop: 12,
-        borderTopWidth: 1,
-        borderTopColor: '#F5F5F5',
-    },
-    contactCard: {
-        backgroundColor: '#1E3A8A',
-        borderRadius: 16,
-        padding: 24,
-        marginBottom: 30,
-    },
-    contactTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#FFF',
-        marginBottom: 8,
-    },
-    contactSubtitle: {
-        fontSize: 14,
-        color: 'rgba(255,255,255,0.7)',
-        marginBottom: 20,
-        lineHeight: 20,
-    },
-    contactInput: {
-        backgroundColor: '#FFF',
-        marginBottom: 12,
-        borderRadius: 8,
-    },
-    textArea: {
-        height: 100,
-        padding: 12,
-        textAlignVertical: 'top',
-    },
-    contactLinks: {
-        gap: 16,
-        marginBottom: 40,
-    },
-    linkItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        backgroundColor: '#FFF',
-        padding: 16,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#EEE',
-    },
-    linkText: {
-        fontSize: 15,
-        color: '#333',
-        fontWeight: '500',
-    },
-});

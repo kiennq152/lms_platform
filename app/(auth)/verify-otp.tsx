@@ -1,52 +1,49 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { notify, errorMessage } from '@/lib/notify';
+import { homeForRole } from '@/lib/auth';
 
 export default function VerifyOtpScreen() {
-    const { email } = useLocalSearchParams<{ email: string }>();
+    // next=change-password is used by the "Quên mật khẩu" flow (FR-003).
+    const { email, next } = useLocalSearchParams<{ email: string; next?: string }>();
     const [token, setToken] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     async function verifyOtp() {
         if (!token) {
-            Alert.alert('Error', 'Please enter the verification code');
+            notify('Thiếu mã', 'Vui lòng nhập mã xác thực đã gửi tới email.');
             return;
         }
         setLoading(true);
         const { error, data } = await supabase.auth.verifyOtp({
             email: email,
-            token: token,
+            token: token.trim(),
             type: 'email',
         });
 
         if (error) {
-            console.error('Verify OTP Error Object:', JSON.stringify(error, null, 2));
-            Alert.alert('Verification Error', error.message);
+            notify('Xác thực thất bại', errorMessage(error));
             setLoading(false);
             return;
         }
 
-        // Role-based navigation
         if (data.user) {
+            if (next === 'change-password') {
+                router.replace({ pathname: '/(details)/change-password' as any, params: { reset: '1' } });
+                setLoading(false);
+                return;
+            }
             const { data: profile } = await supabase
-                .from('profiles')
+                .from('users')
                 .select('role')
                 .eq('id', data.user.id)
-                .single();
-
-            const role = profile?.role || 'student';
-
-            if (role === 'admin') {
-                router.replace('/(admin)/dashboard' as any);
-            } else if (role === 'instructor') {
-                router.replace('/(instructor)/dashboard' as any);
-            } else {
-                router.replace('/(tabs)');
-            }
+                .maybeSingle();
+            router.replace(homeForRole(profile?.role) as any);
         }
         setLoading(false);
     }
@@ -58,36 +55,42 @@ export default function VerifyOtpScreen() {
         >
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Text style={styles.backButtonText}>← Back to Login</Text>
+                    <Text style={styles.backButtonText}>← Quay lại đăng nhập</Text>
                 </TouchableOpacity>
 
                 <View style={styles.header}>
-                    <Text style={styles.title}>Verify Email</Text>
+                    <Text style={styles.title}>{next === 'change-password' ? 'Khôi phục mật khẩu' : 'Xác thực email'}</Text>
                     <Text style={styles.description}>
-                        We&apos;ve sent a 6-digit verification code to{"\n"}
+                        Chúng tôi đã gửi mã xác thực tới{"\n"}
                         <Text style={styles.emailText}>{email}</Text>
                     </Text>
                 </View>
 
                 <View style={styles.form}>
                     <Input
-                        label="Verification Code"
+                        label="Mã xác thực"
                         placeholder="123456"
                         value={token}
                         onChangeText={setToken}
                         keyboardType="number-pad"
-                        maxLength={6}
+                        maxLength={8}
                     />
 
                     <Button
-                        title="Verify & Sign In"
+                        title={next === 'change-password' ? 'Xác thực & đặt mật khẩu mới' : 'Xác thực & đăng nhập'}
                         onPress={verifyOtp}
                         loading={loading}
                         style={styles.verifyButton}
                     />
 
-                    <TouchableOpacity style={styles.resendButton}>
-                        <Text style={styles.resendText}>Didn&apos;t receive the code? Resend</Text>
+                    <TouchableOpacity
+                        style={styles.resendButton}
+                        onPress={async () => {
+                            const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+                            notify(error ? 'Lỗi' : 'Đã gửi lại mã', error ? errorMessage(error) : 'Vui lòng kiểm tra hộp thư.');
+                        }}
+                    >
+                        <Text style={styles.resendText}>Chưa nhận được mã? Gửi lại</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>

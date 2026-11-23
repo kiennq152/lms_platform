@@ -1,291 +1,142 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { WebLayout } from '@/components/ui/web-layout';
-import { Footer } from '@/components/ui/footer';
+import React, { useCallback, useMemo, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Button } from '@/components/ui/button';
+import { Avatar, Badge, BRAND, Card, Chips, EmptyState, Field, H1, Loading, Muted, Row, Screen } from '@/components/ui/kit';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/auth';
+import { fullName, timeAgo } from '@/lib/format';
+import { errorMessage, notify } from '@/lib/notify';
+import type { ForumTopic } from '@/lib/types';
 
-const TOPICS = [
-    {
-        id: '1',
-        title: 'Làm sao để chuẩn bị hồ sơ IT sang Hàn Quốc?',
-        author: 'Minh Tuấn',
-        avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGrTHmQf9dUMLCAKVlCNR5IwZFKNPlP_I6Pd5o6YETB9VHGsGMv_giowUTs9D--M86FGud2YIOin1Y_hq2s5NjWdQTAqu5IGkCVycXMJD3dL1GUpDc3MumskZ5FC7GiW_FUeEaQvKxiIJh5_9oACcG9Jy7UHpXo-zNCnu2QBznh2GV3X8F2NVenIgBYkUz9oEiWugYEBq88ok7lpq0m2FNWUrOvTgs8atAc_RIOOJp_J7ZwxLjhBvIOlFIVxt-QqSU8LEhCr25GUM',
-        time: '2 giờ trước',
-        replies: 12,
-        views: 450,
-        category: 'Hỗ Trợ',
-        isPinned: true,
-    },
-    {
-        id: '2',
-        title: 'Thảo luận về lộ trình Full-stack 2024 tại VIAN',
-        author: 'Hương Giang',
-        avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1WTFm-xwtHq8b_43zDypyfN44CDtCGEbAv7jRuQnZIwVzh9VRSnWv6egbKHiD4tYDBuIK9_JxWL8ewjv_SQapBdS5N71SXE08LJZS3yOO18yKrAtTXIpRJS2rl2psdqR3gE-69tgN9BuZOHbBpT4SpiGFffT6XDvtuLxcQdMZ81P0XaFm4HtYJyhwu_jhj6oH47Xldf3Ub4HrPgvEVs9NGuujv7GmKZKjf9oq1a5b84LqbtyD8agVHNZikOFReWjSxfWoMy3ntXI',
-        time: '5 giờ trước',
-        replies: 8,
-        views: 231,
-        category: 'Thảo Luận',
-        hasSolution: true,
-    },
-    {
-        id: '3',
-        title: 'Lỗi khi cài đặt SQL Server trên Macbook M1',
-        author: 'Quốc Bảo',
-        avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAeZgX-ScIZ6ZsUWgD8K0D_gcpKOEGl99hsnpYLUgKzWkDz9BtO2xYPD3WbXyGmTDYWtvNnN8TlR3HzI1zcVb5-w3o8Hjh0thVIxjSiLHRBaye8IrxS_2TwFvB-fbowRHr4NHi-V5vvm1Z2sazxTOUIU8CKddxVPOksqls65Ego3G7X6CcqknWQuXbqv7-iG6Fn7riN03i35tTL4bdD5n4I8zSNcVVUo8oEcyXK53bKZLpFBn4dXPg-ZS5z0youWw__xi2L9FELL0A',
-        time: '1 ngày trước',
-        replies: 24,
-        views: 890,
-        category: 'Hỏi Đáp',
-    }
-];
+type Filter = 'all' | 'discussion' | 'question' | 'mine';
 
 export default function CommunityScreen() {
-    const colorScheme = useColorScheme();
-    const themeColors = Colors[colorScheme ?? 'light'];
-    const [activeTab, setActiveTab] = useState('Diễn Đàn');
+  const router = useRouter();
+  const { session } = useAuth();
+  const [topics, setTopics] = useState<ForumTopic[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [filter, setFilter] = useState<Filter>('all');
+  const [search, setSearch] = useState('');
 
-    return (
-        <WebLayout>
-            <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-            <View style={styles.header}>
-                <Text style={[styles.title, { color: themeColors.text }]}>VIAN Community</Text>
-                <TouchableOpacity style={[styles.createBtn, { backgroundColor: themeColors.primary }]}>
-                    <Ionicons name="add" size={24} color="#FFF" />
-                    <Text style={styles.createBtnText}>Tạo Chủ Đề</Text>
-                </TouchableOpacity>
+  const [composing, setComposing] = useState(false);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [type, setType] = useState<'discussion' | 'question'>('discussion');
+  const [posting, setPosting] = useState(false);
+
+  const load = useCallback(async () => {
+    const { data } = await supabase.from('forum_topics')
+      .select('*, author:users!forum_topics_author_id_fkey(first_name, last_name, avatar_url, role), course:courses(title)')
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(200);
+    setTopics((data as unknown as ForumTopic[]) ?? []);
+    setLoading(false);
+  }, []);
+
+  useFocusEffect(useCallback(() => { load(); }, [load]));
+
+  const visible = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return topics.filter((t) => {
+      if (filter === 'mine' && t.author_id !== session?.user?.id) return false;
+      if ((filter === 'discussion' || filter === 'question') && t.type !== filter) return false;
+      if (q && !`${t.title} ${t.content}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [topics, filter, search, session?.user?.id]);
+
+  const post = async () => {
+    if (!session) return router.push('/(auth)/login');
+    if (!title.trim() || !content.trim()) return notify('Thiếu nội dung', 'Vui lòng nhập tiêu đề và nội dung.');
+    setPosting(true);
+    const { error } = await supabase.from('forum_topics').insert({ author_id: session.user.id, title: title.trim(), content: content.trim(), type });
+    setPosting(false);
+    if (error) return notify('Không đăng được bài', errorMessage(error));
+    setTitle('');
+    setContent('');
+    setComposing(false);
+    load();
+  };
+
+  return (
+    <Screen tabBarInset refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }}>
+      <View style={{ paddingTop: 28 }}>
+        <H1>Cộng đồng VIAN</H1>
+        <Muted style={{ marginBottom: 16 }}>Thảo luận, hỏi đáp và chia sẻ kinh nghiệm học tập.</Muted>
+      </View>
+
+      <View style={styles.search}>
+        <Ionicons name="search" size={18} color="#999" />
+        <TextInput style={styles.searchInput} placeholder="Tìm kiếm bài viết..." value={search} onChangeText={setSearch} placeholderTextColor="#999" />
+      </View>
+      <Chips<Filter>
+        options={[
+          { value: 'all', label: 'Tất cả' },
+          { value: 'discussion', label: 'Thảo luận' },
+          { value: 'question', label: 'Hỏi đáp' },
+          ...(session ? [{ value: 'mine' as Filter, label: 'Bài của tôi' }] : []),
+        ]}
+        value={filter}
+        onChange={setFilter}
+      />
+
+      <View style={{ marginVertical: 14 }}>
+        {composing ? (
+          <Card style={{ backgroundColor: '#FAFBFF' }}>
+            <Chips
+              options={[{ value: 'discussion', label: '💬 Thảo luận' }, { value: 'question', label: '❓ Câu hỏi' }] as { value: 'discussion' | 'question'; label: string }[]}
+              value={type}
+              onChange={setType}
+            />
+            <View style={{ height: 10 }} />
+            <Field placeholder="Tiêu đề" value={title} onChangeText={setTitle} />
+            <Field placeholder="Nội dung bài viết..." value={content} onChangeText={setContent} multiline />
+            <Row>
+              <Button title="Đăng bài" size="sm" onPress={post} loading={posting} />
+              <Button title="Huỷ" size="sm" variant="ghost" onPress={() => setComposing(false)} />
+            </Row>
+          </Card>
+        ) : (
+          <Button title={session ? 'Tạo bài viết mới' : 'Đăng nhập để tham gia thảo luận'} icon="create-outline" variant="secondary"
+            onPress={() => (session ? setComposing(true) : router.push('/(auth)/login'))} />
+        )}
+      </View>
+
+      {loading ? <Loading /> : visible.length === 0 ? (
+        <EmptyState icon="chatbubbles-outline" title="Chưa có bài viết" message="Hãy là người đầu tiên bắt đầu cuộc thảo luận!" />
+      ) : visible.map((t) => (
+        <TouchableOpacity key={t.topic_id} style={styles.topic} onPress={() => router.push({ pathname: '/(details)/topic', params: { id: String(t.topic_id) } })}>
+          <Row gap={10} style={{ alignItems: 'flex-start' }}>
+            <Avatar uri={t.author?.avatar_url} user={t.author} size={38} />
+            <View style={{ flex: 1, gap: 4 }}>
+              <Row wrap gap={6}>
+                {t.is_pinned && <Badge label="📌 Ghim" tone="orange" />}
+                <Badge label={t.type === 'question' ? 'Hỏi đáp' : 'Thảo luận'} tone={t.type === 'question' ? 'purple' : 'blue'} />
+                {t.course?.title ? <Badge label={t.course.title} tone="gray" /> : null}
+                {t.is_locked && <Badge label="Đã khoá" tone="red" />}
+              </Row>
+              <Text style={styles.topicTitle} numberOfLines={2}>{t.title}</Text>
+              <Muted numberOfLines={2}>{t.content}</Muted>
+              <Row gap={14}>
+                <Muted style={{ fontSize: 12 }}>{fullName(t.author)} · {timeAgo(t.created_at)}</Muted>
+                <Row gap={4}><Ionicons name="chatbubble-outline" size={13} color="#888" /><Muted style={{ fontSize: 12 }}>{t.reply_count}</Muted></Row>
+                <Row gap={4}><Ionicons name="eye-outline" size={13} color="#888" /><Muted style={{ fontSize: 12 }}>{t.view_count}</Muted></Row>
+              </Row>
             </View>
-
-            <View style={styles.tabs}>
-                {['Diễn Đàn', 'Hỏi Đáp', 'Tin Tức'].map(tab => (
-                    <TouchableOpacity
-                        key={tab}
-                        style={[styles.tab, activeTab === tab && { borderBottomColor: themeColors.primary }]}
-                        onPress={() => setActiveTab(tab)}
-                    >
-                        <Text style={[styles.tabText, activeTab === tab && { color: themeColors.primary, fontWeight: 'bold' }]}>
-                            {tab}
-                        </Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
-
-            <View style={styles.searchBar}>
-                <Ionicons name="search" size={20} color="#999" />
-                <TextInput
-                    placeholder="Tìm chủ đề..."
-                    style={styles.searchInput}
-                    placeholderTextColor="#999"
-                />
-            </View>
-
-            <ScrollView contentContainerStyle={styles.listContent}>
-                {TOPICS.map(topic => (
-                    <TouchableOpacity key={topic.id} style={styles.topicCard}>
-                        <View style={styles.topicHeader}>
-                            <Image source={{ uri: topic.avatar }} style={styles.authorAvatar} />
-                            <View style={styles.authorInfo}>
-                                <Text style={styles.authorName}>{topic.author}</Text>
-                                <Text style={styles.topicTime}>{topic.time}</Text>
-                            </View>
-                            {topic.isPinned && (
-                                <View style={styles.pinnedBadge}>
-                                    <Ionicons name="pin" size={12} color={themeColors.primary} />
-                                    <Text style={[styles.pinnedText, { color: themeColors.primary }]}>Đã ghim</Text>
-                                </View>
-                            )}
-                        </View>
-
-                        <Text style={styles.topicTitle}>{topic.title}</Text>
-
-                        <View style={styles.topicFooter}>
-                            <View style={styles.categoryBadge}>
-                                <Text style={styles.categoryText}>{topic.category}</Text>
-                            </View>
-                            <View style={styles.statsRow}>
-                                <View style={styles.statItem}>
-                                    <Ionicons name="chatbubble-outline" size={14} color="#666" />
-                                    <Text style={styles.statText}>{topic.replies}</Text>
-                                </View>
-                                <View style={styles.statItem}>
-                                    <Ionicons name="eye-outline" size={16} color="#666" />
-                                    <Text style={styles.statText}>{topic.views}</Text>
-                                </View>
-                                {topic.hasSolution && (
-                                    <View style={styles.solvedBadge}>
-                                        <Ionicons name="checkmark-circle" size={14} color="#4CAF50" />
-                                        <Text style={styles.solvedText}>Đã giải quyết</Text>
-                                    </View>
-                                )}
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                ))}
-                <View style={{ height: 20 }} />
-                <Footer />
-            </ScrollView>
-        </View>
-        </WebLayout>
-    );
+          </Row>
+        </TouchableOpacity>
+      ))}
+    </Screen>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    header: {
-        paddingTop: 60,
-        paddingHorizontal: 20,
-        paddingBottom: 16,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#FFF',
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-    },
-    createBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 8,
-        gap: 4,
-    },
-    createBtnText: {
-        color: '#FFF',
-        fontSize: 14,
-        fontWeight: 'bold',
-    },
-    tabs: {
-        flexDirection: 'row',
-        backgroundColor: '#FFF',
-        borderBottomWidth: 1,
-        borderBottomColor: '#EEE',
-    },
-    tab: {
-        flex: 1,
-        paddingVertical: 14,
-        alignItems: 'center',
-        borderBottomWidth: 2,
-        borderBottomColor: 'transparent',
-    },
-    tabText: {
-        fontSize: 14,
-        color: '#666',
-    },
-    searchBar: {
-        margin: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#F5F5F5',
-        paddingHorizontal: 12,
-        borderRadius: 10,
-    },
-    searchInput: {
-        flex: 1,
-        paddingVertical: 10,
-        marginLeft: 8,
-        fontSize: 15,
-    },
-    listContent: {
-        paddingHorizontal: 20,
-        paddingBottom: 40,
-    },
-    topicCard: {
-        backgroundColor: '#FFF',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
-        borderWidth: 1,
-        borderColor: '#EEE',
-    },
-    topicHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    authorAvatar: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: '#EEE',
-    },
-    authorInfo: {
-        marginLeft: 10,
-        flex: 1,
-    },
-    authorName: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    topicTime: {
-        fontSize: 11,
-        color: '#999',
-    },
-    pinnedBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(29, 58, 138, 0.05)',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 4,
-        gap: 4,
-    },
-    pinnedText: {
-        fontSize: 10,
-        fontWeight: 'bold',
-    },
-    topicTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-        lineHeight: 22,
-        marginBottom: 16,
-    },
-    topicFooter: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    categoryBadge: {
-        backgroundColor: '#F0F0F0',
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 4,
-    },
-    categoryText: {
-        fontSize: 11,
-        color: '#666',
-        fontWeight: '600',
-    },
-    statsRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 16,
-    },
-    statItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
-    },
-    statText: {
-        fontSize: 12,
-        color: '#666',
-    },
-    solvedBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
-        marginLeft: 4,
-    },
-    solvedText: {
-        fontSize: 11,
-        color: '#4CAF50',
-        fontWeight: 'bold',
-    },
+  search: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#F5F5F5', borderRadius: 12, paddingHorizontal: 12, marginBottom: 12 },
+  searchInput: { flex: 1, paddingVertical: 11, fontSize: 15, color: '#333' },
+  topic: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  topicTitle: { fontSize: 16, fontWeight: '700', color: BRAND.text },
 });

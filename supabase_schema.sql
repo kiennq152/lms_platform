@@ -21,6 +21,8 @@ create table public.users (
   phone text,
   bio text,
   social_link text,
+  degree text,
+  experience_years integer,
   admin_approved boolean default false,
   admin_approved_at timestamp with time zone,
   approved_by uuid references public.users(id),
@@ -44,14 +46,16 @@ create policy "Users can update own profile."
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.users (id, email, first_name, last_name, role, avatar_url)
+  insert into public.users (id, email, first_name, last_name, role, avatar_url, degree, experience_years)
   values (
     new.id,
     new.email,
     new.raw_user_meta_data->>'first_name',
     new.raw_user_meta_data->>'last_name',
     coalesce(new.raw_user_meta_data->>'role', 'student'),
-    new.raw_user_meta_data->>'avatar_url'
+    new.raw_user_meta_data->>'avatar_url',
+    new.raw_user_meta_data->>'degree',
+    (new.raw_user_meta_data->>'experience_years')::integer
   );
   return new;
 end;
@@ -265,4 +269,21 @@ create table public.forum_replies (
 );
 alter table public.forum_replies enable row level security;
 create policy "Replies are public." on forum_replies for select using ( true );
+
+-- =====================================================
+-- 12. INSTRUCTOR RLS POLICIES FOR MODULES AND LESSONS
+-- =====================================================
+create policy "Instructors can insert modules."
+  on modules for insert with check ( 
+    exists (select 1 from courses where courses.course_id = course_id and courses.instructor_id = auth.uid()) 
+  );
+
+create policy "Instructors can insert lessons."
+  on lessons for insert with check ( 
+    exists (
+      select 1 from modules 
+      join courses on courses.course_id = modules.course_id 
+      where modules.module_id = module_id and courses.instructor_id = auth.uid()
+    ) 
+  );
 

@@ -1,186 +1,184 @@
-import React, { useState, useMemo } from 'react';
-import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { CourseCard } from '@/components/course-card';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View, Text, FlatList, TextInput, RefreshControl } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { CourseCard } from '@/components/course-card';
 import { WebLayout } from '@/components/ui/web-layout';
 import { Footer } from '@/components/ui/footer';
+import { Chips, EmptyState, Loading, BRAND } from '@/components/ui/kit';
+import { supabase } from '@/lib/supabase';
+import { COURSE_CARD_SELECT, fetchCategories } from '@/lib/api';
+import { formatVND, fullName, LEVEL_LABEL } from '@/lib/format';
+import type { Category, Course } from '@/lib/types';
 
-const ALL_COURSES = [
-  {
-    id: '1',
-    title: 'Advanced Python for Data Science',
-    instructor: 'Dr. Angela Yu',
-    image: 'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?auto=format&fit=crop&w=900&q=80',
-    price: '$129.99',
-    rating: 4.8,
-    category: 'Lập Trình',
-    level: 'Nâng Cao',
-  },
-  {
-    id: '2',
-    title: 'Web Development Bootcamp 2024',
-    instructor: 'Colt Steele',
-    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=900&q=80',
-    price: '$99.99',
-    rating: 4.9,
-    category: 'Lập Trình',
-    level: 'Cơ Bản',
-  },
-  {
-    id: '3',
-    title: 'UI/UX Design Masterclass',
-    instructor: 'Sarah Johnson',
-    image: 'https://images.unsplash.com/photo-1587614382346-4ec892f9aca3?auto=format&fit=crop&w=900&q=80',
-    price: '$79.99',
-    rating: 4.6,
-    category: 'Thiết Kế',
-    level: 'Trung Cấp',
-  },
-  {
-    id: '4',
-    title: 'Growth Marketing 360°',
-    instructor: 'Neil Patel',
-    image: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=900&q=80',
-    price: '$69.99',
-    rating: 4.5,
-    category: 'Marketing',
-    level: 'Cơ Bản',
-  },
-  {
-    id: '5',
-    title: 'Business Strategy & Management',
-    instructor: 'Michael Porter',
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=80',
-    price: '$89.99',
-    rating: 4.7,
-    category: 'Kinh Doanh',
-    level: 'Trung Cấp',
-  },
-  {
-    id: '6',
-    title: 'Data Analytics with SQL & Tableau',
-    instructor: 'Emily Chen',
-    image: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=900&q=80',
-    price: '$119.00',
-    rating: 4.8,
-    category: 'Dữ Liệu',
-    level: 'Nâng Cao',
-  }
+type Sort = 'popular' | 'rating' | 'newest' | 'price_asc' | 'price_desc';
+type PriceFilter = 'all' | 'free' | 'paid';
+
+const SORTS: { value: Sort; label: string }[] = [
+  { value: 'popular', label: 'Phổ biến' },
+  { value: 'rating', label: 'Đánh giá cao' },
+  { value: 'newest', label: 'Mới nhất' },
+  { value: 'price_asc', label: 'Giá tăng dần' },
+  { value: 'price_desc', label: 'Giá giảm dần' },
 ];
 
-const CATEGORIES = ['Tất cả', 'Lập Trình', 'Thiết Kế', 'Marketing', 'Kinh Doanh', 'Dữ Liệu'];
+function normalize(s: string) {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+}
 
 export default function CoursesScreen() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Tất cả');
-  const colorScheme = useColorScheme();
-  const themeColors = Colors[colorScheme ?? 'light'];
   const router = useRouter();
+  const params = useLocalSearchParams<{ category?: string }>();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const filteredCourses = useMemo(() => {
-    return ALL_COURSES.filter(course => {
-      const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.instructor.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'Tất cả' || course.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState<number>(params.category ? Number(params.category) : 0);
+  const [level, setLevel] = useState<string>('all');
+  const [price, setPrice] = useState<PriceFilter>('all');
+  const [minRating, setMinRating] = useState<number>(0);
+  const [sort, setSort] = useState<Sort>('popular');
+
+  const load = useCallback(async () => {
+    const [{ data }, cats] = await Promise.all([
+      supabase.from('courses').select(COURSE_CARD_SELECT).eq('status', 'published').limit(500),
+      fetchCategories(),
+    ]);
+    setCourses((data as unknown as Course[]) ?? []);
+    setCategories(cats);
+  }, []);
+
+  useEffect(() => {
+    load().finally(() => setLoading(false));
+  }, [load]);
+
+  const filtered = useMemo(() => {
+    const q = normalize(search.trim());
+    const list = courses.filter((c) => {
+      if (q) {
+        const hay = normalize(`${c.title} ${c.short_description ?? ''} ${fullName(c.instructor, '')} ${c.category?.name ?? ''}`);
+        if (!hay.includes(q)) return false;
+      }
+      if (category && c.category_id !== category) return false;
+      if (level !== 'all' && c.level !== level) return false;
+      if (price === 'free' && Number(c.price) > 0) return false;
+      if (price === 'paid' && Number(c.price) === 0) return false;
+      if (minRating && Number(c.rating) < minRating) return false;
+      return true;
     });
-  }, [searchQuery, selectedCategory]);
+    const by: Record<Sort, (a: Course, b: Course) => number> = {
+      popular: (a, b) => b.total_enrollments - a.total_enrollments,
+      rating: (a, b) => Number(b.rating) - Number(a.rating),
+      newest: (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      price_asc: (a, b) => Number(a.price) - Number(b.price),
+      price_desc: (a, b) => Number(b.price) - Number(a.price),
+    };
+    return list.sort(by[sort]);
+  }, [courses, search, category, level, price, minRating, sort]);
+
+  const header = (
+    <View style={styles.header}>
+      <Text style={styles.title}>Danh Mục Khóa Học</Text>
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="#999" style={{ marginRight: 8 }} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Tìm theo tên khoá học, giảng viên..."
+          value={search}
+          onChangeText={setSearch}
+          placeholderTextColor="#999"
+          accessibilityLabel="Tìm kiếm khoá học"
+        />
+        {search ? <Ionicons name="close-circle" size={18} color="#BBB" onPress={() => setSearch('')} /> : null}
+      </View>
+      <Chips
+        options={[{ value: 0, label: 'Tất cả' }, ...categories.map((c) => ({ value: c.category_id, label: c.name }))]}
+        value={category}
+        onChange={setCategory}
+      />
+      <View style={{ height: 8 }} />
+      <Chips
+        options={[
+          { value: 'all', label: 'Mọi trình độ' },
+          ...Object.entries(LEVEL_LABEL).map(([value, label]) => ({ value, label })),
+        ]}
+        value={level}
+        onChange={setLevel}
+      />
+      <View style={{ height: 8 }} />
+      <Chips
+        options={[
+          { value: 'all', label: 'Mọi mức giá' },
+          { value: 'free', label: 'Miễn phí' },
+          { value: 'paid', label: 'Trả phí' },
+        ] as { value: PriceFilter; label: string }[]}
+        value={price}
+        onChange={setPrice}
+      />
+      <View style={{ height: 8 }} />
+      <Chips
+        options={[{ value: 0, label: 'Mọi đánh giá' }, { value: 4, label: '★ 4.0+' }, { value: 4.5, label: '★ 4.5+' }]}
+        value={minRating}
+        onChange={setMinRating}
+      />
+      <View style={styles.sortRow}>
+        <Text style={styles.count}>{filtered.length} khoá học</Text>
+      </View>
+      <Chips options={SORTS} value={sort} onChange={setSort} />
+    </View>
+  );
 
   return (
     <WebLayout>
-      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: themeColors.text }]}>Danh Mục Khóa Học</Text>
-
-        {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#999" style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Tìm kiếm khóa học..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholderTextColor="#999"
-          />
-        </View>
-
-        {/* Category Filter */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryScroll}
-          contentContainerStyle={styles.categoryContent}
-        >
-          {CATEGORIES.map(category => (
-            <TouchableOpacity
-              key={category}
-              style={[
-                styles.categoryButton,
-                selectedCategory === category && { backgroundColor: themeColors.primary }
-              ]}
-              onPress={() => setSelectedCategory(category)}
-            >
-              <Text style={[
-                styles.categoryText,
-                selectedCategory === category && styles.activeCategoryText
-              ]}>
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
       <FlatList
-        data={filteredCourses}
-        keyExtractor={(item) => item.id}
+        data={loading ? [] : filtered}
+        keyExtractor={(item) => String(item.course_id)}
+        ListHeaderComponent={header}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }} />}
         renderItem={({ item }) => (
-          <CourseCard
-            title={item.title}
-            instructor={item.instructor}
-            price={item.price}
-            rating={item.rating}
-            image={item.image}
-            onPress={() => router.push(`/(details)/course-detail?id=${item.id}`)}
-          />
-        )}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Không tìm thấy khóa học nào</Text>
+          <View style={{ paddingHorizontal: 20 }}>
+            <CourseCard
+              title={item.title}
+              instructor={fullName(item.instructor, 'VIAN Academy')}
+              price={formatVND(item.price)}
+              rating={Number(item.rating)}
+              students={item.total_enrollments}
+              meta={[item.category?.name, item.level ? LEVEL_LABEL[item.level] : null, item.total_lessons ? `${item.total_lessons} bài học` : null].filter(Boolean).join(' · ')}
+              image={item.thumbnail_url}
+              onPress={() => router.push({ pathname: '/(details)/course-detail', params: { id: String(item.course_id) } })}
+            />
           </View>
+        )}
+        ListEmptyComponent={
+          loading ? <Loading /> : (
+            <EmptyState icon="search-outline" title="Không tìm thấy khóa học nào" message="Hãy thử từ khoá khác hoặc bỏ bớt bộ lọc." />
+          )
         }
         ListFooterComponent={
           <>
             <View style={{ height: 20 }} />
             <Footer />
+            <View style={{ height: 90 }} />
           </>
         }
       />
-    </View>
     </WebLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   header: {
-    paddingTop: 60,
+    paddingTop: 48,
     paddingHorizontal: 20,
     paddingBottom: 16,
-    backgroundColor: '#FFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEE',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    color: BRAND.text,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -188,10 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     borderRadius: 12,
     paddingHorizontal: 12,
-    marginBottom: 16,
-  },
-  searchIcon: {
-    marginRight: 8,
+    marginBottom: 12,
   },
   searchInput: {
     flex: 1,
@@ -199,37 +194,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-  categoryScroll: {
-    marginBottom: 4,
+  sortRow: {
+    marginTop: 14,
+    marginBottom: 8,
   },
-  categoryContent: {
-    paddingRight: 20,
-  },
-  categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#F0F0F0',
-    marginRight: 8,
-  },
-  categoryText: {
-    fontSize: 14,
+  count: {
+    color: BRAND.muted,
     fontWeight: '600',
-    color: '#666',
-  },
-  activeCategoryText: {
-    color: '#FFF',
-  },
-  listContent: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  emptyContainer: {
-    padding: 40,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#999',
   },
 });
