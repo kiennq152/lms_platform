@@ -34,7 +34,7 @@ export default function SupportScreen() {
       setName(fullName(profile, ''));
       setEmail(profile.email);
     }
-  }, [profile]);
+  }, [profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps -- background refreshes must not overwrite edits
 
   const loadMine = useCallback(async () => {
     if (!session?.user) return setMine([]);

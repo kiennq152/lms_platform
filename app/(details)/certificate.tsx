@@ -69,7 +69,7 @@ export default function CertificateScreen() {
               <Text style={styles.course}>{cert.course?.title}</Text>
               {cert.course?.total_lessons ? (
                 <Muted style={{ fontSize: 13 }}>
-                  {cert.course.total_lessons} bài học{Number(cert.course.duration_hours) ? ` · ${cert.course.duration_hours} giờ video` : ''}
+                  {cert.course.total_lessons} bài học{Number(cert.course.duration_hours) ? ` · ${Number(cert.course.duration_hours) < 1 ? `${Math.max(1, Math.round(Number(cert.course.duration_hours) * 60))} phút` : `${Number(cert.course.duration_hours)} giờ`} video` : ''}
                 </Muted>
               ) : null}
               <Row style={{ justifyContent: 'space-between', alignSelf: 'stretch', marginTop: 28 }}>

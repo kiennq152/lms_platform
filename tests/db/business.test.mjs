@@ -143,3 +143,22 @@ ok(r.rows.length === 0, "users cannot read others' tickets");
 r = await as(U.admin, `update users set status = 'suspended' where id = $1`, [U.stu2]);
 r = await as(U.stu2, `select checkout(array[$1]::int[], null, 'paypal') c`, [free]);
 ok(!!r.error, 'suspended user cannot checkout');
+
+// --- hidden courses -----------------------------------------------------
+{
+  const c = await one(`insert into courses (instructor_id, title, description, price, status) values ($1, 'Hidden', 'd', 0, 'draft') returning course_id`, [U.inst]);
+  const m = await one(`insert into modules (course_id, title, order_index) values ($1, 'M', 0) returning module_id`, [c.course_id]);
+  await db.query(`insert into lessons (module_id, title, content_type, order_index) values ($1, 'L', 'text', 0)`, [m.module_id]);
+  await db.query(`insert into enrollments (student_id, course_id) values ($1, $2)`, [U.stu, c.course_id]);
+  const count = async (uid) => [
+    (await as(uid, `select 1 from courses where course_id = $1`, [c.course_id])).rows.length,
+    (await as(uid, `select 1 from modules where course_id = $1`, [c.course_id])).rows.length,
+    (await as(uid, `select 1 from lessons where module_id = $1`, [m.module_id])).rows.length,
+    (await as(uid, `select 1 from course_outline where course_id = $1`, [c.course_id])).rows.length,
+  ].join();
+  ok(await count(U.stu) === '1,1,1,1', 'enrolled student keeps access to a hidden course');
+  ok(await count(U.inst) === '1,1,1,1', 'instructor sees own hidden course');
+  ok(await count(U.stu2) === '0,0,0,0' && await count(null) === '0,0,0,0', 'hidden course stays hidden from everyone else');
+  await db.query(`update enrollments set status = 'dropped' where course_id = $1`, [c.course_id]);
+  ok(await count(U.stu) === '0,0,0,0', 'dropped enrollment loses access to a hidden course');
+}
