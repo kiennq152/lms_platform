@@ -1,5 +1,15 @@
 {
-  "buildCommand": "npx expo export",
+  "buildCommand": "npx expo export --platform web",
   "outputDirectory": "dist",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/instructor/curriculum/:id",
+      "destination": "/instructor/curriculum/[id]"
+    },
+    {
+      "source": "/instructor/students/:id",
+      "destination": "/instructor/students/[id]"
+    }
+  ]
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Platform } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -39,7 +39,7 @@ export function Footer() {
                     <Text style={styles.socialLabel}>Kết nối với chúng tôi:</Text>
                     <View style={styles.socialIcons}>
                         <TouchableOpacity onPress={handleOpenFacebook} style={styles.iconButton}>
-                            <MaterialCommunityIcons name="facebook" size={28} color="#1877F2" />
+                            <Ionicons name="logo-facebook" size={28} color="#1877F2" />
                         </TouchableOpacity>
                         {/* You can add more icons here like YouTube, LinkedIn, etc. */}
                     </View>

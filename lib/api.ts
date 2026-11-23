@@ -5,18 +5,19 @@ import type { Category } from './types';
 /** Columns needed to render a course card, with instructor + category joined. */
 export const COURSE_CARD_SELECT =
   'course_id, title, short_description, price, thumbnail_url, rating, total_enrollments, total_lessons, duration_hours, level, status, created_at, updated_at, category_id, instructor_id, rejection_reason, ' +
-  'instructor:users!courses_instructor_id_fkey(id, first_name, last_name, avatar_url), category:categories(name)';
+  'instructor:public_profiles!courses_instructor_id_fkey(id, first_name, last_name, avatar_url), category:categories(name)';
 
 export const COURSE_DETAIL_SELECT =
-  '*, instructor:users!courses_instructor_id_fkey(id, first_name, last_name, avatar_url, bio, degree, experience_years), category:categories(name)';
+  '*, instructor:public_profiles!courses_instructor_id_fkey(id, first_name, last_name, avatar_url, bio, degree, experience_years), category:categories(name)';
 
 export const DEFAULT_THUMBNAIL = 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80';
 
 let categoriesCache: Category[] | null = null;
 export async function fetchCategories(force = false): Promise<Category[]> {
   if (categoriesCache && !force) return categoriesCache;
-  const { data } = await supabase.from('categories').select('category_id, name, slug, description').order('name');
-  categoriesCache = (data as Category[]) ?? [];
+  const { data, error } = await supabase.from('categories').select('category_id, name, slug, description').order('name');
+  if (error) return categoriesCache ?? []; // do not cache a failure
+  categoriesCache = data as Category[];
   return categoriesCache;
 }
 

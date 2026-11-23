@@ -32,6 +32,7 @@ export function errorMessage(err: unknown): string {
   if (/Email not confirmed/i.test(msg)) return 'Email chưa được xác thực. Vui lòng kiểm tra hộp thư.';
   if (/Password should be at least/i.test(msg)) return 'Mật khẩu phải có ít nhất 6 ký tự.';
   if (/User already registered/i.test(msg)) return 'Email này đã được đăng ký.';
+  if (/Failed to fetch|Network request failed|NetworkError/i.test(msg)) return 'Không kết nối được máy chủ. Vui lòng kiểm tra mạng và thử lại.';
   if (/rate limit/i.test(msg)) return 'Bạn thao tác quá nhanh, vui lòng thử lại sau ít phút.';
   return msg;
 }

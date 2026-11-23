@@ -20,6 +20,7 @@ import {
   Platform,
 } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { Button } from './button';
 import { WebLayout } from './web-layout';
 import { Footer } from './footer';
 import { initials } from '@/lib/format';
@@ -224,6 +225,18 @@ export function EmptyState({ icon = 'file-tray-outline', title, message, action 
       {message ? <Text style={[styles.muted, { textAlign: 'center' }]}>{message}</Text> : null}
       {action ? <View style={{ marginTop: 12 }}>{action}</View> : null}
     </View>
+  );
+}
+
+/** Shown when data could not be loaded, so a failed request never looks like "no data". */
+export function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <EmptyState
+      icon="cloud-offline-outline"
+      title="Không tải được dữ liệu"
+      message={message}
+      action={<Button title="Thử lại" size="sm" variant="outline" icon="refresh" onPress={onRetry} />}
+    />
   );
 }
 

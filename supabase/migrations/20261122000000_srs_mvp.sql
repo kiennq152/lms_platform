@@ -128,8 +128,13 @@ create trigger users_guard before update on public.users
   for each row execute procedure public.users_guard();
 
 -- Instructors that already existed before approval was enforced keep working.
-update public.users set admin_approved = true, admin_approved_at = coalesce(admin_approved_at, now())
-where role = 'instructor' and admin_approved = false;
+-- First run only (certificates does not exist yet): a re-run must not approve pending instructors.
+do $$ begin
+  if to_regclass('public.certificates') is null then
+    update public.users set admin_approved = true, admin_approved_at = coalesce(admin_approved_at, now())
+    where role = 'instructor' and admin_approved = false;
+  end if;
+end $$;
 
 -- ---------------------------------------------------------------------
 -- 2. NEW COLUMNS
@@ -225,7 +230,7 @@ drop policy if exists "Users can update own profile." on public.users;
 drop policy if exists "users_select" on public.users;
 drop policy if exists "users_update_own" on public.users;
 drop policy if exists "users_update_admin" on public.users;
-create policy "users_select" on public.users for select using (true);
+create policy "users_select" on public.users for select using (auth.uid() = id or public.is_admin());
 create policy "users_update_own" on public.users for update using (auth.uid() = id);
 create policy "users_update_admin" on public.users for update using (public.is_admin());
 

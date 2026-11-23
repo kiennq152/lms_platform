@@ -20,7 +20,8 @@ export default function AdminCategories() {
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
-    const { data } = await supabase.from('categories').select('*, courses(count)').order('name');
+    const { data, error } = await supabase.from('categories').select('*, courses(count)').order('name');
+    if (error) notify('Không tải được danh mục', errorMessage(error));
     setItems((data as any) ?? []);
     setLoading(false);
   }, []);

@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Platform, Linking, useWindowDimensions } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import YoutubePlayer from 'react-native-youtube-iframe';
 import { Button } from '@/components/ui/button';
+import { YoutubeVideo } from '@/components/ui/youtube-video';
 import { WebLayout } from '@/components/ui/web-layout';
-import { Badge, BRAND, Card, EmptyState, Field, Loading, Muted, Notice, ProgressBar, Row, Tabs } from '@/components/ui/kit';
+import { Badge, BRAND, Card, EmptyState, ErrorState, Field, Loading, Muted, Notice, ProgressBar, Row, Tabs } from '@/components/ui/kit';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { formatDuration, fullName, timeAgo, youtubeId } from '@/lib/format';
@@ -20,14 +20,7 @@ function VideoBlock({ lesson, width, onEnded }: { lesson: Lesson; width: number;
   if (ytId) {
     return (
       <View style={{ backgroundColor: '#000' }}>
-        <YoutubePlayer
-          key={ytId}
-          height={height}
-          width={width}
-          videoId={ytId}
-          play={false}
-          onChangeState={(state: string) => { if (state === 'ended') onEnded(); }}
-        />
+        <YoutubeVideo key={lesson.lesson_id} videoId={ytId} onEnded={onEnded} />
       </View>
     );
   }
@@ -75,6 +68,8 @@ export default function CoursePlayerScreen() {
   const [completed, setCompleted] = useState<Set<number>>(new Set());
   const [currentId, setCurrentId] = useState<number | null>(null);
   const [tab, setTab] = useState<Tab>('lessons');
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const [marking, setMarking] = useState(false);
 
   const [questions, setQuestions] = useState<ForumTopic[]>([]);
@@ -93,7 +88,7 @@ export default function CoursePlayerScreen() {
 
   const loadQuestions = useCallback(async () => {
     const { data } = await supabase.from('forum_topics')
-      .select('*, author:users!forum_topics_author_id_fkey(first_name, last_name, avatar_url, role)')
+      .select('*, author:public_profiles!forum_topics_author_id_fkey(first_name, last_name, avatar_url, role)')
       .eq('course_id', courseId).order('created_at', { ascending: false });
     setQuestions((data as unknown as ForumTopic[]) ?? []);
   }, [courseId]);
@@ -105,6 +100,8 @@ export default function CoursePlayerScreen() {
         supabase.from('modules').select('*').eq('course_id', courseId).order('order_index'),
         supabase.from('lessons').select('*, module:modules!inner(course_id)').eq('module.course_id', courseId).order('order_index'),
       ]);
+      const failed = c.error ?? m.error ?? l.error;
+      setLoadError(failed ? errorMessage(failed) : null);
       setCourse((c.data as unknown as Course) ?? null);
       setModules((m.data as Module[]) ?? []);
       const ls = ((l.data as unknown as Lesson[]) ?? []);
@@ -137,7 +134,7 @@ export default function CoursePlayerScreen() {
       setLoading(false);
     })();
     loadQuestions();
-  }, [courseId, lessonParam, session?.user, loadQuestions]);
+  }, [courseId, lessonParam, session?.user, loadQuestions, reloadKey]);
 
   const current = ordered.find((l) => l.lesson_id === currentId) ?? null;
   const currentIndex = current ? ordered.indexOf(current) : -1;
@@ -192,6 +189,7 @@ export default function CoursePlayerScreen() {
   };
 
   if (loading) return <Loading />;
+  if (loadError) return <ErrorState message={loadError} onRetry={() => setReloadKey((k) => k + 1)} />;
   if (!course) return <EmptyState icon="alert-circle-outline" title="Không tìm thấy khoá học" />;
 
   const lockedForViewer = !canTrack && !isOwner && role !== 'admin';

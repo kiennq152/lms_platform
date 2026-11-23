@@ -5,9 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { CourseCard } from '@/components/course-card';
 import { WebLayout } from '@/components/ui/web-layout';
 import { Footer } from '@/components/ui/footer';
-import { Chips, EmptyState, Loading, BRAND } from '@/components/ui/kit';
+import { Chips, EmptyState, ErrorState, Loading, BRAND } from '@/components/ui/kit';
 import { supabase } from '@/lib/supabase';
 import { COURSE_CARD_SELECT, fetchCategories } from '@/lib/api';
+import { errorMessage } from '@/lib/notify';
 import { formatVND, fullName, LEVEL_LABEL } from '@/lib/format';
 import type { Category, Course } from '@/lib/types';
 
@@ -32,6 +33,7 @@ export default function CoursesScreen() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const [search, setSearch] = useState('');
@@ -42,11 +44,12 @@ export default function CoursesScreen() {
   const [sort, setSort] = useState<Sort>('popular');
 
   const load = useCallback(async () => {
-    const [{ data }, cats] = await Promise.all([
+    const [{ data, error: e }, cats] = await Promise.all([
       supabase.from('courses').select(COURSE_CARD_SELECT).eq('status', 'published').limit(500),
       fetchCategories(),
     ]);
-    setCourses((data as unknown as Course[]) ?? []);
+    setError(e ? errorMessage(e) : null);
+    if (data) setCourses(data as unknown as Course[]);
     setCategories(cats);
   }, []);
 
@@ -152,7 +155,7 @@ export default function CoursesScreen() {
           </View>
         )}
         ListEmptyComponent={
-          loading ? <Loading /> : (
+          loading ? <Loading /> : error ? <ErrorState message={error} onRetry={load} /> : (
             <EmptyState icon="search-outline" title="Không tìm thấy khóa học nào" message="Hãy thử từ khoá khác hoặc bỏ bớt bộ lọc." />
           )
         }
