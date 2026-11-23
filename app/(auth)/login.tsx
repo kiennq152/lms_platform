@@ -38,8 +38,7 @@ export default function LoginScreen() {
                 .maybeSingle();
 
             if (profile?.status === 'suspended') {
-                await supabase.auth.signOut();
-                notify('Tài khoản bị khoá', 'Tài khoản của bạn đã bị tạm khoá. Vui lòng liên hệ bộ phận hỗ trợ.');
+                // AuthProvider signs suspended users out and tells them why.
                 setLoading(false);
                 return;
             }

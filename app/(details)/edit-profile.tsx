@@ -29,7 +29,7 @@ export default function EditProfileScreen() {
       experience_years: profile.experience_years != null ? String(profile.experience_years) : '',
       avatar_url: profile.avatar_url ?? '',
     });
-  }, [profile]);
+  }, [profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps -- background refreshes must not overwrite edits
 
   if (loading) return <Loading />;
   if (!session) return <Redirect href="/(auth)/login" />;

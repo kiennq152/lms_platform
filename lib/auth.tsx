@@ -34,7 +34,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProfile(null);
       return;
     }
-    const { data } = await supabase.from('users').select('*').eq('id', s.user.id).maybeSingle();
+    const { data, error } = await supabase.from('users').select('*').eq('id', s.user.id).maybeSingle();
+    if (error) {
+      // Keep what we already know about this user on a transient failure.
+      setProfile((p) => (p?.id === s.user.id ? p : null));
+      return;
+    }
     if (data?.status === 'suspended') {
       await supabase.auth.signOut();
       setProfile(null);
@@ -61,7 +66,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })();
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
-      setSession(s);
+      // supabase-js re-emits the session on tab focus and token refresh. Keep the same object for the same
+      // user so screens do not reload and drop what the user is doing.
+      setSession((prev) => (prev && s && prev.user.id === s.user.id ? prev : s));
       // Defer DB calls out of the auth callback (supabase-js recommendation).
       setTimeout(() => {
         loadProfile(s);

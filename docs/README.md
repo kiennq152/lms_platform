@@ -15,6 +15,7 @@ Mở **Supabase Dashboard → SQL Editor** và chạy lần lượt:
 1. [`supabase_schema.sql`](../supabase_schema.sql): bảng gốc (bỏ qua nếu database đã có).
 2. [`supabase/migrations/20261122000000_srs_mvp.sql`](../supabase/migrations/20261122000000_srs_mvp.sql): sửa lỗi bảo mật, thêm bảng, trigger, RPC, storage. **Chạy lại nhiều lần vẫn an toàn.**
    Sau đó chạy [`20261123000000_grants_privacy.sql`](../supabase/migrations/20261123000000_grants_privacy.sql): cấp quyền API và ẩn email/điện thoại. **Phải chạy trước khi deploy bản app tương ứng.**
+   Cuối cùng chạy [`20261124000000_hidden_course_access.sql`](../supabase/migrations/20261124000000_hidden_course_access.sql): học viên đã đăng ký vẫn học được khi khoá bị ẩn.
 3. [`supabase_seed.sql`](../supabase_seed.sql) (tuỳ chọn): danh mục, giảng viên/học viên mẫu (mật khẩu `123456`, **không chạy trên database thật**), khoá học, mã giảm giá `WELCOME10`, `VIAN200K`.
 4. Tạo admin: đăng ký một tài khoản trong app, rồi chạy:
    ```sql
